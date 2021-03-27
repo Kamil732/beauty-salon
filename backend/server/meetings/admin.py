@@ -8,12 +8,6 @@ from .models import Meeting
 class MeetingAdmin(ModelAdmin):
     empty_value_display = '-?-'
     list_display = ('type', 'customer_first_name', 'start',)
-    search_fields = ('type', 'account__first_name', 'start',)
+    search_fields = ('type', 'customer_first_name', 'start',)
     list_editable = ('start',)
     readonly_fields = ('id',)
-
-    def customer_first_name(self, obj):
-        if obj.account:
-            return obj.account.first_name
-
-    customer_first_name.short_description = 'Imię klienta'
