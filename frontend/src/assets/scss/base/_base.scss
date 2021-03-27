@@ -1,0 +1,158 @@
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	background-color: $background-color;
+	color: set-text-color($background-color);
+	min-height: 100vh;
+}
+
+.content-wrap {
+	padding-bottom: 12rem;
+}
+
+a {
+	text-decoration: none;
+}
+
+.header {
+	margin-bottom: 2rem;
+	z-index: 999;
+	width: 100%;
+	padding: 1rem;
+
+	&__logo {
+		margin: 0 auto;
+		height: 2.5rem;
+		width: auto;
+	}
+
+	& > .mobile-nav {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		& > .nav-btn {
+			position: relative;
+			line-height: 1.6;
+			opacity: 0.8;
+			display: flex;
+			padding-left: 3rem;
+			cursor: pointer;
+
+			& > .nav-btn__burger {
+				position: absolute;
+				left: 0;
+				top: 0.7rem;
+				width: 29px;
+				height: 3px;
+				border-radius: 10px;
+				background-color: set-text-color($background-color);
+
+				&::before {
+					content: '';
+					position: absolute;
+					top: -8px;
+					left: 0;
+					width: 29px;
+					height: 3px;
+					border-radius: 10px;
+					background-color: set-text-color($background-color);
+				}
+
+				&::after {
+					content: '';
+					position: absolute;
+					bottom: -8px;
+					left: 0;
+					width: 29px;
+					height: 3px;
+					border-radius: 10px;
+					background-color: set-text-color($background-color);
+				}
+			}
+		}
+	}
+
+	& > .nav-background {
+		z-index: 1;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		opacity: 0.5;
+		background-color: #000;
+	}
+
+	& > .nav {
+		z-index: 1;
+		position: fixed;
+		top: 0;
+		right: 0;
+		width: 70vw;
+		padding: 2rem 0;
+		transform: translate3d(100vw, 0, 0);
+		transition: transform 0.3s cubic-bezier(0, 0.52, 0, 1);
+
+		&.active {
+			transform: translate3d(0vw, 0, 0);
+		}
+
+		background-color: $surface-color;
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+
+		& > .nav__link {
+			position: relative;
+			color: set-text-color($surface-color);
+			width: fit-content;
+			font-size: 1.2rem;
+			margin-left: 2rem;
+
+			&.active {
+				color: #0f91dd;
+			}
+
+			&::after {
+				content: '';
+				width: 100%;
+				height: 2px;
+				position: absolute;
+				bottom: -2px;
+				left: 0;
+
+				background: linear-gradient(
+						to left,
+						transparent 50%,
+						#0f91dd 50%
+					)
+					right;
+				background-size: 200%;
+				transition: background-position 0.2s ease-in-out,
+					color 0.2s ease-in-out;
+			}
+
+			&:hover::after,
+			&.active::after {
+				background-position: left;
+			}
+		}
+	}
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 2.5rem;
+	text-align: center;
+}

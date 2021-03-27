@@ -1,0 +1,31 @@
+@function set-text-color($color) {
+	@if (lightness($color) < 50%) {
+		@return #fff;
+	} @else {
+		@return #000;
+	}
+}
+
+@mixin media-tablet {
+	@media screen and (min-width: 768px) {
+		@content;
+	}
+}
+
+@mixin media-laptop {
+	@media screen and (min-width: 1024px) {
+		@content;
+	}
+}
+
+@mixin media-laptop-lg {
+	@media screen and (min-width: 1440px) {
+		@content;
+	}
+}
+
+@mixin media-laptop-lg-extra {
+	@media screen and (min-width: 1920px) {
+		@content;
+	}
+} ;
