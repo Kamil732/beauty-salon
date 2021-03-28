@@ -34,6 +34,8 @@ class Header extends Component {
 				) : null}
 
 				<nav className={`nav${isNavActive ? ' active' : ''}`}>
+					<span className="nav__close" onClick={() => this.setState({ isNavActive: false })}></span>
+
 					<NavigationMenu
 						closeNavigation={() => this.setState({ isNavActive: false })}
 					/>

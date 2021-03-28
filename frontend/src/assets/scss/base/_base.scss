@@ -10,7 +10,7 @@ body {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	background-color: $background-color;
 	color: set-text-color($background-color);
-	min-height: 100vh;
+	min-height: 200vh;
 }
 
 .content-wrap {
@@ -110,13 +110,39 @@ a {
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
+		padding-left: 2rem;
+
+		& > .nav__close {
+			position: relative;
+			width: 32px;
+			height: 32px;
+			opacity: 0.8;
+			margin-bottom: 2.5rem;
+			cursor: pointer;
+
+			&::before,
+			&:after {
+				position: absolute;
+				left: 15px;
+				content: ' ';
+				height: 33px;
+				width: 2px;
+				background-color: #333;
+			}
+
+			&::before {
+				transform: rotate(45deg);
+			}
+			&::after {
+				transform: rotate(-45deg);
+			}
+		}
 
 		& > .nav__link {
 			position: relative;
 			color: set-text-color($surface-color);
 			width: fit-content;
 			font-size: 1.2rem;
-			margin-left: 2rem;
 
 			&.active {
 				color: #0f91dd;

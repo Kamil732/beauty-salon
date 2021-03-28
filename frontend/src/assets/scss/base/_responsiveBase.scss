@@ -1,0 +1,26 @@
+@include media-tablet {
+	.header {
+		margin: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0 1rem 1rem;
+
+		& > .mobile-nav > .nav-btn {
+			display: none;
+		}
+
+		& > .nav {
+			height: auto;
+			width: max-content;
+			transform: translate3d(0vw, 0, 0);
+			flex-direction: row;
+			background-color: inherit;
+			position: static;
+
+			& > .nav__close {
+				display: none;
+			}
+		}
+	}
+}
