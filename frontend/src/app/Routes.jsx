@@ -6,11 +6,9 @@ import Home from '../containers/Home'
 class Routes extends Component {
     render() {
         return (
-            <div className="content-wrap">
-                <Switch>
-                    <Route exact path="/" component={Home} />
-                </Switch>
-            </div>
+            <Switch>
+                <Route exact path="/" component={Home} />
+            </Switch>
         )
     }
 }

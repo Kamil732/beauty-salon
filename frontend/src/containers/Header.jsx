@@ -6,27 +6,34 @@ import logo from '../assets/images/logo.png'
 import { default as NavigationMenu } from '../components/navigation/Menu'
 
 class Header extends Component {
-    state = {
-        isNavActive: false,
-    }
+	state = {
+		isNavActive: false,
+	}
 
-    render() {
-        const { isNavActive } = this.state
+	render() {
+		const { isNavActive } = this.state
 
-        return (
-            <div className="header">
-                <div className="mobile-nav">
+		return (
+			<div className="header">
+				<div className="mobile-nav">
 					<Link to="/">
-                        <img src={logo} className="header__logo" alt="Damian Kwiecień" />
+						<img
+							src={logo}
+							className="header__logo"
+							alt="Damian Kwiecień"
+						/>
 					</Link>
 
-					<div className="nav-btn" onClick={() => this.setState({ isNavActive: true })}>
+					<div
+						className="nav-btn"
+						onClick={() => this.setState({ isNavActive: true })}
+					>
 						<span className="nav-btn__burger"></span>
-                        MENU
+						MENU
 					</div>
 				</div>
 
-                {isNavActive ? (
+				{isNavActive ? (
 					<div
 						className="nav-background"
 						onClick={() => this.setState({ isNavActive: false })}
@@ -34,15 +41,23 @@ class Header extends Component {
 				) : null}
 
 				<nav className={`nav${isNavActive ? ' active' : ''}`}>
-					<span className="nav__close" onClick={() => this.setState({ isNavActive: false })}></span>
+					<span
+						className="nav__close"
+						onClick={() => this.setState({ isNavActive: false })}
+					></span>
 
 					<NavigationMenu
-						closeNavigation={() => this.setState({ isNavActive: false })}
+						closeNavigation={() =>
+							setTimeout(
+								() => this.setState({ isNavActive: false }),
+								300
+							)
+						}
 					/>
 				</nav>
-            </div>
-        )
-    }
+			</div>
+		)
+	}
 }
 
 export default Header

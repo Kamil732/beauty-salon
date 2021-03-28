@@ -1,19 +1,79 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
+import { connect } from 'react-redux'
+
+import { logout } from '../../redux/actions/auth'
 
 class Menu extends Component {
-    render() {
-        return (
-            <>
-                <NavLink to="/contact" className="nav__link">
-                    Kontakt
-                </NavLink>
-                <NavLink to="/my-meetings" className="nav__link">
-                    Moje wizyty
-                </NavLink>
-            </>
-        )
-    }
+	static propTypes = {
+		isAuthenticted: PropTypes.bool,
+		loading: PropTypes.bool,
+		logout: PropTypes.func.isRequired,
+		closeNavigation: PropTypes.func.isRequired,
+	}
+
+	render() {
+		const { loading, isAuthenticted, logout, closeNavigation } = this.props
+
+		return (
+			<>
+				<NavLink
+					to="/contact"
+					className="nav__link"
+					onClick={closeNavigation}
+				>
+					Kontakt
+				</NavLink>
+				<NavLink
+					to="/my-meetings"
+					className="nav__link"
+					onClick={closeNavigation}
+				>
+					Moje wizyty
+				</NavLink>
+				{!loading ? (
+					!isAuthenticted ? (
+						<>
+							<NavLink
+								to="/login"
+								className="nav__link"
+								onClick={closeNavigation}
+							>
+								Zaloguj się
+							</NavLink>
+							<NavLink
+								to="/register"
+								className="nav__link"
+								onClick={closeNavigation}
+							>
+								Zarejestruj się
+							</NavLink>
+						</>
+					) : (
+						<button
+							className="btn"
+							onClick={() => {
+								closeNavigation()
+								logout()
+							}}
+						>
+							Wyloguj się
+						</button>
+					)
+				) : null}
+			</>
+		)
+	}
 }
 
-export default Menu
+const mapStateToProps = (state) => ({
+	isAuthenticted: state.auth.isAuthenticted,
+	loading: state.auth.loading,
+})
+
+const mapDispatchToProps = {
+	logout,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Menu)
