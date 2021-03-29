@@ -1,0 +1,9 @@
+.card {
+	display: flex;
+	justify-content: space-between;
+	gap: 6rem;
+
+	& > &__body {
+		font-size: 1.2rem;
+	}
+}

@@ -11,7 +11,7 @@ body {
 	background-color: $background-color;
 	color: set-text-color($background-color);
 	min-height: 100vh;
-	line-height: 1.5;
+	overflow-x: hidden;
 }
 
 .content-wrap {
@@ -23,9 +23,9 @@ a {
 }
 
 .header {
-	margin-bottom: 2rem;
 	z-index: 999;
 	width: 100%;
+	margin-bottom: 2rem;
 	padding: 25px;
 
 	&__logo {
@@ -182,4 +182,38 @@ a {
 	width: 100%;
 	padding: 2.5rem;
 	text-align: center;
+}
+
+@include media-tablet {
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		& > .mobile-nav > .nav-btn {
+			display: none;
+		}
+
+		& > .nav {
+			height: auto;
+			width: max-content;
+			transform: translate3d(0vw, 0, 0);
+			flex-direction: row;
+			background-color: inherit;
+			position: static;
+			gap: 2.5rem;
+			padding: 0;
+
+			& > .nav__close {
+				display: none;
+			}
+
+			& > .nav__link {
+				text-transform: uppercase;
+				font-size: 1rem;
+				font-weight: 400;
+				margin: 0 1.25rem;
+			}
+		}
+	}
 }

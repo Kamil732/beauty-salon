@@ -19,6 +19,14 @@ class Menu extends Component {
 		return (
 			<>
 				<NavLink
+					exact
+					to="/"
+					className="nav__link"
+					onClick={closeNavigation}
+				>
+					Home
+				</NavLink>
+				<NavLink
 					to="/contact"
 					className="nav__link"
 					onClick={closeNavigation}
