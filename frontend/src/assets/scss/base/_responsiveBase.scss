@@ -4,7 +4,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0 1rem 1rem;
 
 		& > .mobile-nav > .nav-btn {
 			display: none;
@@ -18,19 +17,17 @@
 			background-color: inherit;
 			position: static;
 			gap: 2.5rem;
+			padding: 0;
 
 			& > .nav__close {
 				display: none;
 			}
 
-			& > .nav__link::before {
-				content: '•';
-				position: absolute;
-				left: -1.5rem;
-			}
-
-			& > .nav__link:first-of-type::before {
-				display: none;
+			& > .nav__link {
+				text-transform: uppercase;
+				font-size: 1rem;
+				font-weight: 400;
+				padding: 0 20px;
 			}
 		}
 	}

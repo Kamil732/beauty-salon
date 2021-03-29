@@ -42,13 +42,6 @@ class Menu extends Component {
 							>
 								Zaloguj się
 							</NavLink>
-							<NavLink
-								to="/register"
-								className="nav__link"
-								onClick={closeNavigation}
-							>
-								Zarejestruj się
-							</NavLink>
 						</>
 					) : (
 						<button
