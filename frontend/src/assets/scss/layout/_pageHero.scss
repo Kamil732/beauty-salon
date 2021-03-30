@@ -6,11 +6,6 @@
 	font-weight: 400;
 
 	.made-by {
-		// position: absolute;
-		// float: right;
-
-		// width: 10px;
-		// display: block;
 		margin-left: auto;
 		width: fit-content;
 	}
@@ -29,7 +24,6 @@
 
 	&__img-container {
 		margin-bottom: 1rem;
-		// margin: 0 auto;
 	}
 
 	&__img {
@@ -46,16 +40,15 @@
 	.page-hero {
 		padding: 50px 50px;
 
-		& > &__body {
+		&__body {
 			width: 100%;
 			display: flex;
-			justify-content: space-around;
+			justify-content: space-evenly;
 			align-items: center;
 		}
 
 		&__content {
-			max-width: 450px;
-			padding: 0 1rem;
+			max-width: 300px;
 		}
 
 		&__img-container {
@@ -64,17 +57,22 @@
 		}
 
 		&__img {
+			order: 2;
 			width: 400px;
-			margin-right: 0;
-			margin-left: auto;
+			max-width: 40%;
+			margin: 0;
 		}
 	}
 }
 
 @include media-laptop-lg {
 	.page-hero {
+		&__content {
+			max-width: 500px;
+		}
+
 		&__img {
-			width: 700px;
+			max-width: 100%;
 		}
 	}
 }

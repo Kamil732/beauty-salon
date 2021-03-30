@@ -10,26 +10,7 @@ class Home extends Component {
 		return (
 			<PageHero>
 				<PageHero.Body>
-					<PageHero.Img src={BarberIllustration}>
-						<div className="text-broken made-by">
-							Illustration by{' '}
-							<a
-								rel="noreferrer"
-								href="https://icons8.com/illustrations/author/5ddea3b001d036001345e529"
-								target="_blank"
-							>
-								Dmitry Nikulnikov
-							</a>{' '}
-							from{' '}
-							<a
-								rel="noreferrer"
-								href="https://icons8.com/illustrations"
-								target="_blank"
-							>
-								Ouch!
-							</a>
-						</div>
-					</PageHero.Img>
+					<PageHero.Img src={BarberIllustration} />
 
 					<PageHero.Content>
 						<h1>Pełna obsługa mężczyzn i chłopców</h1>
