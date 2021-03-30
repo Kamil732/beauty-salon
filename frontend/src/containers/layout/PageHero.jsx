@@ -34,6 +34,14 @@ function Img(props) {
 	)
 }
 
+function Title({ children }) {
+	return <div className="page-hero__title">{children}</div>
+}
+
+function Text({ children }) {
+	return <div className="page-hero__text">{children}</div>
+}
+
 Img.prototype.propTypes = {
 	src: PropTypes.string.isRequired,
 	alt: PropTypes.string,
@@ -42,5 +50,7 @@ Img.prototype.propTypes = {
 PageHero.Body = Body
 PageHero.Content = Content
 PageHero.Img = Img
+PageHero.Title = Title
+PageHero.Text = Text
 
 export default PageHero

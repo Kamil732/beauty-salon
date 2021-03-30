@@ -10,20 +10,21 @@
 		width: fit-content;
 	}
 
-	h1 {
+	&__title {
 		margin-bottom: 50px;
 		font-size: 3rem;
 		line-height: 1.5em;
 		text-align: justify;
 	}
 
-	p {
+	&__text {
 		opacity: 0.8;
 		text-align: justify;
 	}
 
 	&__img-container {
 		margin-bottom: 1rem;
+		max-width: 80%;
 	}
 
 	&__img {
@@ -52,14 +53,12 @@
 		}
 
 		&__img-container {
-			order: 2;
 			margin: 0;
 		}
 
 		&__img {
-			order: 2;
 			width: 400px;
-			max-width: 40%;
+			max-width: 80%;
 			margin: 0;
 		}
 	}

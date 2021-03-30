@@ -34,6 +34,13 @@ class Menu extends Component {
 					Kontakt
 				</NavLink>
 				<NavLink
+					to="/gallery"
+					className="nav__link"
+					onClick={closeNavigation}
+				>
+					Galeria
+				</NavLink>
+				<NavLink
 					to="/my-meetings"
 					className="nav__link"
 					onClick={closeNavigation}

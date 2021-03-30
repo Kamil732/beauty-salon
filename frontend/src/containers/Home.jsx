@@ -10,16 +10,16 @@ class Home extends Component {
 		return (
 			<PageHero>
 				<PageHero.Body>
-					<PageHero.Img src={BarberIllustration} />
-
 					<PageHero.Content>
-						<h1>Pełna obsługa mężczyzn i chłopców</h1>
-						<p>
+						<PageHero.Title>
+							Pełna obsługa mężczyzn i chłopców
+						</PageHero.Title>
+						<PageHero.Text>
 							Wolność w podejmowaniu decyzji, elastyczność w
 							wykorzystaniu czasu. Przeżyj czas, kiedy dbanie o
 							włosy i brodę było męskie i było częścią bycia
 							mężczyzną
-						</p>
+						</PageHero.Text>
 
 						<ButtonContainer>
 							<Button primary to="/my-meetings">
@@ -30,6 +30,7 @@ class Home extends Component {
 							</Button>
 						</ButtonContainer>
 					</PageHero.Content>
+					<PageHero.Img src={BarberIllustration} />
 				</PageHero.Body>
 			</PageHero>
 		)

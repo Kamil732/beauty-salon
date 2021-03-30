@@ -7,21 +7,25 @@
 
 .btn {
 	outline: none;
-	border: none;
+	border: 2px solid black;
 	border-radius: 5px;
 	padding: 1rem 2rem;
 	cursor: pointer;
 	display: block;
 	width: fit-content;
 	text-align: center;
-	transition: background-color 0.1s ease-in, box-shadow 0.1s ease-in;
+	transition: background-color 0.1s ease-in, box-shadow 0.1s ease-in,
+		border-color 0.1s ease-in;
+	font-size: 1.1rem;
 
 	&__primary {
+		border-color: $primary-color;
 		background-color: $primary-color;
-		border-bottom: 2px solid black;
 		color: set-text-color($primary-color);
 
 		&:hover {
+			border-color: $primary-color-hover;
+			border-bottom-color: $primary-color;
 			background-color: $primary-color-hover;
 			color: set-text-color($primary-color-hover);
 		}
@@ -29,12 +33,11 @@
 
 	&__secondary {
 		background-color: $secondary-color;
-		border: 1px solid black;
 		color: set-text-color($secondary-color);
 
 		&:hover {
-			border: none;
-			border-bottom: 2px solid grey;
+			border-color: $secondary-color-hover;
+			border-bottom-color: grey;
 			background-color: $secondary-color-hover;
 			color: set-text-color($secondary-color-hover);
 		}

@@ -26,6 +26,11 @@ body {
 
 a {
 	text-decoration: none;
+	color: $active-element;
+
+	&.slide-floor {
+		@include sliding-floor;
+	}
 }
 
 .header {
@@ -116,7 +121,7 @@ a {
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 2rem;
 		padding-left: 2rem;
 
 		& > .nav__close {
@@ -146,38 +151,15 @@ a {
 		}
 
 		& > .nav__link {
-			position: relative;
 			color: set-text-color($surface-color);
 			width: fit-content;
 			font-size: 1.2rem;
 
 			&.active {
-				color: #0f91dd;
+				color: $active-element;
 			}
 
-			&::after {
-				content: '';
-				width: 100%;
-				height: 2px;
-				position: absolute;
-				bottom: -2px;
-				left: 0;
-
-				background: linear-gradient(
-						to left,
-						transparent 50%,
-						#0f91dd 50%
-					)
-					right;
-				background-size: 200%;
-				transition: background-position 0.2s ease-in-out,
-					color 0.2s ease-in-out;
-			}
-
-			&:hover::after,
-			&.active::after {
-				background-position: left;
-			}
+			@include sliding-floor;
 		}
 	}
 }
@@ -193,6 +175,14 @@ a {
 }
 
 @include media-tablet {
+	.header {
+		& > .nav > .nav__link {
+			font-size: 1.6rem;
+		}
+	}
+}
+
+@include media-laptop {
 	.header {
 		display: flex;
 		justify-content: space-between;

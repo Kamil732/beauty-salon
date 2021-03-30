@@ -6,6 +6,33 @@
 	}
 }
 
+@mixin sliding-floor {
+	position: relative;
+
+	&::after {
+		content: '';
+		width: 100%;
+		height: 2px;
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+
+		background: linear-gradient(
+				to left,
+				transparent 50%,
+				$active-element 50%
+			)
+			right;
+		background-size: 200%;
+		transition: background-position 0.2s ease-in-out, color 0.2s ease-in-out;
+	}
+
+	&:hover::after,
+	&.active::after {
+		background-position: left;
+	}
+}
+
 @mixin media-tablet {
 	@media screen and (min-width: 768px) {
 		@content;

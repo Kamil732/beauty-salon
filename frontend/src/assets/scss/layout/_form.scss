@@ -1,0 +1,41 @@
+.form-control {
+	position: relative;
+	margin: 1rem 0;
+
+	& > &__input {
+		width: 100%;
+		border: none;
+		font-size: 1rem;
+		margin: 1rem 0;
+		padding: 5px 0;
+		outline: 0;
+		border-bottom: 2px solid $active-element;
+
+		&:invalid {
+			box-shadow: none;
+			border-color: $error-color;
+		}
+
+		&:required:valid {
+			border-color: $success-color;
+		}
+	}
+
+	& > &__label {
+		cursor: text;
+		color: inherit;
+		font-size: 1.1rem;
+		position: absolute;
+		transform-origin: top left;
+		transform: translate(0, 1rem) scale(1);
+		transition: all 0.1s ease-in-out;
+
+		&.active {
+			transform: translate(0, -0.5rem) scale(0.75);
+		}
+	}
+
+	&:focus-within > &__label {
+		transform: translate(0, -0.5rem) scale(0.75);
+	}
+}
