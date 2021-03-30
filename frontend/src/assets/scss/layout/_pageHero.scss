@@ -6,12 +6,16 @@
 	font-weight: 400;
 
 	.made-by {
-		position: absolute;
-		right: 50px;
+		// position: absolute;
+		// float: right;
+
+		// width: 10px;
+		// display: block;
+		margin-left: auto;
+		width: fit-content;
 	}
 
 	h1 {
-		max-width: 450px;
 		margin-bottom: 50px;
 		font-size: 3rem;
 		line-height: 1.5em;
@@ -19,13 +23,13 @@
 	}
 
 	p {
-		max-width: 450px;
 		opacity: 0.8;
 		text-align: justify;
 	}
 
 	&__img-container {
 		margin-bottom: 1rem;
+		// margin: 0 auto;
 	}
 
 	&__img {
@@ -35,11 +39,6 @@
 		height: auto;
 		max-width: 80%;
 		width: auto;
-	}
-
-	& > &__content {
-		max-width: 450px;
-		padding: 0 1rem;
 	}
 }
 
@@ -54,6 +53,11 @@
 			align-items: center;
 		}
 
+		&__content {
+			max-width: 450px;
+			padding: 0 1rem;
+		}
+
 		&__img-container {
 			order: 2;
 			margin: 0;
@@ -61,6 +65,8 @@
 
 		&__img {
 			width: 400px;
+			margin-right: 0;
+			margin-left: auto;
 		}
 	}
 }

@@ -11,7 +11,7 @@ class Home extends Component {
 			<PageHero>
 				<PageHero.Body>
 					<PageHero.Img src={BarberIllustration}>
-						<span className="text-broken made-by">
+						<div className="text-broken made-by">
 							Illustration by{' '}
 							<a
 								rel="noreferrer"
@@ -28,7 +28,7 @@ class Home extends Component {
 							>
 								Ouch!
 							</a>
-						</span>
+						</div>
 					</PageHero.Img>
 
 					<PageHero.Content>
