@@ -7,11 +7,13 @@ function FormControl({ children }) {
 
 function Label(props) {
 	const input = document.getElementById(props.htmlFor)
-	let classNames = 'form-control__label'
 
-	if (input?.value) classNames += ' active'
-
-	return <label className={classNames} {...props} />
+	return (
+		<label
+			className={`form-control__label${input?.value ? ' active' : ''}`}
+			{...props}
+		/>
+	)
 }
 
 Label.prototype.propTypes = {

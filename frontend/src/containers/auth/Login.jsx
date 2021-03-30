@@ -4,17 +4,18 @@ import { connect } from 'react-redux'
 
 import { login } from '../../redux/actions/auth'
 
-import AuthImg from '../../assets/images/auth.svg'
+import AuthIllustration from '../../assets/images/auth-illustration.svg'
 
 import CSRFToken from '../../components/CSRFToken'
 import Card from '../layout/Card'
 import FormControl from '../layout/forms/FormControl'
 import Button from '../layout/buttons/Button'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import PageHero from '../layout/PageHero'
 
 class Login extends Component {
 	static propTypes = {
+		isAuthenticated: PropTypes.bool,
 		login: PropTypes.func.isRequired,
 	}
 
@@ -22,6 +23,7 @@ class Login extends Component {
 		super(props)
 
 		this.state = {
+			loading: false,
 			email: '',
 			password: '',
 		}
@@ -35,16 +37,20 @@ class Login extends Component {
 	onSubmit = (e) => {
 		e.preventDefault()
 
-		this.props.login(this.state.email, this.state.password)
+		this.setState({ loading: true })
+		this.props.login('xd', this.state.email, this.state.password)
+		this.setState({ loading: false })
 	}
 
 	render() {
-		const { email, password } = this.state
+		const { loading, email, password } = this.state
+
+		if (this.props.isAuthenticated) return <Redirect to="/" />
 
 		return (
 			<PageHero>
 				<PageHero.Body>
-					<PageHero.Img src={AuthImg}>
+					<PageHero.Img src={AuthIllustration}>
 						<p className="text-broken">
 							Nie masz jeszcze konta?{' '}
 							<Link to="/register" className="slide-floor">
@@ -66,7 +72,7 @@ class Login extends Component {
 											Email:
 										</FormControl.Label>
 										<FormControl.Input
-											isRequired
+											required
 											type="email"
 											id="email"
 											name="email"
@@ -79,7 +85,7 @@ class Login extends Component {
 											Hasło:
 										</FormControl.Label>
 										<FormControl.Input
-											isRequired
+											required
 											type="password"
 											id="password"
 											name="password"
@@ -89,7 +95,13 @@ class Login extends Component {
 										/>
 									</FormControl>
 
-									<Button primary>Zaloguj się</Button>
+									<Button
+										primary
+										loading={loading}
+										loadingText="Logowanie"
+									>
+										Zaloguj się
+									</Button>
 								</form>
 							</Card.Body>
 						</Card>
@@ -100,7 +112,9 @@ class Login extends Component {
 	}
 }
 
-const mapStateToProps = (state) => ({})
+const mapStateToProps = (state) => ({
+	isAuthenticated: state.auth.isAuthenticated,
+})
 
 const mapDispatchToProps = {
 	login,

@@ -7,14 +7,14 @@ import { logout } from '../../redux/actions/auth'
 
 class Menu extends Component {
 	static propTypes = {
-		isAuthenticted: PropTypes.bool,
+		isAuthenticated: PropTypes.bool,
 		loading: PropTypes.bool,
 		logout: PropTypes.func.isRequired,
 		closeNavigation: PropTypes.func.isRequired,
 	}
 
 	render() {
-		const { loading, isAuthenticted, logout, closeNavigation } = this.props
+		const { loading, isAuthenticated, logout, closeNavigation } = this.props
 
 		return (
 			<>
@@ -48,7 +48,7 @@ class Menu extends Component {
 					Moje wizyty
 				</NavLink>
 				{!loading ? (
-					!isAuthenticted ? (
+					!isAuthenticated ? (
 						<>
 							<NavLink
 								to="/login"
@@ -76,7 +76,7 @@ class Menu extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	isAuthenticted: state.auth.isAuthenticted,
+	isAuthenticated: state.auth.isAuthenticated,
 	loading: state.auth.loading,
 })
 

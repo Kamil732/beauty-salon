@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import BarberIllustration from '../assets/images/barber-illustration.png'
+import BarberIllustration from '../assets/images/barber-illustration.svg'
 import ButtonContainer from './layout/buttons/ButtonContainer'
 import Button from './layout/buttons/Button'
 import PageHero from './layout/PageHero'
@@ -30,6 +30,7 @@ class Home extends Component {
 							</Button>
 						</ButtonContainer>
 					</PageHero.Content>
+
 					<PageHero.Img src={BarberIllustration} />
 				</PageHero.Body>
 			</PageHero>

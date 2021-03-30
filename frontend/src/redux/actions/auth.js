@@ -53,6 +53,7 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
 			'Accept-Language': 'en',
+			'X-CSRFToken': Cookies.get('csrftoken'),
 		},
 	}
 
@@ -95,6 +96,7 @@ export const signUp = (
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
 			'Accept-Language': 'en',
+			'X-CSRFToken': Cookies.get('csrftoken'),
 		},
 	}
 

@@ -14,23 +14,15 @@ function Content({ children }) {
 }
 
 function Img(props) {
-	if (props.children)
-		return (
-			<div className="page-hero__img-container">
-				<img
-					src={props.src}
-					alt={props.alt ? props.alt : ''}
-					className="page-hero__img"
-				/>
-				{props.children}
-			</div>
-		)
 	return (
-		<img
-			src={props.src}
-			alt={props.alt ? props.alt : ''}
-			className="page-hero__img"
-		/>
+		<div className="page-hero__img-container">
+			<img
+				src={props.src}
+				alt={props.alt ? props.alt : ''}
+				className="page-hero__img"
+			/>
+			{props.children}
+		</div>
 	)
 }
 

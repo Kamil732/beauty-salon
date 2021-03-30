@@ -9,8 +9,13 @@ import Routes from './Routes'
 import { Provider } from 'react-redux'
 
 import store from '../redux/store'
+import { loadUser } from '../redux/actions/auth'
 
 class App extends Component {
+	componentDidMount() {
+		store.dispatch(loadUser())
+	}
+
 	render() {
 		return (
 			<Provider store={store}>

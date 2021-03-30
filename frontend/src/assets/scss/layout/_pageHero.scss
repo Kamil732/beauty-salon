@@ -24,7 +24,7 @@
 
 	&__img-container {
 		margin-bottom: 1rem;
-		max-width: 80%;
+		max-width: 100%;
 	}
 
 	&__img {
@@ -32,8 +32,7 @@
 		display: block;
 		margin: 0 auto;
 		height: auto;
-		max-width: 80%;
-		width: auto;
+		width: 100%;
 	}
 }
 
@@ -49,16 +48,15 @@
 		}
 
 		&__content {
-			max-width: 300px;
+			max-width: 400px;
 		}
 
 		&__img-container {
 			margin: 0;
+			max-width: 35%;
 		}
 
 		&__img {
-			width: 400px;
-			max-width: 80%;
 			margin: 0;
 		}
 	}
@@ -68,10 +66,6 @@
 	.page-hero {
 		&__content {
 			max-width: 500px;
-		}
-
-		&__img {
-			max-width: 100%;
 		}
 	}
 }

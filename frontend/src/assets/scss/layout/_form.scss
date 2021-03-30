@@ -16,7 +16,7 @@
 			border-color: $error-color;
 		}
 
-		&:required:valid {
+		&:valid {
 			border-color: $success-color;
 		}
 	}
