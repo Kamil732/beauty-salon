@@ -1,0 +1,48 @@
+.btn-container {
+	margin: 2rem 0;
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+.btn {
+	outline: none;
+	border: none;
+	border-radius: 5px;
+	padding: 1rem 2rem;
+	cursor: pointer;
+	display: block;
+	width: fit-content;
+	text-align: center;
+	transition: background-color 0.1s ease-in, box-shadow 0.1s ease-in;
+
+	&__primary {
+		background-color: $primary-color;
+		border-bottom: 2px solid black;
+		color: set-text-color($primary-color);
+
+		&:hover {
+			background-color: $primary-color-hover;
+			color: set-text-color($primary-color-hover);
+		}
+	}
+
+	&__secondary {
+		background-color: $secondary-color;
+		border: 1px solid black;
+		color: set-text-color($secondary-color);
+
+		&:hover {
+			border: none;
+			border-bottom: 2px solid grey;
+			background-color: $secondary-color-hover;
+			color: set-text-color($secondary-color-hover);
+		}
+	}
+}
+
+@include media-tablet {
+	.btn {
+		padding: 1rem 3rem;
+	}
+}
