@@ -7,11 +7,11 @@ import { login } from '../../redux/actions/auth'
 import AuthIllustration from '../../assets/images/auth-illustration.svg'
 
 import CSRFToken from '../../components/CSRFToken'
-import Card from '../layout/Card'
-import FormControl from '../layout/forms/FormControl'
-import Button from '../layout/buttons/Button'
+import Card from '../../layout/Card'
+import FormControl from '../../layout/forms/FormControl'
+import Button from '../../layout/buttons/Button'
 import { Link, Redirect } from 'react-router-dom'
-import PageHero from '../layout/PageHero'
+import PageHero from '../../layout/PageHero'
 
 class Login extends Component {
 	static propTypes = {

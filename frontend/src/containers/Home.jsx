@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 
 import BarberIllustration from '../assets/images/barber-illustration.svg'
-import ButtonContainer from './layout/buttons/ButtonContainer'
-import Button from './layout/buttons/Button'
-import PageHero from './layout/PageHero'
+import ButtonContainer from '../layout/buttons/ButtonContainer'
+import Button from '../layout/buttons/Button'
+import PageHero from '../layout/PageHero'
 
 class Home extends Component {
 	render() {

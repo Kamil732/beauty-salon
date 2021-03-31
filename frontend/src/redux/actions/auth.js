@@ -12,6 +12,8 @@ import {
 
 import Cookies from 'js-cookie'
 
+import { NotificationManager } from 'react-notifications'
+
 export const loadUser = () => async (dispatch) => {
 	dispatch({ type: AUTH_LOADING })
 
@@ -66,12 +68,18 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 
 		dispatch({
 			type: LOGIN_SUCCESS,
-			payload: res.data,
+			payload: res.data.user,
 		})
-		dispatch(loadUser())
+
+		NotificationManager.success(res.data.message, 'Sukces', 3000)
 	} catch (err) {
-		// if (err.response)
-		// 	dispatch(addError(err.response.data, err.response.status))
+		if (err.response)
+			for (const msg in err.response.data)
+				NotificationManager.error(
+					err.response.data[msg],
+					msg === 'detail' ? 'Błąd' : msg,
+					5000
+				)
 
 		dispatch({
 			type: LOGIN_FAIL,
@@ -81,11 +89,10 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 
 export const signUp = (
 	recaptchaToken,
-	{ email, username, password, password2 }
+	{ email, password, password2 }
 ) => async (dispatch) => {
 	const body = JSON.stringify({
 		email,
-		username,
 		password,
 		password2,
 		'g-recaptcha-response': recaptchaToken,
@@ -101,7 +108,7 @@ export const signUp = (
 	}
 
 	try {
-		await axios.post(
+		const res = await axios.post(
 			`${process.env.REACT_APP_API_URL}/accounts/signup/`,
 			body,
 			config
@@ -109,13 +116,17 @@ export const signUp = (
 
 		dispatch({
 			type: REGISTER_SUCCESS,
+			payload: res.data,
 		})
-
-		// dispatch(login(email, password))
-		dispatch(loadUser())
+		dispatch(login(email, password))
 	} catch (err) {
-		// if (err.response)
-		// 	dispatch(addError(err.response.data, err.response.status))
+		if (err.response)
+			for (const msg in err.response.data)
+				NotificationManager.error(
+					err.response.data[msg],
+					msg === 'detail' ? 'Błąd' : msg,
+					5000
+				)
 
 		dispatch({
 			type: REGISTER_FAIL,
@@ -136,13 +147,25 @@ export const logout = () => async (dispatch) => {
 		withCredentials: true,
 	})
 
-	await axios.post(
-		`${process.env.REACT_APP_API_URL}/accounts/logout/`,
-		body,
-		config
-	)
+	try {
+		const res = await axios.post(
+			`${process.env.REACT_APP_API_URL}/accounts/logout/`,
+			body,
+			config
+		)
 
-	dispatch({
-		type: LOGOUT,
-	})
+		dispatch({
+			type: LOGOUT,
+		})
+
+		NotificationManager.success(res.data.message, 'Sukces', 3000)
+	} catch (err) {
+		if (err.response)
+			for (const msg in err.response.data)
+				NotificationManager.error(
+					err.response.data[msg],
+					msg === 'detail' ? 'Błąd' : msg,
+					5000
+				)
+	}
 }

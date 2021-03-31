@@ -24,23 +24,13 @@ export default function (state = initialState, action) {
 				loading: true,
 			}
 		case AUTH_SUCCESS:
+		case LOGIN_SUCCESS:
+		case REGISTER_SUCCESS:
 			return {
 				...state,
 				isAuthenticated: true,
 				loading: false,
 				data: action.payload,
-			}
-		case LOGIN_SUCCESS:
-			return {
-				...state,
-				isAuthenticated: true,
-				loading: false,
-			}
-		case REGISTER_SUCCESS:
-			return {
-				...state,
-				isAuthenticated: false,
-				loading: true,
 			}
 		case AUTH_ERROR:
 		case REGISTER_FAIL:
@@ -50,7 +40,7 @@ export default function (state = initialState, action) {
 				...state,
 				isAuthenticated: false,
 				loading: false,
-				data: {},
+				data: initialState.data,
 			}
 		default:
 			return state
