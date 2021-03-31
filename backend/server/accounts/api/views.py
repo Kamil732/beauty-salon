@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, generics, status
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib import auth
@@ -42,8 +42,11 @@ class LoginAPIView(APIView):
         if user is not None:
             auth.login(request, user)
 
-            return Response(serializers.AccountSerializer(user).data, status=status.HTTP_200_OK)
-        raise APIException('Username or password is incorrect')
+            return Response({
+                'message': 'Pomyślnie zalogowano',
+                'user': serializers.AccountSerializer(user).data,
+            }, status=status.HTTP_200_OK)
+        raise ValidationError({ 'detail': 'Email lub hasło jest niepoprawne' })
 
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -53,4 +56,4 @@ class LogoutAPIView(APIView):
     def post(self, request, format=None):
         auth.logout(request)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({ 'message': 'Pomyślnie wylogowano' })
