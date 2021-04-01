@@ -1,13 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, generics, status
+from rest_framework import permissions, generics, status, viewsets
 from rest_framework.exceptions import ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib import auth
-from django.contrib.auth.models import User
 
 from . import serializers
+from accounts.models import CustomerImage
 
 
 class CurrentAccountAPIView(generics.RetrieveAPIView):
@@ -57,3 +57,7 @@ class LogoutAPIView(APIView):
         auth.logout(request)
 
         return Response({ 'message': 'Pomyślnie wylogowano' })
+
+class CustomerImageViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = CustomerImage.objects.order_by('-id')
+    serializer_class = serializers.CustomerImageSerializer

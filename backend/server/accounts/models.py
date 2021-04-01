@@ -66,3 +66,7 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+
+class CustomerImage(models.Model):
+    image = models.ImageField(upload_to='customer_images/%Y/%m/%d/')
+    title = models.CharField(max_length=100)

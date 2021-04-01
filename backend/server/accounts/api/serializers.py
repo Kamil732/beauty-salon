@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from accounts.models import Account
+from accounts.models import Account, CustomerImage
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -34,3 +34,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = data['password']
 
         return Account.objects.create_user(email=email, password=password)
+
+class CustomerImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerImage
+        fields = ('image', 'title', 'id',)
