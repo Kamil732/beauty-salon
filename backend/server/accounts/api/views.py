@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.contrib import auth
 
 from . import serializers
+from . import pagination
 from accounts.models import CustomerImage
 
 
@@ -61,3 +62,4 @@ class LogoutAPIView(APIView):
 class CustomerImageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = CustomerImage.objects.order_by('-id')
     serializer_class = serializers.CustomerImageSerializer
+    pagination_class = pagination.CustomerImagesPagination
