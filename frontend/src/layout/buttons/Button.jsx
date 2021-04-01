@@ -13,6 +13,7 @@ function Button(props) {
 					props.to ? ' btn__link' : ''
 				}`}
 				disabled={props.loading}
+				{...props}
 			>
 				{props.loading && props.loadingText
 					? props.loadingText
@@ -29,6 +30,7 @@ function Button(props) {
 				props.to ? ' btn__link' : ''
 			}`}
 			disabled={props.loading}
+			{...props}
 		>
 			{props.loading && props.loadingText
 				? props.loadingText

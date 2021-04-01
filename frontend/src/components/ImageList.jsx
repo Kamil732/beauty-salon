@@ -10,10 +10,8 @@ function ImageList({ loading, images }) {
 			zoom === null ? 'auto' : 'hidden'
 	}, [zoom])
 
-	if (loading) return <BrickLoader />
-
-	images = images.map((image) => {
-		return (
+	if (images.length > 0) {
+		images = images.map((image) => (
 			<>
 				<figure
 					className={`gallery__img-container${
@@ -44,10 +42,17 @@ function ImageList({ loading, images }) {
 					<figure className="gallery__img-container"></figure>
 				) : null}
 			</>
-		)
-	})
+		))
 
-	return <div className="gallery">{images}</div>
+		return (
+			<>
+				<div className="gallery">{images}</div>
+				{loading ? <BrickLoader /> : null}
+			</>
+		)
+	}
+	if (loading) return <BrickLoader />
+	return <h2>Galeria jest pusta. Nie ma żadnych zdjęć</h2>
 }
 
 export default ImageList

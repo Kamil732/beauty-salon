@@ -6,6 +6,7 @@ import GalleryIllustration from '../assets/images/gallery-illustration.svg'
 import { NotificationManager } from 'react-notifications'
 import PageHero from '../layout/PageHero'
 import ImageList from '../components/ImageList'
+import Button from '../layout/buttons/Button'
 
 class Gallery extends Component {
 	constructor(props) {
@@ -13,32 +14,45 @@ class Gallery extends Component {
 
 		this.state = {
 			loading: true,
-			images: [],
+			data: {
+				next: null,
+				results: [],
+			},
 		}
+
+		this.getImages = this.getImages.bind(this)
 	}
 
-	componentDidMount = async () => {
+	componentDidMount = () => this.getImages()
+
+	getImages = async (page = 1) => {
 		this.setState({ loading: true })
 
 		try {
 			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/gallery/`
+				`${process.env.REACT_APP_API_URL}/accounts/gallery/?page=${page}`
 			)
 
-			this.setState({ images: res.data })
+			this.setState({
+				loading: false,
+				data: {
+					next: res.data.next,
+					results: [...this.state.data.results, ...res.data.results],
+				},
+			})
 		} catch (err) {
 			NotificationManager.error(
 				'Nie udało się załadować zdjęć',
 				'Błąd',
 				1000 * 10
 			)
-		}
 
-		this.setState({ loading: false })
+			this.setState({ loading: false })
+		}
 	}
 
 	render() {
-		const { loading, images } = this.state
+		const { loading, data } = this.state
 
 		return (
 			<PageHero>
@@ -54,7 +68,20 @@ class Gallery extends Component {
 				</PageHero.Body>
 				<PageHero.Body>
 					<div style={{ marginTop: '10rem' }}>
-						<ImageList images={images} loading={loading} />
+						<ImageList images={data.results} loading={loading} />
+						{data.next ? (
+							<Button
+								secondary
+								onClick={() => this.getImages(data.next)}
+								style={{
+									marginLeft: 'auto',
+									marginRight: 'auto',
+									marginTop: '5rem',
+								}}
+							>
+								Załaduj Więcej
+							</Button>
+						) : null}
 					</div>
 				</PageHero.Body>
 			</PageHero>
