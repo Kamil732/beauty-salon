@@ -42,7 +42,7 @@ class Header extends Component {
 
 				<nav className={`nav${isNavActive ? ' active' : ''}`}>
 					<span
-						className="nav__close"
+						className="btn-close d-md"
 						onClick={() => this.setState({ isNavActive: false })}
 					></span>
 

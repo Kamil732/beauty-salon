@@ -124,32 +124,6 @@ a {
 		gap: 2rem;
 		padding-left: 2rem;
 
-		& > .nav__close {
-			position: relative;
-			width: 32px;
-			height: 32px;
-			opacity: 0.8;
-			margin-bottom: 2.5rem;
-			cursor: pointer;
-
-			&::before,
-			&:after {
-				position: absolute;
-				left: 15px;
-				content: ' ';
-				height: 33px;
-				width: 2px;
-				background-color: #333;
-			}
-
-			&::before {
-				transform: rotate(45deg);
-			}
-			&::after {
-				transform: rotate(-45deg);
-			}
-		}
-
 		& > .nav__link {
 			color: set-text-color($surface-color);
 			width: fit-content;
@@ -202,10 +176,6 @@ a {
 			position: static;
 			gap: 2.5rem;
 			padding: 0;
-
-			& > .nav__close {
-				display: none;
-			}
 
 			& > .nav__link {
 				text-transform: uppercase;

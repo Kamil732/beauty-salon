@@ -1,0 +1,85 @@
+.gallery {
+	padding: 0 1rem;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1.5rem;
+
+	&__img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 10px;
+		box-shadow: 0 0 5px grey;
+		background-color: $surface-color;
+		transition: transform 0.1s ease-in, box-shadow 0.1s ease-in;
+
+		&:hover {
+			transform: translateY(-0.5rem) scale(1.03);
+			box-shadow: 0 0 8px 2px grey;
+		}
+	}
+
+	&__img-container {
+		cursor: zoom-in;
+
+		&.zoom {
+			overflow-y: auto;
+			z-index: 2;
+			position: fixed;
+			left: 0;
+			top: 0;
+			width: 100vw;
+			height: 100vh;
+			cursor: default;
+			background-color: $surface-color;
+			background-image: url(//generatepress.com/wp-content/themes/generatepress_official/images/bg.svg);
+			background-repeat: no-repeat;
+			background-size: 100% auto;
+
+			.gallery__img {
+				height: 70vh;
+				width: 70vw;
+				object-fit: contain;
+				display: block;
+				margin: 4rem auto;
+
+				&:hover {
+					transform: none;
+					box-shadow: 0 0 5px grey;
+				}
+
+				&__title {
+					width: 100%;
+					text-align: center;
+					color: set-text-color($surface-color);
+					padding: 0 1rem;
+				}
+			}
+
+			.btn-close {
+				position: absolute;
+				top: 1rem;
+				right: 1rem;
+			}
+		}
+	}
+}
+
+@include media-tablet {
+	.gallery {
+		gap: 3rem;
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@include media-laptop {
+	.gallery {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+@include media-laptop-lg {
+	.gallery {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}

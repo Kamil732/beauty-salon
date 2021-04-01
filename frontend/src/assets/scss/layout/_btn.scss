@@ -65,6 +65,32 @@
 	}
 }
 
+.btn-close {
+	position: relative;
+	width: 32px;
+	height: 32px;
+	opacity: 0.8;
+	margin-bottom: 2.5rem;
+	cursor: pointer;
+
+	&::before,
+	&:after {
+		position: absolute;
+		left: 15px;
+		content: ' ';
+		height: 33px;
+		width: 2px;
+		background-color: #333;
+	}
+
+	&::before {
+		transform: rotate(45deg);
+	}
+	&::after {
+		transform: rotate(-45deg);
+	}
+}
+
 @include media-tablet {
 	.btn {
 		padding: 1rem 3rem;
