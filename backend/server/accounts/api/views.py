@@ -8,6 +8,7 @@ from django.contrib import auth
 
 from . import serializers
 from . import pagination
+from .permissions import IsAdminOrReadOnly
 from accounts.models import CustomerImage
 
 
@@ -59,7 +60,8 @@ class LogoutAPIView(APIView):
 
         return Response({ 'message': 'Pomyślnie wylogowano' })
 
-class CustomerImageViewSet(viewsets.ReadOnlyModelViewSet):
+class CustomerImageViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
     queryset = CustomerImage.objects.order_by('-id')
     serializer_class = serializers.CustomerImageSerializer
     pagination_class = pagination.CustomerImagesPagination
