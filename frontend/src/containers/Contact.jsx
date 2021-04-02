@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import { FaPhoneAlt } from 'react-icons/fa'
+import { IoLocationSharp } from 'react-icons/io5'
 import ContactIllustration from '../assets/images/contact-illustration.svg'
 
 import PageHero from '../layout/PageHero'
@@ -24,8 +26,12 @@ class Contact extends Component {
 							salonu fryzjerskiego lub umówić swoją pierwszą
 							wizytę, możesz zadzwonic na poniższy numer telefonu.
 						</PageHero.Text>
-						<a href="tel:+48-500-484-315" className="unique-text">
-							+48 500 484 315
+						<a
+							href="tel:+48-505-946-545"
+							className="unique-text icon-container"
+						>
+							<FaPhoneAlt className="icon-container__icon" />
+							+48 505 946 545
 						</a>
 						<PageHero.Text>
 							Stali klienci mają opcję komunikatora tekstowego, są
@@ -36,7 +42,12 @@ class Contact extends Component {
 				</PageHero.Body>
 				<PageHero.Body>
 					<PageHero.Content>
-						<PageHero.Title>Lokalizacja</PageHero.Title>
+						<PageHero.Title>
+							<div className="icon-container">
+								<IoLocationSharp className="icon-container__icon" />
+								Lokalizacja
+							</div>
+						</PageHero.Title>
 						<PageHero.Text>
 							Nasz salon fryzjerski znajdziesz pod adresem:
 						</PageHero.Text>

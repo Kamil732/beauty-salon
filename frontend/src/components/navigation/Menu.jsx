@@ -40,13 +40,6 @@ class Menu extends Component {
 				>
 					Galeria
 				</NavLink>
-				<NavLink
-					to="/my-meetings"
-					className="nav__link"
-					onClick={closeNavigation}
-				>
-					Moje wizyty
-				</NavLink>
 				{!loading ? (
 					!isAuthenticated ? (
 						<>
@@ -59,15 +52,24 @@ class Menu extends Component {
 							</NavLink>
 						</>
 					) : (
-						<button
-							className="btn"
-							onClick={() => {
-								closeNavigation()
-								logout()
-							}}
-						>
-							Wyloguj się
-						</button>
+						<>
+							<NavLink
+								to="/my-meetings"
+								className="nav__link"
+								onClick={closeNavigation}
+							>
+								Moje wizyty
+							</NavLink>
+							<button
+								className="btn"
+								onClick={() => {
+									closeNavigation()
+									logout()
+								}}
+							>
+								Wyloguj się
+							</button>
+						</>
 					)
 				) : null}
 			</>

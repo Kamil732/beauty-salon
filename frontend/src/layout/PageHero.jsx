@@ -11,7 +11,10 @@ function PageHero(props) {
 
 function Body(props) {
 	return (
-		<div className="page-hero__body" {...props}>
+		<div
+			className={`page-hero__body${props.vertical ? ' vertical' : ''}`}
+			{...props}
+		>
 			{props.children}
 		</div>
 	)
