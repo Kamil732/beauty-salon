@@ -5,9 +5,9 @@
 	font-size: 18px;
 	font-weight: 400;
 
-	.made-by {
-		margin-left: auto;
-		width: fit-content;
+	&__body {
+		width: 100%;
+		min-height: 100vh;
 	}
 
 	&__title {
@@ -38,13 +38,11 @@
 
 @include media-tablet {
 	.page-hero {
-		padding: 50px 50px;
-
 		&__body {
-			width: 100%;
 			display: flex;
 			justify-content: space-evenly;
 			align-items: center;
+			gap: 2rem;
 		}
 
 		&__content {

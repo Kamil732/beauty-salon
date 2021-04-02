@@ -4,6 +4,17 @@
 	opacity: 0.7;
 }
 
+.unique-text {
+	display: block;
+	width: fit-content;
+	padding: 0.5rem;
+	margin: 1.5rem auto;
+	font-size: 1.6rem;
+	border-radius: 8px;
+	background-color: darken($surface-color, 15%);
+	color: set-text-color(darken($surface-color, 15%));
+}
+
 @include media-laptop {
 	.d-md {
 		display: none;
