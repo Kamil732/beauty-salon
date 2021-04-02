@@ -37,10 +37,11 @@
 		color: set-text-color($secondary-color);
 
 		&:hover {
-			border-color: $secondary-color-hover;
+			border-color: transparent;
 			border-bottom-color: grey;
-			background-color: $secondary-color-hover;
+			background-color: transparent;
 			color: set-text-color($secondary-color-hover);
+			border-radius: 0;
 		}
 	}
 
@@ -93,7 +94,7 @@
 
 @include media-tablet {
 	.btn {
-		padding: 1rem 3rem;
+		padding: 1rem 2.5rem;
 	}
 }
 

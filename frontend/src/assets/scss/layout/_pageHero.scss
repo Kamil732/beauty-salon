@@ -43,6 +43,11 @@
 			justify-content: space-evenly;
 			align-items: center;
 			gap: 2rem;
+
+			&.vertical {
+				justify-content: baseline;
+				flex-direction: column;
+			}
 		}
 
 		&__content {
