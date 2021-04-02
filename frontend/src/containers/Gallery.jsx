@@ -67,7 +67,15 @@ class Gallery extends Component {
 					</PageHero.Content>
 				</PageHero.Body>
 				<PageHero.Body>
-					<div style={{ marginTop: '10rem' }}>
+					<div>
+						<PageHero.Title
+							style={{
+								textAlign: 'center',
+							}}
+						>
+							Zdjęcia klientów
+						</PageHero.Title>
+
 						<ImageList images={data.results} loading={loading} />
 						{data.next ? (
 							<Button

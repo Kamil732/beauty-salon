@@ -1,16 +1,28 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function PageHero({ children }) {
-	return <div className="page-hero">{children}</div>
+function PageHero(props) {
+	return (
+		<div className="page-hero" {...props}>
+			{props.children}
+		</div>
+	)
 }
 
-function Body({ children }) {
-	return <div className="page-hero__body">{children}</div>
+function Body(props) {
+	return (
+		<div className="page-hero__body" {...props}>
+			{props.children}
+		</div>
+	)
 }
 
-function Content({ children }) {
-	return <div className="page-hero__content">{children}</div>
+function Content(props) {
+	return (
+		<div className="page-hero__content" {...props}>
+			{props.children}
+		</div>
+	)
 }
 
 function Img(props) {
@@ -26,12 +38,20 @@ function Img(props) {
 	)
 }
 
-function Title({ children }) {
-	return <div className="page-hero__title">{children}</div>
+function Title(props) {
+	return (
+		<div className="page-hero__title" {...props}>
+			{props.children}
+		</div>
+	)
 }
 
-function Text({ children }) {
-	return <div className="page-hero__text">{children}</div>
+function Text(props) {
+	return (
+		<div className="page-hero__text" {...props}>
+			{props.children}
+		</div>
+	)
 }
 
 Img.prototype.propTypes = {
