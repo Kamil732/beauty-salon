@@ -54,7 +54,14 @@ class Menu extends Component {
 					) : (
 						<>
 							<NavLink
-								to="/my-meetings"
+								to="/chat"
+								className="nav__link"
+								onClick={closeNavigation}
+							>
+								Czat
+							</NavLink>
+							<NavLink
+								to="/meetings/calendar"
 								className="nav__link"
 								onClick={closeNavigation}
 							>

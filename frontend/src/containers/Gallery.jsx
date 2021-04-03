@@ -67,34 +67,32 @@ class Gallery extends Component {
 						</PageHero.Text>
 					</PageHero.Content>
 				</PageHero.Body>
-				<PageHero.Body>
-					<div>
-						<PageHero.Title
+				<PageHero.Body vertical>
+					<PageHero.Title
+						style={{
+							textAlign: 'center',
+						}}
+					>
+						<div className="icon-container">
+							<IoMdPhotos className="icon-container__icon" />
+							Zdjęcia klientów
+						</div>
+					</PageHero.Title>
+
+					<ImageList images={data.results} loading={loading} />
+					{data.next ? (
+						<Button
+							secondary
+							onClick={() => this.getImages(data.next)}
 							style={{
-								textAlign: 'center',
+								marginLeft: 'auto',
+								marginRight: 'auto',
+								marginTop: '5rem',
 							}}
 						>
-							<div className="icon-container">
-								<IoMdPhotos className="icon-container__icon" />
-								Zdjęcia klientów
-							</div>
-						</PageHero.Title>
-
-						<ImageList images={data.results} loading={loading} />
-						{data.next ? (
-							<Button
-								secondary
-								onClick={() => this.getImages(data.next)}
-								style={{
-									marginLeft: 'auto',
-									marginRight: 'auto',
-									marginTop: '5rem',
-								}}
-							>
-								Załaduj Więcej
-							</Button>
-						) : null}
-					</div>
+							Załaduj Więcej
+						</Button>
+					) : null}
 				</PageHero.Body>
 			</PageHero>
 		)

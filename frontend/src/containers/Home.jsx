@@ -4,6 +4,7 @@ import BarberIllustration from '../assets/images/barber-illustration.svg'
 import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
+import Calendar from '../components/meetings/Calendar'
 
 function Home() {
 	return (
@@ -30,6 +31,10 @@ function Home() {
 				</PageHero.Content>
 
 				<PageHero.Img src={BarberIllustration} />
+			</PageHero.Body>
+			<PageHero.Body vertical>
+				<PageHero.Title>Kalendarz</PageHero.Title>
+				<Calendar />
 			</PageHero.Body>
 		</PageHero>
 	)

@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { Route, Switch } from 'react-router-dom'
+
 import Login from '../containers/auth/Login'
 import Contact from '../containers/Contact'
 import Gallery from '../containers/Gallery'
-
 import Home from '../containers/Home'
+
+import { default as MeetingsRoutes } from '../components/meetings/Routes'
 import NotFound from '../containers/NotFound'
 
 class Routes extends Component {
@@ -15,6 +17,8 @@ class Routes extends Component {
 				<Route exact path="/gallery" component={Gallery} />
 				<Route exact path="/contact" component={Contact} />
 				<Route exact path="/login" component={Login} />
+
+				<Route path="/meetings" component={MeetingsRoutes} />
 
 				<Route path="*" component={NotFound} />
 			</Switch>
