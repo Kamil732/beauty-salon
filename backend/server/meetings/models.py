@@ -14,7 +14,7 @@ class Meeting(models.Model):
     customer = models.ForeignKey(verbose_name='Konto Klienta', to=Account, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='meetings')
     customer_first_name = models.CharField(verbose_name='Imię Klienta', max_length=20, blank=True)
     type = models.CharField(verbose_name='Typ Wizyty', max_length=5, choices=TYPES)
-    start = models.DateTimeField(verbose_name='Wizyta jest o')
+    start = models.DateTimeField(verbose_name='Wizyta jest o', unique=True)
 
     def __str__(self):
         return self.type
@@ -23,8 +23,8 @@ class Meeting(models.Model):
         if not(self.customer) and not(self.customer_first_name):
             raise ValidationError('Klient musi mieć imię')
 
-        if self.start < timezone.now() - timedelta(hours=1):
-            raise ValidationError('Niepoprawna data wizyty')
+        if Meeting.objects.filter(start__range=(self.start + timedelta(minutes=1), self.start + timedelta(minutes=29))).exists():
+            raise ValidationError('Już istnieje wizyta o tej godzinie')
 
     def save(self, *args, **kwargs):
         if self.customer:

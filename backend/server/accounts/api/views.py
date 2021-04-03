@@ -8,7 +8,7 @@ from django.contrib import auth
 
 from . import serializers
 from . import pagination
-from .permissions import IsAdminOrReadOnly
+from server.permissions import IsAdminOrReadOnly
 from accounts.models import CustomerImage
 
 
