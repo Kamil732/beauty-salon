@@ -1,24 +1,24 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import BarberIllustration from '../assets/images/barber-illustration.svg'
 import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
 import Calendar from '../components/meetings/Calendar'
+import { connect } from 'react-redux'
 
-function Home() {
+function Home({ home_title, home_content }) {
 	return (
 		<PageHero>
 			<PageHero.Body>
 				<PageHero.Content>
-					<PageHero.Title>
-						Pełna obsługa mężczyzn i chłopców
-					</PageHero.Title>
-					<PageHero.Text>
-						Wolność w podejmowaniu decyzji, elastyczność w
-						wykorzystaniu czasu. Przeżyj czas, kiedy dbanie o włosy
-						i brodę było męskie i było częścią bycia mężczyzną
-					</PageHero.Text>
+					{home_title ? (
+						<PageHero.Title>{home_title}</PageHero.Title>
+					) : null}
+					{home_content ? (
+						<PageHero.Text>{home_content}</PageHero.Text>
+					) : null}
 
 					<ButtonContainer>
 						<Button primary to="/my-meetings">
@@ -40,4 +40,14 @@ function Home() {
 	)
 }
 
-export default Home
+Home.prototype.propTypes = {
+	home_content: PropTypes.string,
+	home_title: PropTypes.string,
+}
+
+const mapStateToProps = (state) => ({
+	home_content: state.data.data.home_content,
+	home_title: state.data.data.home_title,
+})
+
+export default connect(mapStateToProps, null)(Home)

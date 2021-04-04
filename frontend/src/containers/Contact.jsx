@@ -11,60 +11,88 @@ import PageHero from '../layout/PageHero'
 class Contact extends Component {
 	static propTypes = {
 		isAuthenticated: PropTypes.bool,
+		contact_title: PropTypes.string,
+		contact_content: PropTypes.string,
+		contact_content_second: PropTypes.string,
+		phone_number: PropTypes.string,
+		location: PropTypes.string,
+		google_maps_url: PropTypes.string,
 	}
 
 	render() {
+		const {
+			contact_title,
+			contact_content,
+			contact_content_second,
+			phone_number,
+			location,
+			google_maps_url,
+		} = this.props
+
 		return (
 			<PageHero>
 				<PageHero.Body>
 					<PageHero.Img src={ContactIllustration} />
 
-					<PageHero.Content>
-						<PageHero.Title>Skontaktuj się z nami</PageHero.Title>
-						<PageHero.Text>
-							Jeśli chcesz dowiedzić się więcej na temat naszego
-							salonu fryzjerskiego lub umówić swoją pierwszą
-							wizytę, możesz zadzwonic na poniższy numer telefonu.
-						</PageHero.Text>
-						<a
-							href="tel:+48-505-946-545"
-							className="unique-text icon-container"
-						>
-							<FaPhoneAlt className="icon-container__icon" />
-							+48 505 946 545
-						</a>
-						<PageHero.Text>
-							Stali klienci mają opcję komunikatora tekstowego, są
-							również przez niego powiadamiani o nadchodzącej
-							wizycie
-						</PageHero.Text>
-					</PageHero.Content>
+					{contact_title ||
+					contact_content ||
+					contact_content_second ||
+					phone_number ? (
+						<PageHero.Content>
+							{contact_title ? (
+								<PageHero.Title>{contact_title}</PageHero.Title>
+							) : null}
+							{contact_content ? (
+								<PageHero.Text>{contact_content}</PageHero.Text>
+							) : null}
+
+							{phone_number ? (
+								<a
+									href={`tel:+48-${phone_number}`}
+									className="unique-text icon-container"
+								>
+									<FaPhoneAlt className="icon-container__icon" />
+									+48 {phone_number}
+								</a>
+							) : null}
+							{contact_content_second ? (
+								<PageHero.Text>
+									{contact_content_second}
+								</PageHero.Text>
+							) : null}
+						</PageHero.Content>
+					) : null}
 				</PageHero.Body>
-				<PageHero.Body>
-					<PageHero.Content>
-						<PageHero.Title>
-							<div className="icon-container">
-								<IoLocationSharp className="icon-container__icon" />
-								Lokalizacja
-							</div>
-						</PageHero.Title>
-						<PageHero.Text>
-							Nasz salon fryzjerski znajdziesz pod adresem:
-						</PageHero.Text>
-						<span className="unique-text" style={{ width: '100%' }}>
-							Stefana Żeromskiego 60, 26-680 Wierzbica
-						</span>
-					</PageHero.Content>
-					<div style={{ textAlign: 'center' }}>
-						<iframe
-							title="map"
-							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d371.25592612718344!2d21.070607758719838!3d51.246661846651435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471843ae043f723d%3A0x822ca4d3514898!2sSALON%20FRYZJERSKI%20DAMIAN%20KWIECIE%C5%83!5e0!3m2!1spl!2spl!4v1617379006232!5m2!1spl!2spl"
-							height="300"
-							allowfullscreen=""
-							loading="lazy"
-						></iframe>
-					</div>
-				</PageHero.Body>
+				{location ? (
+					<PageHero.Body>
+						<PageHero.Content>
+							<PageHero.Title>
+								<div className="icon-container">
+									<IoLocationSharp className="icon-container__icon" />
+									Lokalizacja
+								</div>
+							</PageHero.Title>
+							<PageHero.Text>
+								Nasz salon fryzjerski znajdziesz pod adresem:
+							</PageHero.Text>
+							<span
+								className="unique-text"
+								style={{ width: '100%' }}
+							>
+								{location}
+							</span>
+						</PageHero.Content>
+						<div style={{ textAlign: 'center' }}>
+							<iframe
+								title="map"
+								src={google_maps_url}
+								height="300"
+								allowfullscreen=""
+								loading="lazy"
+							></iframe>
+						</div>
+					</PageHero.Body>
+				) : null}
 			</PageHero>
 		)
 	}
@@ -72,6 +100,12 @@ class Contact extends Component {
 
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
+	contact_title: state.data.data.contact_title,
+	contact_content: state.data.data.contact_content,
+	contact_content_second: state.data.data.contact_content_second,
+	phone_number: state.data.data.phone_number,
+	location: state.data.data.location,
+	google_maps_url: state.data.data.google_maps_url,
 })
 
 export default connect(mapStateToProps, null)(Contact)

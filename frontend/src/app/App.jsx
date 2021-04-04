@@ -12,9 +12,11 @@ import { NotificationContainer } from 'react-notifications'
 import { Provider } from 'react-redux'
 import store from '../redux/store'
 import { loadUser } from '../redux/actions/auth'
+import { getData } from '../redux/actions/data'
 
 class App extends Component {
 	componentDidMount() {
+		store.dispatch(getData())
 		store.dispatch(loadUser())
 	}
 
