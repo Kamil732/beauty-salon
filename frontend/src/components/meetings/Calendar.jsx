@@ -43,13 +43,99 @@ class Calendar extends Component {
 		this.maxDate = new Date()
 		this.maxDate.setHours(19, 0)
 
+		this.timeout = 250
+
 		this.state = {
+			ws: null,
 			loading: true,
 			data: [],
 		}
 	}
 
+	// Check if websocket instance is closed, if so call `connect` function.
+	checkIsWebSocketClosed = () => {
+		const { ws } = this.state
+		if (!ws || ws.readyState === WebSocket.CLOSED) this.connectWebSocket()
+	}
+
+	connectWebSocket = () => {
+		const ws = new WebSocket(
+			`${process.env.REACT_APP_SOCKET_URL}/meetings/`
+		)
+		const that = this // cache the this
+		let connectInterval = null
+
+		// websocket onopen event listener
+		ws.onopen = () => {
+			console.log('connected websocket')
+
+			this.setState({
+				loading: false,
+				ws,
+			})
+
+			that.timeout = 250 // reset timer to 250 on open of websocket connection
+			clearTimeout(connectInterval) // clear Interval on on open of websocket connection
+			connectInterval = null
+		}
+
+		ws.onmessage = (e) => {
+			this.setState({ loading: true })
+			const data = JSON.parse(e.data)
+			let meetings = data.meetings
+
+			for (let i = 0; i < meetings.length; i++) {
+				meetings[i].start = moment.utc(meetings[i].start).toDate()
+				meetings[i].end = moment.utc(meetings[i].end).toDate()
+
+				if (meetings[i].type === 'do_not_work') {
+					meetings[i].allDay = true
+					meetings[i].title = 'NIE PRACUJE'
+				}
+			}
+
+			setTimeout(
+				() =>
+					this.setState({
+						loading: false,
+						data: meetings,
+					}),
+				250
+			)
+		}
+
+		ws.onclose = (e) => {
+			this.setState({ loading: true })
+			console.log(
+				`Socket is closed. Reconnect will be attempted in ${Math.min(
+					10000 / 1000,
+					(that.timeout + that.timeout) / 1000
+				)} second.`,
+				e.reason
+			)
+
+			that.timeout = that.timeout + that.timeout //increment retry interval
+			connectInterval = setTimeout(
+				this.checkIsWebSocketClosed,
+				Math.min(10000, that.timeout)
+			) //call checkIsWebSocketClosed function after timeout
+		}
+
+		ws.onerror = (err) => {
+			this.setState({ loading: true })
+			console.error(
+				'Socket encountered error: ',
+				err.message,
+				'Closing socket'
+			)
+
+			ws.close()
+		}
+	}
+
 	componentDidMount = async () => {
+		this.connectWebSocket()
+
 		try {
 			const res = await axios.get(
 				`${process.env.REACT_APP_API_URL}/meetings/`
@@ -78,6 +164,10 @@ class Calendar extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		this.state.ws.close()
+	}
+
 	render() {
 		const { loading, data } = this.state
 
@@ -92,7 +182,6 @@ class Calendar extends Component {
 					timeslots={1}
 					views={[Views.WEEK]}
 					defaultView={Views.WEEK}
-					selected={false}
 					selectable={false}
 					min={this.minDate}
 					max={this.maxDate}

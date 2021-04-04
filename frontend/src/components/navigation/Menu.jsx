@@ -9,12 +9,19 @@ class Menu extends Component {
 	static propTypes = {
 		isAuthenticated: PropTypes.bool,
 		loading: PropTypes.bool,
+		isAdmin: PropTypes.bool,
 		logout: PropTypes.func.isRequired,
 		closeNavigation: PropTypes.func.isRequired,
 	}
 
 	render() {
-		const { loading, isAuthenticated, logout, closeNavigation } = this.props
+		const {
+			loading,
+			isAuthenticated,
+			isAdmin,
+			logout,
+			closeNavigation,
+		} = this.props
 
 		return (
 			<>
@@ -53,20 +60,48 @@ class Menu extends Component {
 						</>
 					) : (
 						<>
-							<NavLink
-								to="/chat"
-								className="nav__link"
-								onClick={closeNavigation}
-							>
-								Czat
-							</NavLink>
-							<NavLink
-								to="/meetings/calendar"
-								className="nav__link"
-								onClick={closeNavigation}
-							>
-								Moje wizyty
-							</NavLink>
+							{isAdmin ? (
+								<>
+									<NavLink
+										to="/communcation"
+										className="nav__link"
+										onClick={closeNavigation}
+									>
+										Czaty
+									</NavLink>
+									<NavLink
+										to="/meetings/calendar"
+										className="nav__link"
+										onClick={closeNavigation}
+									>
+										Panel
+									</NavLink>
+									<a
+										href="/admin/"
+										className="nav__link"
+										onClick={closeNavigation}
+									>
+										Admin
+									</a>
+								</>
+							) : (
+								<>
+									<NavLink
+										to="/communcation"
+										className="nav__link"
+										onClick={closeNavigation}
+									>
+										Czat
+									</NavLink>
+									<NavLink
+										to="/meetings/calendar"
+										className="nav__link"
+										onClick={closeNavigation}
+									>
+										Moje wizyty
+									</NavLink>
+								</>
+							)}
 							<button
 								className="btn"
 								onClick={() => {
@@ -87,6 +122,7 @@ class Menu extends Component {
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
 	loading: state.auth.loading,
+	isAdmin: state.auth.data.is_admin,
 })
 
 const mapDispatchToProps = {

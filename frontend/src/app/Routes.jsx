@@ -12,6 +12,7 @@ import NotFound from '../containers/NotFound'
 import { connect } from 'react-redux'
 import BrickLoader from '../layout/loaders/BrickLoader'
 import PageHero from '../layout/PageHero'
+import PrivateRoute from '../common/PrivateRoute'
 
 class Routes extends Component {
 	static propTypes = {
@@ -35,7 +36,7 @@ class Routes extends Component {
 				<Route exact path="/contact" component={Contact} />
 				<Route exact path="/login" component={Login} />
 
-				<Route path="/meetings" component={MeetingsRoutes} />
+				<PrivateRoute path="/meetings" component={MeetingsRoutes} />
 
 				<Route path="*" component={NotFound} />
 			</Switch>

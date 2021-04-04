@@ -7,7 +7,7 @@ from accounts.models import Account, CustomerImage
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('id', 'first_name', 'last_name',)
+        fields = ('id', 'first_name', 'last_name', 'is_admin',)
 
 
 class RegisterSerializer(serializers.ModelSerializer):

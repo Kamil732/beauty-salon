@@ -1,10 +1,26 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
+from django.forms import ModelForm
 
 from .models import Account, CustomerImage
 
+class UserCreationForm(ModelForm):
+    class Meta:
+        model = Account
+        fields = '__all__'
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+
+        if commit:
+            user.save()
+
+        return user
+
 @admin.register(Account)
 class AccountAdmin(ModelAdmin):
+    form = UserCreationForm
     empty_value_display = '--empty--'
     list_display = ('first_name', 'last_name', 'phone_number',)
     search_fields = ('first_name', 'last_name', 'phone_number', 'fax_number')
