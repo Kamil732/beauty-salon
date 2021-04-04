@@ -1,3 +1,48 @@
 $current-time-color: $active-element;
-$today-highlight-bg: #fff;
+$today-highlight-bg: #aaa;
+
+$event-bg: $primary-color;
+$event-border: none;
+$event-outline: none;
+$event-color: set-text-color($primary-color);
+$event-border-radius: 8px;
+$event-padding: 0;
+
+$rbc-css-prefix: calendar;
+
 @import '../../../../node_modules/react-big-calendar/lib/sass/styles.scss';
+
+.rbc-event {
+	cursor: default;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&-label {
+		text-align: center;
+		min-width: 100%;
+	}
+
+	&-content {
+		display: none;
+	}
+}
+
+.rbc-calendar {
+	width: 80%;
+	margin: 0 auto;
+}
+
+.rbc-toolbar-label {
+	font-size: 1.4rem;
+}
+
+.rbc-time-view {
+	min-width: 900px;
+	width: 100%;
+}
+
+.rbc-current-time-indicator {
+	height: 2px;
+}
