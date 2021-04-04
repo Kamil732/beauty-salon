@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import axios from 'axios'
 
 import { IoMdPhotos } from 'react-icons/io'
@@ -8,8 +9,14 @@ import { NotificationManager } from 'react-notifications'
 import PageHero from '../layout/PageHero'
 import ImageList from '../components/ImageList'
 import Button from '../layout/buttons/Button'
+import { connect } from 'react-redux'
 
 class Gallery extends Component {
+	static propTypes = {
+		gallery_title: PropTypes.string,
+		gallery_content: PropTypes.string,
+	}
+
 	constructor(props) {
 		super(props)
 
@@ -53,19 +60,24 @@ class Gallery extends Component {
 	}
 
 	render() {
+		const { gallery_title, gallery_content } = this.props
 		const { loading, data } = this.state
 
 		return (
 			<PageHero>
 				<PageHero.Body>
 					<PageHero.Img src={GalleryIllustration} />
-					<PageHero.Content>
-						<PageHero.Title>Galeria zdjęć</PageHero.Title>
-						<PageHero.Text>
-							Ze zgodą naszych klientów zrobiliśmy im parę zdjęć,
-							byś Ty mógł zdecydować nad swoją przyszła fryzurą
-						</PageHero.Text>
-					</PageHero.Content>
+					{gallery_title || gallery_content ? (
+						<PageHero.Content>
+							{gallery_title ? (
+								<PageHero.Title>{gallery_title}</PageHero.Title>
+							) : null}
+
+							{gallery_content ? (
+								<PageHero.Text>{gallery_content}</PageHero.Text>
+							) : null}
+						</PageHero.Content>
+					) : null}
 				</PageHero.Body>
 				<PageHero.Body vertical>
 					<PageHero.Title
@@ -99,4 +111,9 @@ class Gallery extends Component {
 	}
 }
 
-export default Gallery
+const mapStateToProps = (state) => ({
+	gallery_title: state.data.data.gallery_title,
+	gallery_content: state.data.data.gallery_content,
+})
+
+export default connect(mapStateToProps, null)(Gallery)

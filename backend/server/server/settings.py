@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 
     'phonenumber_field',
     'channels',
+    'data',
     'accounts',
     'meetings',
 ]

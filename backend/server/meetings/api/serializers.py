@@ -5,6 +5,4 @@ from meetings.models import Meeting
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
-        fields = (
-            'start',
-        )
+        fields = ('start', 'end', 'type',)

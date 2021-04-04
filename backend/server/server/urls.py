@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/', include([
         path('accounts/', include('accounts.api.urls')),
         path('meetings/', include('meetings.api.urls')),
+        path('data/', include('data.api.urls')),
     ])),
 ]
 
