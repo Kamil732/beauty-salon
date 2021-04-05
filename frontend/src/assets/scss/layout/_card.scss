@@ -1,10 +1,8 @@
 .card-container {
 	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	gap: 2rem;
+	gap: 5rem;
 	flex-direction: column;
-	max-width: 100%;
+	width: 100%;
 
 	& > .card {
 		margin: 0 auto;
@@ -12,7 +10,7 @@
 }
 
 .card {
-	max-width: 100%;
+	width: 100%;
 	background-color: $surface-color;
 	box-shadow: 0 0 1rem 0.2rem grey;
 	border-radius: 10px;
@@ -35,7 +33,6 @@
 @include media-laptop {
 	.card-container {
 		flex-direction: row;
-		max-width: 50%;
 
 		&.vertical {
 			flex-direction: column;

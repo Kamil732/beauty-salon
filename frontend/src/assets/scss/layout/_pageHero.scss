@@ -8,6 +8,12 @@
 	&__body {
 		width: 100%;
 		min-height: 100vh;
+		display: flex;
+		justify-content: space-evenly;
+		align-items: center;
+		gap: 2rem;
+		flex-direction: column;
+		margin-bottom: 3rem;
 	}
 
 	&__title {
@@ -20,11 +26,13 @@
 	&__text {
 		opacity: 0.8;
 		text-align: justify;
+		font-size: 1.3rem;
 	}
 
 	&__img-container {
+		order: 2;
 		margin-bottom: 1rem;
-		max-width: 100%;
+		max-width: 80%;
 	}
 
 	&__img {
@@ -39,10 +47,7 @@
 @include media-tablet {
 	.page-hero {
 		&__body {
-			display: flex;
-			justify-content: space-evenly;
-			align-items: center;
-			gap: 2rem;
+			flex-direction: row;
 
 			&.vertical {
 				justify-content: baseline;
@@ -55,6 +60,7 @@
 		}
 
 		&__img-container {
+			order: initial;
 			margin: 0;
 			max-width: 35%;
 		}

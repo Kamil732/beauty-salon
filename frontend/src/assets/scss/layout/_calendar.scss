@@ -12,17 +12,6 @@ $rbc-css-prefix: calendar;
 
 @import '../../../../node_modules/react-big-calendar/lib/sass/styles.scss';
 
-.work-hours {
-	border-collapse: collapse;
-
-	td,
-	th {
-		border: 1px solid grey;
-		text-align: center;
-		padding: 0.5rem;
-	}
-}
-
 .rbc-event {
 	cursor: default;
 	text-align: center;
