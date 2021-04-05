@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import CardContainer from '../../layout/cards/CardContainer'
 import PageHero from '../../layout/PageHero'
 import Calendar from '../../components/meetings/Calendar'
+import WorkHours from '../../components/meetings/WorkHours'
 
 class MyMeetings extends Component {
 	static propTypes = {
@@ -14,9 +16,10 @@ class MyMeetings extends Component {
 		return (
 			<PageHero>
 				<PageHero.Body>
-					<PageHero.Content>
+					<CardContainer>
 						<Calendar />
-					</PageHero.Content>
+						<WorkHours />
+					</CardContainer>
 				</PageHero.Body>
 			</PageHero>
 		)

@@ -1,14 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
+import { FaPhoneAlt } from 'react-icons/fa'
 import BarberIllustration from '../assets/images/barber-illustration.svg'
+import TimeIllustration from '../assets/images/time-illustration.svg'
+import AppointmentIllustration from '../assets/images/appointment-illustration.svg'
+
 import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
 import Calendar from '../components/meetings/Calendar'
-import { connect } from 'react-redux'
+import WorkHours from '../components/meetings/WorkHours'
 
-function Home({ home_title, home_content }) {
+function Home({
+	home_title,
+	home_content,
+	phone_number,
+	contact_content_second,
+}) {
 	return (
 		<PageHero>
 			<PageHero.Body>
@@ -32,8 +42,44 @@ function Home({ home_title, home_content }) {
 
 				<PageHero.Img src={BarberIllustration} />
 			</PageHero.Body>
+
+			<PageHero.Body>
+				<PageHero.Img src={TimeIllustration} />
+				<PageHero.Content>
+					<PageHero.Title>Godziny Pracy</PageHero.Title>
+					<WorkHours />
+				</PageHero.Content>
+			</PageHero.Body>
+
+			{phone_number ? (
+				<PageHero.Body>
+					<PageHero.Content>
+						<PageHero.Title>Jak umówić wizytę?</PageHero.Title>
+
+						<PageHero.Text>
+							Jeśli chcesz umówić wizytę, skonataktuj się ze mną:
+						</PageHero.Text>
+
+						<a
+							href={`tel:+48-${phone_number}`}
+							className="unique-text icon-container"
+						>
+							<FaPhoneAlt className="icon-container__icon" />
+							+48 {phone_number}
+						</a>
+						{contact_content_second ? (
+							<PageHero.Text>
+								{contact_content_second}
+							</PageHero.Text>
+						) : null}
+					</PageHero.Content>
+
+					<PageHero.Img src={AppointmentIllustration} />
+				</PageHero.Body>
+			) : null}
+
 			<PageHero.Body vertical>
-				<PageHero.Title>Kalendarz</PageHero.Title>
+				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
 				<Calendar />
 			</PageHero.Body>
@@ -44,11 +90,15 @@ function Home({ home_title, home_content }) {
 Home.prototype.propTypes = {
 	home_content: PropTypes.string,
 	home_title: PropTypes.string,
+	phone_number: PropTypes.string,
+	contact_content_second: PropTypes.string,
 }
 
 const mapStateToProps = (state) => ({
 	home_content: state.data.data.home_content,
 	home_title: state.data.data.home_title,
+	phone_number: state.data.data.phone_number,
+	contact_content_second: state.data.data.contact_content_second,
 })
 
 export default connect(mapStateToProps, null)(Home)

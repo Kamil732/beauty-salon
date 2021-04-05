@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import axios from 'axios'
 
 import moment from 'moment'
 import 'moment/locale/pl'
 
-import CardContainer from '../../layout/cards/CardContainer'
 import Card from '../../layout/cards/Card'
 import {
 	Calendar as BigCalendar,
@@ -13,37 +11,11 @@ import {
 	Views,
 } from 'react-big-calendar'
 import BrickLoader from '../../layout/loaders/BrickLoader'
-import { connect } from 'react-redux'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
 
 class Calendar extends Component {
-	static propTypes = {
-		isAdmin: PropTypes.bool,
-
-		end_work_sunday: PropTypes.string.isRequired,
-		start_work_sunday: PropTypes.string.isRequired,
-
-		end_work_saturday: PropTypes.string.isRequired,
-		start_work_saturday: PropTypes.string.isRequired,
-
-		end_work_friday: PropTypes.string.isRequired,
-		start_work_friday: PropTypes.string.isRequired,
-
-		end_work_thursday: PropTypes.string.isRequired,
-		start_work_thursday: PropTypes.string.isRequired,
-
-		end_work_wednesday: PropTypes.string.isRequired,
-		start_work_wednesday: PropTypes.string.isRequired,
-
-		end_work_tuesday: PropTypes.string.isRequired,
-		start_work_tuesday: PropTypes.string.isRequired,
-
-		end_work_monday: PropTypes.string.isRequired,
-		start_work_monday: PropTypes.string.isRequired,
-	}
-
 	constructor(props) {
 		super(props)
 
@@ -157,7 +129,7 @@ class Calendar extends Component {
 				data[i].start = moment.utc(data[i].start).toDate()
 				data[i].end = moment.utc(data[i].end).toDate()
 
-				if (data[i].type === 'do_not_work') {
+				if (data[i].do_not_work) {
 					data[i].allDay = true
 					data[i].title = 'NIE PRACUJE'
 				}
@@ -179,125 +151,37 @@ class Calendar extends Component {
 	}
 
 	render() {
-		const {
-			start_work_monday,
-			end_work_monday,
-			start_work_tuesday,
-			end_work_tuesday,
-			start_work_wednesday,
-			end_work_wednesday,
-			start_work_thursday,
-			end_work_thursday,
-			start_work_friday,
-			end_work_friday,
-			start_work_saturday,
-			end_work_saturday,
-			start_work_sunday,
-			end_work_sunday,
-		} = this.props
 		const { loading, data } = this.state
 
 		if (loading) return <BrickLoader />
 
 		return (
-			<CardContainer>
-				<Card>
-					<Card.Title>Godziny pracy</Card.Title>
-					<Card.Body style={{ overflow: 'auto' }}>
-						<table className="work-hours">
-							<thead>
-								<tr>
-									<th></th>
-									<th scope="col">Otwarcie</th>
-									<th scope="col">Zamknięcie</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<th scope="row">Poniedziałek</th>
-									<td>{start_work_monday}</td>
-									<td>{end_work_monday}</td>
-								</tr>
-								<tr>
-									<th scope="row">Wtorek</th>
-									<td>{start_work_tuesday}</td>
-									<td>{end_work_tuesday}</td>
-								</tr>
-								<tr>
-									<th scope="row">Środa</th>
-									<td>{start_work_wednesday}</td>
-									<td>{end_work_wednesday}</td>
-								</tr>
-								<tr>
-									<th scope="row">Czwartek</th>
-									<td>{start_work_thursday}</td>
-									<td>{end_work_thursday}</td>
-								</tr>
-								<tr>
-									<th scope="row">Piątek</th>
-									<td>{start_work_friday}</td>
-									<td>{end_work_friday}</td>
-								</tr>
-								<tr>
-									<th scope="row">Sobota</th>
-									<td>{start_work_saturday}</td>
-									<td>{end_work_saturday}</td>
-								</tr>
-								<tr>
-									<th scope="row">Niedziela</th>
-									<td>{start_work_sunday}</td>
-									<td>{end_work_sunday}</td>
-								</tr>
-							</tbody>
-						</table>
-					</Card.Body>
-				</Card>
-				<Card>
-					<Card.Body style={{ overflow: 'auto' }}>
-						<BigCalendar
-							localizer={localizer}
-							events={data}
-							step={30}
-							timeslots={1}
-							views={[Views.WEEK]}
-							defaultView={Views.WEEK}
-							selectable={false}
-							min={this.minDate}
-							max={this.maxDate}
-							messages={{
-								next: 'Dalej',
-								previous: 'Wstecz',
-								today: 'Dziś',
-								month: 'Miesiąc',
-								week: 'Tydzień',
-								day: 'Dzień',
-							}}
-							dayLayoutAlgorithm="no-overlap"
-						/>
-					</Card.Body>
-				</Card>
-			</CardContainer>
+			<Card>
+				<Card.Body style={{ overflow: 'auto' }}>
+					<BigCalendar
+						localizer={localizer}
+						events={data}
+						step={30}
+						timeslots={1}
+						views={[Views.WEEK]}
+						defaultView={Views.WEEK}
+						selectable={false}
+						min={this.minDate}
+						max={this.maxDate}
+						messages={{
+							next: 'Dalej',
+							previous: 'Wstecz',
+							today: 'Dziś',
+							month: 'Miesiąc',
+							week: 'Tydzień',
+							day: 'Dzień',
+						}}
+						dayLayoutAlgorithm="no-overlap"
+					/>
+				</Card.Body>
+			</Card>
 		)
 	}
 }
 
-const mapStateToProps = (state) => ({
-	isAdmin: state.auth.data.is_admin,
-
-	end_work_sunday: state.data.data.end_work_sunday,
-	start_work_sunday: state.data.data.start_work_sunday,
-	end_work_saturday: state.data.data.end_work_saturday,
-	start_work_saturday: state.data.data.start_work_saturday,
-	end_work_friday: state.data.data.end_work_friday,
-	start_work_friday: state.data.data.start_work_friday,
-	end_work_thursday: state.data.data.end_work_thursday,
-	start_work_thursday: state.data.data.start_work_thursday,
-	end_work_wednesday: state.data.data.end_work_wednesday,
-	start_work_wednesday: state.data.data.start_work_wednesday,
-	end_work_tuesday: state.data.data.end_work_tuesday,
-	start_work_tuesday: state.data.data.start_work_tuesday,
-	end_work_monday: state.data.data.end_work_monday,
-	start_work_monday: state.data.data.start_work_monday,
-})
-
-export default connect(mapStateToProps, null)(Calendar)
+export default Calendar
