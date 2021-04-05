@@ -7,4 +7,8 @@ from . import serializers
 class MeetingViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     queryset = Meeting.objects.order_by('-start')
-    serializer_class = serializers.MeetingSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated and self.request.user.is_admin:
+            return serializers.AdminMeetingSerializer
+        return serializers.MeetingSerializer
