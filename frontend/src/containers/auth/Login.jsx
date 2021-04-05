@@ -7,7 +7,7 @@ import { login } from '../../redux/actions/auth'
 import AuthIllustration from '../../assets/images/auth-illustration.svg'
 
 import CSRFToken from '../../components/CSRFToken'
-import Card from '../../layout/Card'
+import Card from '../../layout/cards/Card'
 import FormControl from '../../layout/forms/FormControl'
 import Button from '../../layout/buttons/Button'
 import { Link, Redirect } from 'react-router-dom'

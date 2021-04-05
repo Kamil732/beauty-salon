@@ -34,6 +34,7 @@ function Home({ home_title, home_content }) {
 			</PageHero.Body>
 			<PageHero.Body vertical>
 				<PageHero.Title>Kalendarz</PageHero.Title>
+
 				<Calendar />
 			</PageHero.Body>
 		</PageHero>

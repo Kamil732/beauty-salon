@@ -1,10 +1,44 @@
+.card-container {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 2rem;
+	flex-direction: column;
+	max-width: 100%;
+
+	& > .card {
+		margin: 0 auto;
+	}
+}
+
 .card {
+	max-width: 100%;
 	background-color: $surface-color;
 	box-shadow: 0 0 1rem 0.2rem grey;
 	border-radius: 10px;
 
+	& > &__title {
+		background-color: #ccc;
+		color: set-text-color(#ccc);
+		padding: 1.5rem;
+		font-size: 1.3rem;
+		font-weight: 600;
+		text-align: center;
+	}
+
 	& > &__body {
 		font-size: 1.2rem;
 		padding: 2rem 3rem;
+	}
+}
+
+@include media-laptop {
+	.card-container {
+		flex-direction: row;
+		max-width: 50%;
+
+		&.vertical {
+			flex-direction: column;
+		}
 	}
 }

@@ -12,6 +12,17 @@ $rbc-css-prefix: calendar;
 
 @import '../../../../node_modules/react-big-calendar/lib/sass/styles.scss';
 
+.work-hours {
+	border-collapse: collapse;
+
+	td,
+	th {
+		border: 1px solid grey;
+		text-align: center;
+		padding: 0.5rem;
+	}
+}
+
 .rbc-event {
 	cursor: default;
 	text-align: center;
@@ -30,8 +41,8 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-calendar {
-	width: 80%;
 	margin: 0 auto;
+	max-width: 100%;
 }
 
 .rbc-toolbar-label {
@@ -39,8 +50,8 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-time-view {
+	max-width: 100%;
 	min-width: 900px;
-	width: 100%;
 }
 
 .rbc-current-time-indicator {
