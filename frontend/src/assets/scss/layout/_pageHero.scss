@@ -18,9 +18,13 @@
 
 	&__title {
 		margin-bottom: 50px;
-		font-size: 3rem;
+		font-size: 2em;
 		line-height: 1.5em;
 		text-align: justify;
+	}
+
+	&__content {
+		max-width: 100%;
 	}
 
 	&__text {
@@ -46,6 +50,10 @@
 
 @include media-tablet {
 	.page-hero {
+		&__title {
+			font-size: 2.5em;
+		}
+
 		&__body {
 			flex-direction: row;
 
@@ -56,7 +64,7 @@
 		}
 
 		&__content {
-			max-width: 400px;
+			max-width: 450px;
 		}
 
 		&__img-container {
@@ -73,6 +81,10 @@
 
 @include media-laptop-lg {
 	.page-hero {
+		&__title {
+			font-size: 3em;
+		}
+
 		&__content {
 			max-width: 500px;
 		}

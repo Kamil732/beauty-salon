@@ -12,6 +12,7 @@ import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
 import Calendar from '../components/meetings/Calendar'
 import WorkHours from '../components/meetings/WorkHours'
+import Card from '../layout/cards/Card'
 
 function Home({
 	home_title,
@@ -47,7 +48,13 @@ function Home({
 				<PageHero.Img src={TimeIllustration} />
 				<PageHero.Content>
 					<PageHero.Title>Godziny Pracy</PageHero.Title>
-					<WorkHours />
+					<Card>
+						<Card.Body>
+							<div style={{ overflow: 'auto' }}>
+								<WorkHours />
+							</div>
+						</Card.Body>
+					</Card>
 				</PageHero.Content>
 			</PageHero.Body>
 

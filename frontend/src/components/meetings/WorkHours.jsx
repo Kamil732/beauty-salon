@@ -30,33 +30,66 @@ function WorkHours({
 			<tbody>
 				<tr>
 					<th scope="row">Poniedziałek</th>
-					<td>{start_work_monday}</td>
-					<td>{end_work_monday}</td>
+					<td>
+						{(start_work_monday && start_work_monday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_monday && end_work_monday) || 'ZAMKNIĘTE'}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Wtorek</th>
-					<td>{start_work_tuesday}</td>
-					<td>{end_work_tuesday}</td>
+					<td>
+						{(start_work_tuesday && start_work_tuesday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_tuesday && end_work_tuesday) || 'ZAMKNIĘTE'}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Środa</th>
-					<td>{start_work_wednesday}</td>
-					<td>{end_work_wednesday}</td>
+					<td>
+						{(start_work_wednesday && start_work_wednesday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_wednesday && end_work_wednesday) ||
+							'ZAMKNIĘTE'}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Czwartek</th>
-					<td>{start_work_thursday}</td>
-					<td>{end_work_thursday}</td>
+					<td>
+						{(start_work_thursday && start_work_thursday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_thursday && end_work_thursday) ||
+							'ZAMKNIĘTE'}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Piątek</th>
-					<td>{start_work_friday}</td>
-					<td>{end_work_friday}</td>
+					<td>
+						{(start_work_friday && start_work_friday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_friday && end_work_friday) || 'ZAMKNIĘTE'}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Sobota</th>
-					<td>{start_work_saturday}</td>
-					<td>{end_work_saturday}</td>
+					<td>
+						{(start_work_saturday && start_work_saturday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_saturday && end_work_saturday) ||
+							'ZAMKNIĘTE'}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row">Niedziela</th>

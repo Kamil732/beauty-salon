@@ -1,6 +1,8 @@
 .table {
 	border-collapse: collapse;
+	border-spacing: 0;
 	width: 100%;
+	border: 1px solid #ccc;
 
 	thead {
 		background-color: $primary-color;
@@ -9,9 +11,8 @@
 
 	td,
 	th {
-		border: 1px solid grey;
 		text-align: center;
-		padding: 0.5rem;
+		padding: 8px;
 	}
 
 	tr:nth-child(even) {

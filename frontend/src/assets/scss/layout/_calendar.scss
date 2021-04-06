@@ -17,7 +17,6 @@ $rbc-css-prefix: calendar;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 1rem;
-	max-width: 50%;
 
 	&__item {
 		position: relative;
@@ -77,5 +76,11 @@ $rbc-css-prefix: calendar;
 	.toolbar-container {
 		flex-direction: row;
 		gap: 2rem;
+	}
+}
+
+@include media-laptop {
+	.legend {
+		max-width: 50%;
 	}
 }

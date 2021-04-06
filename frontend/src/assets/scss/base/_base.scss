@@ -59,6 +59,7 @@ a {
 	z-index: 999;
 	width: 100%;
 	padding: 25px;
+	margin-bottom: 3rem;
 
 	&__logo {
 		margin: 0 auto;
@@ -171,6 +172,7 @@ a {
 
 @include media-tablet {
 	.header {
+		margin-bottom: 0;
 		& > .nav > .nav__link {
 			font-size: 1.6rem;
 		}
