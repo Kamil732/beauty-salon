@@ -12,6 +12,25 @@ $rbc-css-prefix: calendar;
 
 @import '../../../../node_modules/react-big-calendar/lib/sass/styles.scss';
 
+.legend {
+	font-size: 1rem;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+	max-width: 50%;
+
+	&__item {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+
+		& > span {
+			position: static;
+		}
+	}
+}
+
 .rbc-event {
 	cursor: default;
 	text-align: center;
@@ -27,6 +46,11 @@ $rbc-css-prefix: calendar;
 	&-content {
 		display: none;
 	}
+}
+
+.rbc-event-allday {
+	background-color: $error-color;
+	color: set-text-color($error-color);
 }
 
 .rbc-calendar {

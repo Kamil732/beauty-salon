@@ -157,6 +157,41 @@ class Calendar extends Component {
 
 		return (
 			<Card>
+				<Card.Body>
+					<div className="legend">
+						<div className="legend__item">
+							<span
+								style={{
+									width: '2rem',
+									height: '1rem',
+								}}
+								className="s-color"
+							></span>
+							<span>Obecna data</span>
+						</div>
+						<div className="legend__item">
+							<span
+								className="rbc-current-time-indicator"
+								style={{ width: '2rem' }}
+							></span>
+							<span>Obecny czas</span>
+						</div>
+						<div className="legend__item">
+							<span
+								className="rbc-event"
+								style={{ width: '2rem', height: '1rem' }}
+							></span>
+							<span>Wizyta</span>
+						</div>
+						<div className="legend__item">
+							<span
+								className="rbc-event-allday"
+								style={{ width: '2rem', height: '1rem' }}
+							></span>
+							<span>Nie pracuje</span>
+						</div>
+					</div>
+				</Card.Body>
 				<Card.Body style={{ overflow: 'auto' }}>
 					<BigCalendar
 						localizer={localizer}
