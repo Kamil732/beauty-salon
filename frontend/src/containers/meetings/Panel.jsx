@@ -13,7 +13,7 @@ class Panel extends Component {
 		return (
 			<PageHero>
 				<PageHero.Body>
-					<Calendar />
+					<Calendar isAdminPanel />
 				</PageHero.Body>
 			</PageHero>
 		)

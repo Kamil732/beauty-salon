@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import axios from 'axios'
 
 import moment from 'moment'
@@ -11,11 +12,16 @@ import {
 	Views,
 } from 'react-big-calendar'
 import BrickLoader from '../../layout/loaders/BrickLoader'
+import Toolbar from './Toolbar'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
 
 class Calendar extends Component {
+	static propTypes = {
+		isAdminPanel: PropTypes.bool,
+	}
+
 	constructor(props) {
 		super(props)
 
@@ -28,16 +34,48 @@ class Calendar extends Component {
 		this.timeout = 250
 
 		this.state = {
+			windowWidth: window.innerWidth,
 			ws: null,
 			loading: true,
 			data: [],
 		}
+
+		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
+		this.checkIsWebSocketClosed = this.checkIsWebSocketClosed.bind(this)
+		this.setData = this.setData.bind(this)
+		this.connectWebSocket = this.connectWebSocket.bind(this)
 	}
+
+	updateWindowDimensions = () =>
+		this.setState({ windowWidth: window.innerWidth })
 
 	// Check if websocket instance is closed, if so call `connect` function.
 	checkIsWebSocketClosed = () => {
 		const { ws } = this.state
 		if (!ws || ws.readyState === WebSocket.CLOSED) this.connectWebSocket()
+	}
+
+	setData = (data) => {
+		const { isAdminPanel } = this.props
+
+		for (let i = 0; i < data.length; i++) {
+			data[i].start = moment.utc(data[i].start).toDate()
+			data[i].end = moment.utc(data[i].end).toDate()
+
+			if (isAdminPanel) {
+				data[i].title = `${data[i].type}`
+			}
+
+			if (data[i].do_not_work) {
+				data[i].allDay = true
+				data[i].title = 'NIE PRACUJE'
+			}
+		}
+
+		this.setState({
+			loading: false,
+			data,
+		})
 	}
 
 	connectWebSocket = () => {
@@ -64,26 +102,8 @@ class Calendar extends Component {
 		ws.onmessage = (e) => {
 			this.setState({ loading: true })
 			const data = JSON.parse(e.data)
-			let meetings = data.meetings
 
-			for (let i = 0; i < meetings.length; i++) {
-				meetings[i].start = moment.utc(meetings[i].start).toDate()
-				meetings[i].end = moment.utc(meetings[i].end).toDate()
-
-				if (meetings[i].type === 'do_not_work') {
-					meetings[i].allDay = true
-					meetings[i].title = 'NIE PRACUJE'
-				}
-			}
-
-			setTimeout(
-				() =>
-					this.setState({
-						loading: false,
-						data: meetings,
-					}),
-				250
-			)
+			this.setData(data.meetings)
 		}
 
 		ws.onclose = (e) => {
@@ -117,28 +137,14 @@ class Calendar extends Component {
 
 	componentDidMount = async () => {
 		this.connectWebSocket()
+		window.addEventListener('resize', this.updateWindowDimensions)
 
 		try {
 			const res = await axios.get(
 				`${process.env.REACT_APP_API_URL}/meetings/`
 			)
 
-			let data = res.data
-
-			for (let i = 0; i < data.length; i++) {
-				data[i].start = moment.utc(data[i].start).toDate()
-				data[i].end = moment.utc(data[i].end).toDate()
-
-				if (data[i].do_not_work) {
-					data[i].allDay = true
-					data[i].title = 'NIE PRACUJE'
-				}
-			}
-
-			this.setState({
-				loading: false,
-				data,
-			})
+			this.setData(res.data)
 		} catch (err) {
 			this.setState({
 				loading: false,
@@ -148,10 +154,11 @@ class Calendar extends Component {
 
 	componentWillUnmount() {
 		this.state.ws.close()
+		window.removeEventListener('resize', this.updateWindowDimensions)
 	}
 
 	render() {
-		const { loading, data } = this.state
+		const { windowWidth, loading, data } = this.state
 
 		if (loading) return <BrickLoader />
 
@@ -192,26 +199,24 @@ class Calendar extends Component {
 						</div>
 					</div>
 				</Card.Body>
-				<Card.Body style={{ overflow: 'auto' }}>
+				<Card.Body>
 					<BigCalendar
+						popup
 						localizer={localizer}
 						events={data}
 						step={30}
 						timeslots={1}
-						views={[Views.WEEK]}
-						defaultView={Views.WEEK}
+						views={windowWidth >= 768 ? [Views.WEEK] : [Views.DAY]}
+						view={windowWidth >= 768 ? Views.WEEK : Views.DAY}
 						selectable={false}
 						min={this.minDate}
 						max={this.maxDate}
-						messages={{
-							next: 'Dalej',
-							previous: 'Wstecz',
-							today: 'Dziś',
-							month: 'Miesiąc',
-							week: 'Tydzień',
-							day: 'Dzień',
-						}}
 						dayLayoutAlgorithm="no-overlap"
+						onSelecting={() => console.log('xd')}
+						selected={null}
+						components={{
+							toolbar: Toolbar,
+						}}
 					/>
 				</Card.Body>
 			</Card>

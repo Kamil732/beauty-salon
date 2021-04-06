@@ -11,7 +11,7 @@ function Button(props) {
 					props.secondary ? ' btn__secondary' : ''
 				}${props.loading ? ' btn__loading' : ''}${
 					props.to ? ' btn__link' : ''
-				}`}
+				}${props.small ? ' btn__small' : ''}`}
 				disabled={props.loading}
 				{...props}
 			>
@@ -28,7 +28,7 @@ function Button(props) {
 				props.secondary ? ' btn__secondary' : ''
 			}${props.loading ? ' btn__loading' : ''}${
 				props.to ? ' btn__link' : ''
-			}`}
+			}${props.small ? ' btn__small' : ''}`}
 			disabled={props.loading}
 			{...props}
 		>
