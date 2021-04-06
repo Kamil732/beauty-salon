@@ -35,6 +35,16 @@ a {
 	}
 }
 
+.message {
+	background-color: $surface-color;
+	color: set-text-color($surface-color);
+	margin: 0 1.5rem;
+	padding: 1rem;
+	border-radius: 12px;
+	font-size: 1.1rem;
+	text-align: center;
+}
+
 .icon-container {
 	display: flex;
 	align-items: center;

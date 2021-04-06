@@ -19,6 +19,10 @@
 		border-color 0.1s ease-in;
 	font-size: 1.1rem;
 
+	&__small {
+		padding: 0.5rem 1rem;
+	}
+
 	&__primary {
 		border-color: $primary-color;
 		background-color: $primary-color;
@@ -94,6 +98,10 @@
 @include media-tablet {
 	.btn {
 		padding: 1rem 2.5rem;
+
+		&__small {
+			padding: 0.5rem 1rem;
+		}
 	}
 }
 

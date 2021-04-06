@@ -31,6 +31,13 @@ $rbc-css-prefix: calendar;
 	}
 }
 
+.toolbar-container {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	margin-bottom: 1rem;
+}
+
 .rbc-event {
 	cursor: default;
 	text-align: center;
@@ -62,11 +69,13 @@ $rbc-css-prefix: calendar;
 	font-size: 1.4rem;
 }
 
-.rbc-time-view {
-	max-width: 100%;
-	min-width: 900px;
-}
-
 .rbc-current-time-indicator {
 	height: 2px;
+}
+
+@include media-tablet {
+	.toolbar-container {
+		flex-direction: row;
+		gap: 2rem;
+	}
 }
