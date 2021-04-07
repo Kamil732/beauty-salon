@@ -1,0 +1,22 @@
+.modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	right: auto;
+	transform: translate(-50%, -50%);
+	background-color: $surface-color;
+	border-radius: 8px;
+	z-index: 999;
+
+	& > &__header {
+		border-radius: 8px 8px 0 0;
+		padding: 1rem;
+		background-color: darken($surface-color, 15%);
+		color: set-text-color(darken($surface-color, 15%));
+		font-size: 1.4rem;
+	}
+
+	& > &__body {
+		padding: 2rem;
+	}
+}

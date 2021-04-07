@@ -43,7 +43,7 @@ $rbc-css-prefix: calendar;
 	text-align: center;
 	font-size: 0.9em;
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
 	flex-direction: column;
 
@@ -55,12 +55,31 @@ $rbc-css-prefix: calendar;
 	&-content {
 		font-size: 0.9em;
 		width: 100%;
+		height: fit-content !important;
+	}
+
+	&.selectable {
+		cursor: pointer;
+
+		&:hover {
+			background-color: darken($event-bg, 15%);
+			color: set-text-color(darken($event-bg, 15%));
+		}
 	}
 }
 
 .rbc-event-allday {
 	background-color: $error-color;
 	color: set-text-color($error-color);
+
+	&.selectable {
+		cursor: pointer;
+
+		&:hover {
+			background-color: darken($error-color, 15%);
+			color: set-text-color(darken($error-color, 15%));
+		}
+	}
 }
 
 .rbc-calendar {

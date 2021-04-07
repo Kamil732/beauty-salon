@@ -1,5 +1,4 @@
 .btn-container {
-	margin: 2rem 0;
 	display: flex;
 	gap: 1rem;
 	align-items: center;
@@ -106,6 +105,12 @@
 	}
 	&::after {
 		transform: rotate(-45deg);
+	}
+
+	&.rt-corner {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
 	}
 }
 
