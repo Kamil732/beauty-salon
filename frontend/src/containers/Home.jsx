@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { FaPhoneAlt } from 'react-icons/fa'
 import BarberIllustration from '../assets/images/barber-illustration.svg'
 import TimeIllustration from '../assets/images/time-illustration.svg'
+import PaymentIllustration from '../assets/images/payment-illustration.svg'
 import AppointmentIllustration from '../assets/images/appointment-illustration.svg'
 
 import ButtonContainer from '../layout/buttons/ButtonContainer'
@@ -13,6 +14,7 @@ import PageHero from '../layout/PageHero'
 import Calendar from '../components/meetings/Calendar'
 import WorkHours from '../components/meetings/WorkHours'
 import Card from '../layout/cards/Card'
+import Pricing from '../components/meetings/Pricing'
 
 function Home({
 	home_title,
@@ -56,6 +58,17 @@ function Home({
 						</Card.Body>
 					</Card>
 				</PageHero.Content>
+			</PageHero.Body>
+
+			<PageHero.Body>
+				<PageHero.Content>
+					<PageHero.Title>Cennik</PageHero.Title>
+					<PageHero.Text>
+						<Pricing />
+					</PageHero.Text>
+				</PageHero.Content>
+
+				<PageHero.Img src={PaymentIllustration} />
 			</PageHero.Body>
 
 			{phone_number ? (

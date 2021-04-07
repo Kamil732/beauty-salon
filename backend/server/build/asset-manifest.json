@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.23258c75.chunk.css",
-    "main.js": "/static/js/main.aa3eb164.chunk.js",
-    "main.js.map": "/static/js/main.aa3eb164.chunk.js.map",
+    "main.css": "/static/css/main.5d78dc24.chunk.css",
+    "main.js": "/static/js/main.b2734b65.chunk.js",
+    "main.js.map": "/static/js/main.b2734b65.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.248907bc.js",
     "runtime-main.js.map": "/static/js/runtime-main.248907bc.js.map",
     "static/css/2.a4a457b0.chunk.css": "/static/css/2.a4a457b0.chunk.css",
-    "static/js/2.d5043554.chunk.js": "/static/js/2.d5043554.chunk.js",
-    "static/js/2.d5043554.chunk.js.map": "/static/js/2.d5043554.chunk.js.map",
+    "static/js/2.44c3833f.chunk.js": "/static/js/2.44c3833f.chunk.js",
+    "static/js/2.44c3833f.chunk.js.map": "/static/js/2.44c3833f.chunk.js.map",
     "index.html": "/index.html",
     "static/css/2.a4a457b0.chunk.css.map": "/static/css/2.a4a457b0.chunk.css.map",
-    "static/css/main.23258c75.chunk.css.map": "/static/css/main.23258c75.chunk.css.map",
-    "static/js/2.d5043554.chunk.js.LICENSE.txt": "/static/js/2.d5043554.chunk.js.LICENSE.txt",
+    "static/css/main.5d78dc24.chunk.css.map": "/static/css/main.5d78dc24.chunk.css.map",
+    "static/js/2.44c3833f.chunk.js.LICENSE.txt": "/static/js/2.44c3833f.chunk.js.LICENSE.txt",
     "static/media/appointment-illustration.2319e6db.svg": "/static/media/appointment-illustration.2319e6db.svg",
     "static/media/auth-illustration.e9633564.svg": "/static/media/auth-illustration.e9633564.svg",
     "static/media/barber-illustration.c0ef8a86.svg": "/static/media/barber-illustration.c0ef8a86.svg",
@@ -20,13 +20,14 @@
     "static/media/gallery-illustration.8b0b3b98.svg": "/static/media/gallery-illustration.8b0b3b98.svg",
     "static/media/logo.1309fc08.png": "/static/media/logo.1309fc08.png",
     "static/media/notifications.css": "/static/media/notification.c5d9251e.ttf",
+    "static/media/payment-illustration.3295c74a.svg": "/static/media/payment-illustration.3295c74a.svg",
     "static/media/time-illustration.4711c740.svg": "/static/media/time-illustration.4711c740.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.248907bc.js",
     "static/css/2.a4a457b0.chunk.css",
-    "static/js/2.d5043554.chunk.js",
-    "static/css/main.23258c75.chunk.css",
-    "static/js/main.aa3eb164.chunk.js"
+    "static/js/2.44c3833f.chunk.js",
+    "static/css/main.5d78dc24.chunk.css",
+    "static/js/main.b2734b65.chunk.js"
   ]
 }

@@ -9,9 +9,11 @@ function Button(props) {
 				to={props.to}
 				className={`btn${props.primary ? ' btn__primary' : ''}${
 					props.secondary ? ' btn__secondary' : ''
-				}${props.loading ? ' btn__loading' : ''}${
-					props.to ? ' btn__link' : ''
-				}${props.small ? ' btn__small' : ''}`}
+				}${props.danger ? ' btn__danger' : ''}${
+					props.loading ? ' btn__loading' : ''
+				}${props.to ? ' btn__link' : ''}${
+					props.small ? ' btn__small' : ''
+				}`}
 				disabled={props.loading}
 				{...props}
 			>
@@ -26,9 +28,11 @@ function Button(props) {
 		<button
 			className={`btn${props.primary ? ' btn__primary' : ''}${
 				props.secondary ? ' btn__secondary' : ''
-			}${props.loading ? ' btn__loading' : ''}${
-				props.to ? ' btn__link' : ''
-			}${props.small ? ' btn__small' : ''}`}
+			}${props.danger ? ' btn__danger' : ''}${
+				props.loading ? ' btn__loading' : ''
+			}${props.to ? ' btn__link' : ''}${
+				props.small ? ' btn__small' : ''
+			}`}
 			disabled={props.loading}
 			{...props}
 		>

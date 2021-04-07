@@ -69,7 +69,7 @@ class Header extends Component {
 					</nav>
 				</div>
 
-				{message ? <p className="message">{message}</p> : null}
+				{message ? <p className="global-message">{message}</p> : null}
 			</>
 		)
 	}

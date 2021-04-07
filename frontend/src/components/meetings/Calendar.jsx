@@ -4,15 +4,19 @@ import axios from 'axios'
 
 import moment from 'moment'
 import 'moment/locale/pl'
+import { AiOutlineArrowRight } from 'react-icons/ai'
 
 import Card from '../../layout/cards/Card'
+import Button from '../../layout/buttons/Button'
 import {
 	Calendar as BigCalendar,
 	momentLocalizer,
 	Views,
 } from 'react-big-calendar'
 import BrickLoader from '../../layout/loaders/BrickLoader'
+import { UncontrolledTooltip } from 'reactstrap'
 import Toolbar from './Toolbar'
+import ButtonContainer from '../../layout/buttons/ButtonContainer'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -62,9 +66,10 @@ class Calendar extends Component {
 			data[i].start = moment.utc(data[i].start).toDate()
 			data[i].end = moment.utc(data[i].end).toDate()
 
-			if (isAdminPanel) {
-				data[i].title = `${data[i].type}`
-			}
+			if (isAdminPanel)
+				data[
+					i
+				].title = `${data[i].customer_first_name}, ${data[i].type}`
 
 			if (data[i].do_not_work) {
 				data[i].allDay = true
@@ -158,6 +163,7 @@ class Calendar extends Component {
 	}
 
 	render() {
+		const { isAdminPanel } = this.props
 		const { windowWidth, loading, data } = this.state
 
 		if (loading) return <BrickLoader />
@@ -188,7 +194,7 @@ class Calendar extends Component {
 								className="rbc-event"
 								style={{ width: '2rem', height: '1rem' }}
 							></span>
-							<span>Wizyta</span>
+							<span>Umówiona wizyta</span>
 						</div>
 						<div className="legend__item">
 							<span
@@ -201,20 +207,86 @@ class Calendar extends Component {
 				</Card.Body>
 				<Card.Body>
 					<BigCalendar
-						popup
 						localizer={localizer}
 						events={data}
 						step={30}
 						timeslots={1}
 						views={windowWidth >= 768 ? [Views.WEEK] : [Views.DAY]}
 						view={windowWidth >= 768 ? Views.WEEK : Views.DAY}
-						selectable={false}
 						min={this.minDate}
 						max={this.maxDate}
 						dayLayoutAlgorithm="no-overlap"
-						onSelecting={() => console.log('xd')}
-						selected={null}
+						slotPropGetter={(date) => ({
+							style: {
+								minHeight: isAdminPanel ? '60px' : 'auto',
+							},
+						})}
+						selected={{ selected: false }}
 						components={{
+							event: (component) => {
+								const { event } = component
+
+								return (
+									<div className="calendar-event-tooltip">
+										{event?.title}
+
+										{!event.do_not_work && isAdminPanel && (
+											<>
+												<span
+													style={{
+														marginLeft: '10px',
+													}}
+												>
+													<AiOutlineArrowRight
+														id={event.id}
+													/>
+												</span>
+												<UncontrolledTooltip
+													placement="right"
+													autohide={false}
+													style={{ minWidth: 200 }}
+													target={CSS.escape(
+														event.id
+													)}
+													trigger="hover"
+												>
+													<Card>
+														<Card.Title>
+															{moment(
+																event.start
+															).format(
+																'H:mm'
+															)}{' '}
+															-
+															{moment(
+																event.end
+															).format('H:mm')}
+															<br />
+															{event?.title}
+														</Card.Title>
+														<Card.Body>
+															<ButtonContainer>
+																<Button
+																	primary
+																	small
+																>
+																	Edytuj
+																</Button>
+																<Button
+																	danger
+																	small
+																>
+																	Usuń wizyte
+																</Button>
+															</ButtonContainer>
+														</Card.Body>
+													</Card>
+												</UncontrolledTooltip>
+											</>
+										)}
+									</div>
+								)
+							},
 							toolbar: Toolbar,
 						}}
 					/>

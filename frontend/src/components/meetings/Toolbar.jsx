@@ -34,7 +34,7 @@ const Toolbar = (toolbar) => {
 					&#8249;
 				</Button>
 				<Button primary small onClick={goToCurrent}>
-					today
+					Dzisiaj
 				</Button>
 				<Button primary small onClick={goToNext}>
 					&#8250;
