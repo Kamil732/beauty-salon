@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import CardContainer from '../../layout/cards/CardContainer'
 import PageHero from '../../layout/PageHero'
-import Calendar from '../../components/meetings/Calendar'
+import Calendar from '../../components/meetings/calendar/Calendar'
 import WorkHours from '../../components/meetings/WorkHours'
 
 class MyMeetings extends Component {

@@ -3,8 +3,8 @@ import React from 'react'
 import moment from 'moment'
 
 import { Views } from 'react-big-calendar'
-import ButtonContainer from '../../layout/buttons/ButtonContainer'
-import Button from '../../layout/buttons/Button'
+import ButtonContainer from '../../../layout/buttons/ButtonContainer'
+import Button from '../../../layout/buttons/Button'
 
 const Toolbar = (toolbar) => {
 	const goToBack = () => toolbar.onNavigate('PREV')

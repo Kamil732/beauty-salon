@@ -43,7 +43,7 @@ class Header extends Component {
 
 					{isNavActive ? (
 						<div
-							className="nav-background"
+							className="dark-bg"
 							onClick={() =>
 								this.setState({ isNavActive: false })
 							}

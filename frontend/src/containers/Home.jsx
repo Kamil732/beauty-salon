@@ -11,7 +11,7 @@ import AppointmentIllustration from '../assets/images/appointment-illustration.s
 import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
-import Calendar from '../components/meetings/Calendar'
+import Calendar from '../components/meetings/calendar/Calendar'
 import WorkHours from '../components/meetings/WorkHours'
 import Card from '../layout/cards/Card'
 import Pricing from '../components/meetings/Pricing'
@@ -33,7 +33,7 @@ function Home({
 						<PageHero.Text>{home_content}</PageHero.Text>
 					) : null}
 
-					<ButtonContainer>
+					<ButtonContainer style={{ marginTop: '2rem' }}>
 						<Button primary to="/my-meetings">
 							Umów wizytę
 						</Button>
@@ -102,6 +102,11 @@ function Home({
 				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
 				<Calendar />
+			</PageHero.Body>
+			<PageHero.Body vertical>
+				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
+
+				<Calendar isAdminPanel />
 			</PageHero.Body>
 		</PageHero>
 	)

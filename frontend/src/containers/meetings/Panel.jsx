@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import Calendar from '../../components/meetings/Calendar'
+import Calendar from '../../components/meetings/calendar/Calendar'
 import PageHero from '../../layout/PageHero'
 
 class Panel extends Component {

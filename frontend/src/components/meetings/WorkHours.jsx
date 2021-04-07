@@ -93,8 +93,13 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Niedziela</th>
-					<td>{start_work_sunday}</td>
-					<td>{end_work_sunday}</td>
+					<td>
+						{(start_work_sunday && start_work_sunday) ||
+							'ZAMKNIĘTE'}
+					</td>
+					<td>
+						{(end_work_sunday && end_work_sunday) || 'ZAMKNIĘTE'}
+					</td>
 				</tr>
 			</tbody>
 		</table>

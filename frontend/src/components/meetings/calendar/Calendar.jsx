@@ -4,19 +4,19 @@ import axios from 'axios'
 
 import moment from 'moment'
 import 'moment/locale/pl'
-import { AiOutlineArrowRight } from 'react-icons/ai'
 
-import Card from '../../layout/cards/Card'
-import Button from '../../layout/buttons/Button'
+import Card from '../../../layout/cards/Card'
+import ButtonContainer from '../../../layout/buttons/ButtonContainer'
+import Button from '../../../layout/buttons/Button'
+import BrickLoader from '../../../layout/loaders/BrickLoader'
+import Modal from '../../../layout/Modal'
+
 import {
 	Calendar as BigCalendar,
 	momentLocalizer,
 	Views,
 } from 'react-big-calendar'
-import BrickLoader from '../../layout/loaders/BrickLoader'
-import { UncontrolledTooltip } from 'reactstrap'
 import Toolbar from './Toolbar'
-import ButtonContainer from '../../layout/buttons/ButtonContainer'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -42,12 +42,15 @@ class Calendar extends Component {
 			ws: null,
 			loading: true,
 			data: [],
+			selected: {},
+			isModalOpen: false,
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
 		this.checkIsWebSocketClosed = this.checkIsWebSocketClosed.bind(this)
 		this.setData = this.setData.bind(this)
 		this.connectWebSocket = this.connectWebSocket.bind(this)
+		this.openModal = this.openModal.bind(this)
 	}
 
 	updateWindowDimensions = () =>
@@ -158,140 +161,139 @@ class Calendar extends Component {
 	}
 
 	componentWillUnmount() {
-		this.state.ws.close()
+		if (this.state.ws) this.state.ws.close()
 		window.removeEventListener('resize', this.updateWindowDimensions)
+	}
+
+	openModal = (selected) => {
+		if (this.props.isAdminPanel)
+			this.setState({
+				isModalOpen: true,
+				selected,
+			})
 	}
 
 	render() {
 		const { isAdminPanel } = this.props
-		const { windowWidth, loading, data } = this.state
+		const { windowWidth, loading, data, isModalOpen, selected } = this.state
 
 		if (loading) return <BrickLoader />
 
 		return (
-			<Card>
-				<Card.Body>
-					<div className="legend">
-						<div className="legend__item">
-							<span
-								style={{
-									width: '2rem',
-									height: '1rem',
-								}}
-								className="s-color"
-							></span>
-							<span>Obecna data</span>
-						</div>
-						<div className="legend__item">
-							<span
-								className="rbc-current-time-indicator"
-								style={{ width: '2rem' }}
-							></span>
-							<span>Obecny czas</span>
-						</div>
-						<div className="legend__item">
-							<span
-								className="rbc-event"
-								style={{ width: '2rem', height: '1rem' }}
-							></span>
-							<span>Umówiona wizyta</span>
-						</div>
-						<div className="legend__item">
-							<span
-								className="rbc-event-allday"
-								style={{ width: '2rem', height: '1rem' }}
-							></span>
-							<span>Nie pracuje</span>
-						</div>
-					</div>
-				</Card.Body>
-				<Card.Body>
-					<BigCalendar
-						localizer={localizer}
-						events={data}
-						step={30}
-						timeslots={1}
-						views={windowWidth >= 768 ? [Views.WEEK] : [Views.DAY]}
-						view={windowWidth >= 768 ? Views.WEEK : Views.DAY}
-						min={this.minDate}
-						max={this.maxDate}
-						dayLayoutAlgorithm="no-overlap"
-						slotPropGetter={(date) => ({
-							style: {
-								minHeight: isAdminPanel ? '60px' : 'auto',
-							},
-						})}
-						selected={{ selected: false }}
-						components={{
-							event: (component) => {
-								const { event } = component
+			<>
+				{isAdminPanel && isModalOpen && (
+					<Modal
+						isOpen={isModalOpen}
+						closeModal={() =>
+							this.setState({
+								isModalOpen: false,
+								selected: {},
+							})
+						}
+					>
+						<Modal.Header>
+							{selected.do_not_work ? (
+								<>
+									{moment(selected.start).format(
+										'DD/MM/YYYY'
+									)}{' '}
+									-{' '}
+									{moment(selected.end).format('DD/MM/YYYY')}
+								</>
+							) : (
+								<>
+									{moment(selected.start).format('H:mm')} -{' '}
+									{moment(selected.end).format('H:mm')}
+								</>
+							)}
+							<br />
+							{selected?.title}
+						</Modal.Header>
+						<Modal.Body>
+							<ButtonContainer>
+								<Button primary small>
+									Edytuj
+								</Button>
+								<Button danger small>
+									Usuń wizyte
+								</Button>
+							</ButtonContainer>
+						</Modal.Body>
+					</Modal>
+				)}
 
-								return (
-									<div className="calendar-event-tooltip">
-										{event?.title}
-
-										{!event.do_not_work && isAdminPanel && (
-											<>
-												<span
-													style={{
-														marginLeft: '10px',
-													}}
-												>
-													<AiOutlineArrowRight
-														id={event.id}
-													/>
-												</span>
-												<UncontrolledTooltip
-													placement="right"
-													autohide={false}
-													style={{ minWidth: 200 }}
-													target={CSS.escape(
-														event.id
-													)}
-													trigger="hover"
-												>
-													<Card>
-														<Card.Title>
-															{moment(
-																event.start
-															).format(
-																'H:mm'
-															)}{' '}
-															-
-															{moment(
-																event.end
-															).format('H:mm')}
-															<br />
-															{event?.title}
-														</Card.Title>
-														<Card.Body>
-															<ButtonContainer>
-																<Button
-																	primary
-																	small
-																>
-																	Edytuj
-																</Button>
-																<Button
-																	danger
-																	small
-																>
-																	Usuń wizyte
-																</Button>
-															</ButtonContainer>
-														</Card.Body>
-													</Card>
-												</UncontrolledTooltip>
-											</>
-										)}
-									</div>
-								)
-							},
-							toolbar: Toolbar,
-						}}
-					/>
-				</Card.Body>
-			</Card>
+				<Card>
+					<Card.Body>
+						<div className="legend">
+							<div className="legend__item">
+								<span
+									style={{
+										width: '2rem',
+										height: '1rem',
+									}}
+									className="s-color"
+								></span>
+								<span>Obecna data</span>
+							</div>
+							<div className="legend__item">
+								<span
+									className="rbc-current-time-indicator"
+									style={{ width: '2rem' }}
+								></span>
+								<span>Obecny czas</span>
+							</div>
+							<div className="legend__item">
+								<span
+									className="rbc-event"
+									style={{ width: '2rem', height: '1rem' }}
+								></span>
+								<span>Umówiona wizyta</span>
+							</div>
+							<div className="legend__item">
+								<span
+									className="rbc-event-allday"
+									style={{ width: '2rem', height: '1rem' }}
+								></span>
+								<span>Nie pracuje</span>
+							</div>
+						</div>
+					</Card.Body>
+					<Card.Body>
+						<BigCalendar
+							localizer={localizer}
+							events={data}
+							step={30}
+							timeslots={1}
+							views={
+								windowWidth >= 768 ? [Views.WEEK] : [Views.DAY]
+							}
+							view={windowWidth >= 768 ? Views.WEEK : Views.DAY}
+							min={this.minDate}
+							max={this.maxDate}
+							dayLayoutAlgorithm="no-overlap"
+							slotPropGetter={(date) => ({
+								style: {
+									minHeight: isAdminPanel ? '60px' : 'auto',
+								},
+							})}
+							selectable={isAdminPanel}
+							selected={isAdminPanel ? selected : {}}
+							eventPropGetter={(
+								event,
+								start,
+								end,
+								isSelected
+							) => ({
+								className: isAdminPanel ? 'selectable' : '',
+							})}
+							onSelectEvent={(event) => this.openModal(event)}
+							components={{
+								toolbar: Toolbar,
+							}}
+						/>
+					</Card.Body>
+				</Card>
+			</>
 		)
 	}
 }

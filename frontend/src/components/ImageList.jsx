@@ -20,7 +20,7 @@ function ImageList({ loading, images }) {
 				>
 					{zoom === image.id ? (
 						<span
-							className="btn-close"
+							className="btn-close rt-corner"
 							onClick={() => setZoom(null)}
 						></span>
 					) : null}
