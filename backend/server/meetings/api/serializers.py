@@ -10,11 +10,14 @@ class MeetingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Meeting
-        fields = ('start', 'end', 'do_not_work',)
+        fields = ('id', 'start', 'end', 'do_not_work',)
 
 class AdminMeetingSerializer(MeetingSerializer):
+    type = serializers.CharField(source='get_type_display')
+
     class Meta(MeetingSerializer.Meta):
         fields = (
+            'id',
             'start',
             'end',
             'type',

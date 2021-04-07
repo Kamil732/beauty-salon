@@ -4,6 +4,7 @@ from server.permissions import IsAdminOrReadOnly
 from meetings.models import Meeting
 from . import serializers
 
+# TODO: Delete old meetings after GET method
 class MeetingViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     queryset = Meeting.objects.order_by('-start')

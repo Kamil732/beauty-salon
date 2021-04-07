@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.contrib.admin import ModelAdmin
 from django.forms import ModelForm
 
@@ -31,3 +32,5 @@ class CustomerImageAdmin(ModelAdmin):
     list_display = ('title',)
     search_fields = ('title',)
     readonly_fields = ('id',)
+
+admin.site.unregister(Group)

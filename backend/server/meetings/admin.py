@@ -11,3 +11,5 @@ class MeetingAdmin(ModelAdmin):
     search_fields = ('type', 'customer_first_name', 'start', 'end',)
     list_editable = ('start', 'end',)
     readonly_fields = ('id',)
+
+admin.site.site_header = 'Panel Administracyjny'
