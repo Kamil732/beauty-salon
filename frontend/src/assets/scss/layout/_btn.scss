@@ -48,6 +48,20 @@
 		}
 	}
 
+	&__danger {
+		border-color: $error-color;
+		background-color: $error-color;
+		color: set-text-color($error-color);
+
+		&:hover {
+			$hover-color: darken($error-color, 15%);
+			border-color: $hover-color;
+			border-bottom-color: $error-color;
+			background-color: $hover-color;
+			color: set-text-color($hover-color);
+		}
+	}
+
 	&[disabled] {
 		opacity: 0.7;
 		cursor: default;

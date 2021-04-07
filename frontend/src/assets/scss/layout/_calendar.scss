@@ -35,14 +35,17 @@ $rbc-css-prefix: calendar;
 	align-items: center;
 	flex-direction: column;
 	margin-bottom: 1rem;
+	font-size: 1.4rem;
 }
 
 .rbc-event {
 	cursor: default;
 	text-align: center;
+	font-size: 0.9em;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-direction: column;
 
 	&-label {
 		text-align: center;
@@ -50,7 +53,8 @@ $rbc-css-prefix: calendar;
 	}
 
 	&-content {
-		display: none;
+		font-size: 0.9em;
+		width: 100%;
 	}
 }
 
@@ -62,10 +66,6 @@ $rbc-css-prefix: calendar;
 .rbc-calendar {
 	margin: 0 auto;
 	max-width: 100%;
-}
-
-.rbc-toolbar-label {
-	font-size: 1.4rem;
 }
 
 .rbc-current-time-indicator {

@@ -35,7 +35,11 @@ a {
 	}
 }
 
-.message {
+.tooltip {
+	z-index: 5;
+}
+
+.global-message {
 	background-color: $surface-color;
 	color: set-text-color($surface-color);
 	margin: 0 1.5rem;
