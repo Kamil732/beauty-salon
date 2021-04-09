@@ -1,8 +1,15 @@
+.form-group {
+	display: flex;
+	gap: 1rem;
+	width: 100%;
+}
+
 .form-control {
 	position: relative;
 	margin: 1rem 0;
+	width: 100%;
 
-	& > &__input {
+	&__input {
 		width: 100%;
 		border: none;
 		font-size: 1rem;
@@ -27,8 +34,9 @@
 		font-size: 1.1rem;
 		position: absolute;
 		transform-origin: top left;
-		transform: translate(0, 1rem) scale(1);
+		transform: translate(0, 1.2rem) scale(1);
 		transition: all 0.1s ease-in-out;
+		z-index: 0;
 
 		&.active {
 			transform: translate(0, -0.5rem) scale(0.75);
