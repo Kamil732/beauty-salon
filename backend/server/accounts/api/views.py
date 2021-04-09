@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, generics, status, viewsets
@@ -9,7 +10,7 @@ from django.contrib import auth
 from . import serializers
 from . import pagination
 from server.permissions import IsAdminOrReadOnly
-from accounts.models import CustomerImage
+from accounts.models import CustomerImage, Account
 
 
 class CurrentAccountAPIView(generics.RetrieveAPIView):
@@ -65,3 +66,20 @@ class CustomerImageViewSet(viewsets.ModelViewSet):
     queryset = CustomerImage.objects.order_by('-id')
     serializer_class = serializers.CustomerImageSerializer
     pagination_class = pagination.CustomerImagesPagination
+
+class ChoiceListAPIView(APIView):
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, *args, **kwargs):
+        search_field = request.query_params.get('search', '')
+
+        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(last_name__istartswith=search_field))[:10].values('slug', 'first_name', 'last_name')
+        res = [
+            {
+                'label': f"{account['first_name']} {account['last_name']}",
+                'value': account['slug'],
+            }
+            for account in accounts
+        ]
+
+        return Response(res)

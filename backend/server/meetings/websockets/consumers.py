@@ -8,7 +8,7 @@ from meetings.models import Meeting
 
 class MeetingConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = 'meeting'
+        self.room_group_name = 'meetings'
 
         # Join room group
         await self.channel_layer.group_add(
@@ -26,21 +26,22 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive(self, text_data):
         response = json.loads(text_data)
-        event = response.get('event', None)
-        meetings = response.get('meetings', [])
+        type = response.get('type')
+        payload = response.get('payload')
 
-        if event == 'CREATE_MEETING':
+        if type == 'DELETE_MEETING':
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
-                    'type': 'create_meeting',
-                    'message': message,
+                    'type': 'delete_meeting',
+                    'payload': payload,
                 }
             )
 
-    async def create_meeting(self, event):
+    async def delete_meeting(self, event):
 
         # Send message to WebSocket
-        await self.send_json({
-            'meetings': event['meetings'],
-        })
+        await self.send(text_data=json.dumps({
+            'type': 'DELETE_MEETING',
+            'payload': event['payload'],
+        }))

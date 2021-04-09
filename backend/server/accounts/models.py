@@ -2,6 +2,8 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+from autoslug import AutoSlugField
+
 class AccountManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, phone_number, password=None):
         if not email:
@@ -53,6 +55,7 @@ class Account(AbstractBaseUser):
     is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
     is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
     is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
+    slug = AutoSlugField(populate_from='first_name')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']

@@ -8,9 +8,10 @@ router.register('gallery', views.CustomerImageViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('csrf_cookie/', views.GetCSRFToken.as_view()),
-    path('register/', views.RegisterAPIView.as_view()),
-    path('login/', views.LoginAPIView.as_view()),
-    path('logout/', views.LogoutAPIView.as_view()),
-    path('current/', views.CurrentAccountAPIView.as_view()),
+    path('csrf_cookie/', views.GetCSRFToken.as_view(), name='set-csrf-cookie'),
+    path('register/', views.RegisterAPIView.as_view(), name='register'),
+    path('login/', views.LoginAPIView.as_view(), name='login'),
+    path('logout/', views.LogoutAPIView.as_view(), name='logout'),
+    path('current/', views.CurrentAccountAPIView.as_view(), name='current-account'),
+    path('choice-list/', views.ChoiceListAPIView.as_view(), name='choice-list'),
 ]
