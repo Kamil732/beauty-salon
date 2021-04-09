@@ -13,7 +13,7 @@ function Button(props) {
 					props.loading ? ' btn__loading' : ''
 				}${props.to ? ' btn__link' : ''}${
 					props.small ? ' btn__small' : ''
-				}`}
+				}${props.center ? ' center' : ''}`}
 				disabled={props.loading}
 				{...props}
 			>
@@ -32,7 +32,7 @@ function Button(props) {
 				props.loading ? ' btn__loading' : ''
 			}${props.to ? ' btn__link' : ''}${
 				props.small ? ' btn__small' : ''
-			}`}
+			}${props.center ? ' center' : ''}`}
 			disabled={props.loading}
 			{...props}
 		>

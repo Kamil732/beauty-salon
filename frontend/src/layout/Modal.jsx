@@ -2,25 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 function Modal(props) {
-	const closeModal = () => {
-		document.body.style.overflow = 'auto'
-
-		props.closeModal()
-	}
-
-	if (!props.isOpen) return <></>
-
-	document.body.style.overflow = 'hidden'
-
 	return (
 		<>
 			{props.isOpen && (
-				<div className="dark-bg" onClick={closeModal}></div>
+				<div className="dark-bg" onClick={props.closeModal}></div>
 			)}
-			<div className="modal" {...props}>
+			<div className={`modal${props.isOpen ? ' show' : ''}`} {...props}>
 				<span
 					className="btn-close rt-corner"
-					onClick={closeModal}
+					onClick={props.closeModal}
 				></span>
 				{props.children}
 			</div>

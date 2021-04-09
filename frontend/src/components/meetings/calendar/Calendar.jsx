@@ -10,6 +10,7 @@ import ButtonContainer from '../../../layout/buttons/ButtonContainer'
 import Button from '../../../layout/buttons/Button'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
 import Modal from '../../../layout/Modal'
+import { NotificationManager } from 'react-notifications'
 
 import {
 	Calendar as BigCalendar,
@@ -17,6 +18,8 @@ import {
 	Views,
 } from 'react-big-calendar'
 import Toolbar from './Toolbar'
+import AddMeetingForm from './AddMeetingForm'
+import { connect } from 'react-redux'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -24,6 +27,7 @@ const localizer = momentLocalizer(moment)
 class Calendar extends Component {
 	static propTypes = {
 		isAdminPanel: PropTypes.bool,
+		isAuthenticated: PropTypes.bool,
 	}
 
 	constructor(props) {
@@ -43,7 +47,6 @@ class Calendar extends Component {
 			loading: true,
 			data: [],
 			selected: {},
-			isModalOpen: false,
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
@@ -51,6 +54,16 @@ class Calendar extends Component {
 		this.setData = this.setData.bind(this)
 		this.connectWebSocket = this.connectWebSocket.bind(this)
 		this.openModal = this.openModal.bind(this)
+	}
+
+	openModal = (type, selected) => {
+		// if (this.props.isAuthenticated)
+		this.setState({
+			selected: {
+				type,
+				...selected,
+			},
+		})
 	}
 
 	updateWindowDimensions = () =>
@@ -83,6 +96,7 @@ class Calendar extends Component {
 		this.setState({
 			loading: false,
 			data,
+			selected: {},
 		})
 	}
 
@@ -108,10 +122,16 @@ class Calendar extends Component {
 		}
 
 		ws.onmessage = (e) => {
-			this.setState({ loading: true })
 			const data = JSON.parse(e.data)
+			NotificationManager.info('Zaktualizowano kalendarz', null, 5000)
+			console.debug('Websocket message received')
 
-			this.setData(data.meetings)
+			if (data.type === 'DELETE_MEETING')
+				this.setData(
+					this.state.data.filter(
+						(meeting) => meeting.id !== data.payload
+					)
+				)
 		}
 
 		ws.onclose = (e) => {
@@ -137,6 +157,11 @@ class Calendar extends Component {
 				'Socket encountered error: ',
 				err.message,
 				'Closing socket'
+			)
+			NotificationManager.error(
+				'Nie można połączyć się z kalendarzem',
+				'Błąd',
+				5000
 			)
 
 			ws.close()
@@ -165,62 +190,68 @@ class Calendar extends Component {
 		window.removeEventListener('resize', this.updateWindowDimensions)
 	}
 
-	openModal = (selected) => {
-		if (this.props.isAdminPanel)
-			this.setState({
-				isModalOpen: true,
-				selected,
+	deleteMeeting = () => {
+		const { selected } = this.state
+
+		this.state.ws.send(
+			JSON.stringify({
+				type: 'DELETE_MEETING',
+				payload: selected.id,
 			})
+		)
 	}
 
 	render() {
 		const { isAdminPanel } = this.props
-		const { windowWidth, loading, data, isModalOpen, selected } = this.state
+		const { windowWidth, loading, data, selected } = this.state
 
 		if (loading) return <BrickLoader />
 
 		return (
 			<>
-				{isAdminPanel && isModalOpen && (
-					<Modal
-						isOpen={isModalOpen}
-						closeModal={() =>
-							this.setState({
-								isModalOpen: false,
-								selected: {},
-							})
-						}
-					>
-						<Modal.Header>
-							{selected.do_not_work ? (
-								<>
-									{moment(selected.start).format(
-										'DD/MM/YYYY'
-									)}{' '}
-									-{' '}
-									{moment(selected.end).format('DD/MM/YYYY')}
-								</>
-							) : (
-								<>
-									{moment(selected.start).format('H:mm')} -{' '}
-									{moment(selected.end).format('H:mm')}
-								</>
-							)}
-							<br />
-							{selected?.title}
-						</Modal.Header>
-						<Modal.Body>
+				<Modal
+					isOpen={Object.keys(selected).length > 0}
+					closeModal={() => this.setState({ selected: {} })}
+				>
+					<Modal.Header>
+						{selected.do_not_work ? (
+							<>
+								{moment(selected.start).format('DD/MM/YYYY')} -{' '}
+								{moment(selected.end).format('DD/MM/YYYY')}
+							</>
+						) : (
+							<>
+								{moment(selected.start).format('DD/H:mm')} -{' '}
+								{moment(selected.end).format('DD/H:mm')}
+							</>
+						)}
+						<br />
+						{selected?.title}
+					</Modal.Header>
+					<Modal.Body>
+						{selected.type === 'event' ? (
 							<ButtonContainer>
 								<Button primary small>
 									Edytuj
 								</Button>
-								<Button danger small>
-									Usuń wizyte
+								<Button
+									danger
+									small
+									onClick={this.deleteMeeting}
+								>
+									Usuń{' '}
+									{selected.do_not_work
+										? 'wolne od pracy'
+										: 'wizytę'}
 								</Button>
 							</ButtonContainer>
-						</Modal.Body>
-					</Modal>
-				)}
+						) : (
+							<>
+								<AddMeetingForm />
+							</>
+						)}
+					</Modal.Body>
+				</Modal>
 
 				<Card>
 					<Card.Body>
@@ -276,8 +307,8 @@ class Calendar extends Component {
 									minHeight: isAdminPanel ? '60px' : 'auto',
 								},
 							})}
-							selectable={isAdminPanel}
-							selected={isAdminPanel ? selected : {}}
+							selectable={true}
+							selected={selected}
 							eventPropGetter={(
 								event,
 								start,
@@ -286,7 +317,13 @@ class Calendar extends Component {
 							) => ({
 								className: isAdminPanel ? 'selectable' : '',
 							})}
-							onSelectEvent={(event) => this.openModal(event)}
+							onSelectSlot={(slot) => {
+								if (slot.action === 'click')
+									this.openModal('slot', slot)
+							}}
+							onSelectEvent={(event) => {
+								if (isAdminPanel) this.openModal('event', event)
+							}}
 							components={{
 								toolbar: Toolbar,
 							}}
@@ -298,4 +335,8 @@ class Calendar extends Component {
 	}
 }
 
-export default Calendar
+const mapStateToProps = (state) => ({
+	isAuthenticated: state.auth.isAuthenticated,
+})
+
+export default connect(mapStateToProps, null)(Calendar)
