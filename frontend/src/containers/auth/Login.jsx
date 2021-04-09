@@ -69,7 +69,10 @@ class Login extends Component {
 									<CSRFToken />
 
 									<FormControl>
-										<FormControl.Label htmlFor="email">
+										<FormControl.Label
+											htmlFor="email"
+											inputValue={email}
+										>
 											Email:
 										</FormControl.Label>
 										<FormControl.Input
@@ -82,7 +85,10 @@ class Login extends Component {
 										/>
 									</FormControl>
 									<FormControl>
-										<FormControl.Label htmlFor="password">
+										<FormControl.Label
+											htmlFor="password"
+											inputValue={password}
+										>
 											Hasło:
 										</FormControl.Label>
 										<FormControl.Input

@@ -32,7 +32,13 @@ function Input(props) {
 	)
 }
 
-function InputSelect({ children, options, selectprops, theme, ...props }) {
+function SelectSearchInput({
+	children,
+	options,
+	selectprops,
+	theme,
+	...props
+}) {
 	const { getValue, hasValue } = props
 	const value = getValue()
 
@@ -47,94 +53,91 @@ function InputSelect({ children, options, selectprops, theme, ...props }) {
 	)
 }
 
+function SelectSingleValue({ children, id, ...props2 }) {
+	return (
+		<components.SingleValue {...props2}>
+			<div id={id}>{children}</div>
+		</components.SingleValue>
+	)
+}
+
 function ChoiceField(props) {
-	const getValue = () => {
-		if (!props.value) return props.value
+	const onChange = (opt) => props.onChange(opt?.label || '', opt?.value || '')
 
-		// If value is represented in the current options, just return that option.
-		const currentOption = props.choices.find(
-			(option) => option.value === props.value
-		)
-		if (currentOption) return currentOption
-
-		// If value is truthy but not contained in the options, it must be new.
-		return {
-			value: props.value,
-			label: props.value,
-		}
+	const styles = {
+		container: () => ({}),
+		control: () => ({}),
+		valueContainer: () => ({}),
+		indicatorSeparator: () => ({}),
+		indicatorsContainer: () => ({
+			position: 'absolute',
+			top: '0.7rem',
+			right: '0',
+		}),
 	}
+
+	const components = {
+		IndicatorSeparator: () => <></>,
+		DropdownIndicator: () => <></>,
+		Input: SelectSearchInput,
+		SingleValue: (provided) => (
+			<SelectSingleValue {...provided} id={props.id} />
+		),
+	}
+
+	const loadingMessage = () => 'Ładowanie...'
+
+	const noOptionsMessage = () => 'Nic nie znaleziono'
 
 	if (props.searchAsync)
 		return (
-			<AsyncSelect
-				loadOptions={props.choices}
-				defaultOptions
-				cacheOptions
-				loadingMessage={() => 'Ładowanie...'}
-				noOptionsMessage={() => 'Nic nie znaleziono'}
-				components={{
-					IndicatorSeparator: () => <></>,
-					DropdownIndicator: () => <></>,
-					Input: InputSelect,
-					SingleValue: ({ children, ...props2 }) => {
-						return (
-							<components.SingleValue {...props2}>
-								<div id={props.id}>{children}</div>
-							</components.SingleValue>
-						)
-					},
-				}}
-				styles={{
-					container: () => ({}),
-					control: () => ({}),
-					valueContainer: () => ({}),
-					indicatorSeparator: () => ({}),
-					indicatorsContainer: () => ({
-						position: 'absolute',
-						top: '0.7rem',
-						right: '0',
-					}),
-				}}
-				placeholder=""
-				onChange={(opt) =>
-					props.onChange(opt?.label || '', opt?.value || '')
-				}
-				isClearable
-			/>
+			<>
+				<AsyncSelect
+					defaultOptions
+					cacheOptions
+					loadOptions={props.choices}
+					loadingMessage={loadingMessage}
+					noOptionsMessage={noOptionsMessage}
+					components={components}
+					styles={styles}
+					placeholder=""
+					onChange={onChange}
+					isClearable
+				/>
+				{props.required && (
+					<input
+						tabIndex={-1}
+						autoComplete="off"
+						style={{ opacity: 0, height: 0 }}
+						value={props.value}
+						required
+					/>
+				)}
+			</>
 		)
 
 	return (
-		<Select
-			options={props.choices}
-			components={{
-				IndicatorSeparator: () => <></>,
-				DropdownIndicator: () => <></>,
-				Input: InputSelect,
-				SingleValue: ({ children, ...props2 }) => {
-					return (
-						<components.SingleValue {...props2}>
-							<div id={props.id}>{children}</div>
-						</components.SingleValue>
-					)
-				},
-			}}
-			styles={{
-				container: () => ({}),
-				control: () => ({}),
-				valueContainer: () => ({}),
-				indicatorSeparator: () => ({}),
-				indicatorsContainer: () => ({
-					position: 'absolute',
-					top: '0.7rem',
-					right: '0',
-				}),
-			}}
-			placeholder=""
-			onChange={(opt) =>
-				props.onChange(opt?.label || '', opt?.value || '')
-			}
-			isClearable
-		/>
+		<>
+			<Select
+				options={props.choices}
+				loadingMessage={loadingMessage}
+				noOptionsMessage={noOptionsMessage}
+				components={components}
+				styles={styles}
+				placeholder=""
+				onChange={onChange}
+				isClearable
+			/>
+			{props.required && (
+				<input
+					tabIndex={-1}
+					autoComplete="off"
+					style={{ opacity: 0, height: 0 }}
+					value={props.value}
+					required
+				/>
+			)}
+		</>
 	)
 }
 
