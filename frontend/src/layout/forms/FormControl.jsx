@@ -7,12 +7,10 @@ function FormControl({ children }) {
 	return <div className="form-control">{children}</div>
 }
 
-function Label(props) {
+function Label({ inputValue, ...props }) {
 	return (
 		<label
-			className={`form-control__label${
-				props.inputValue ? ' active' : ''
-			}`}
+			className={`form-control__label${inputValue ? ' active' : ''}`}
 			{...props}
 		/>
 	)
@@ -32,47 +30,63 @@ function Input(props) {
 	)
 }
 
-function SelectSearchInput({
-	children,
-	options,
-	selectprops,
-	theme,
-	...props
-}) {
-	const { getValue, hasValue } = props
-	const value = getValue()
+function SelectSearchInput({ children, getValue, hasValue, ...props }) {
+	const values = getValue()
 
-	if (!hasValue) return <input className="form-control__input" {...props} />
-
+	// if (!hasValue)
 	return (
 		<input
 			className="form-control__input"
-			value={value[0] ? value[0].label : props.value}
+			// value={values[0] ? values[0].label : ''}
 			{...props}
-		/>
+		>
+			{children}
+		</input>
 	)
+
+	// return (
+	// 	<components.Input
+	// 		className="form-control__input"
+	// 		// value={values[0] ? values[0].label : ''}
+	// 		getValue={getValue}
+	// 		hasValue={hasValue}
+	// 		{...props}
+	// 	>
+	// 		{children}
+	// 	</components.Input>
+	// )
 }
 
-function SelectSingleValue({ children, id, ...props2 }) {
+function SelectSingleValue({ children, id, ...props }) {
 	return (
-		<components.SingleValue {...props2}>
-			<div id={id}>{children}</div>
+		<components.SingleValue {...props}>
+			{id ? <div id={id}>{children}</div> : <div>{children}</div>}
 		</components.SingleValue>
 	)
 }
 
-function ChoiceField(props) {
-	const onChange = (opt) => props.onChange(opt?.label || '', opt?.value || '')
+function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
+	const handleOnChange = (opt) => onChange(opt?.label || '', opt?.value || '')
 
 	const styles = {
 		container: () => ({}),
-		control: () => ({}),
-		valueContainer: () => ({}),
+		control: (_, state) => ({
+			display: state.hasValue ? 'flex' : 'block',
+			justifyContent: 'start-flex',
+			alignItems: 'center',
+			position: 'relative',
+		}),
 		indicatorSeparator: () => ({}),
 		indicatorsContainer: () => ({
-			position: 'absolute',
-			top: '0.7rem',
-			right: '0',
+			zIndex: 2,
+			flex: 0,
+		}),
+		valueContainer: (provided, _) => ({
+			...provided,
+		}),
+		menu: (provided, _) => ({
+			...provided,
+			zIndex: 3,
 		}),
 	}
 
@@ -80,37 +94,37 @@ function ChoiceField(props) {
 		IndicatorSeparator: () => <></>,
 		DropdownIndicator: () => <></>,
 		Input: SelectSearchInput,
-		SingleValue: (provided) => (
-			<SelectSingleValue {...provided} id={props.id} />
-		),
+		SingleValue: (provided) => <SelectSingleValue {...provided} id={id} />,
 	}
 
 	const loadingMessage = () => 'Ładowanie...'
 
 	const noOptionsMessage = () => 'Nic nie znaleziono'
 
-	if (props.searchAsync)
+	if (searchAsync)
 		return (
 			<>
 				<AsyncSelect
 					defaultOptions
 					cacheOptions
-					loadOptions={props.choices}
+					loadOptions={choices}
 					loadingMessage={loadingMessage}
 					noOptionsMessage={noOptionsMessage}
 					components={components}
 					styles={styles}
 					placeholder=""
-					onChange={onChange}
+					onChange={handleOnChange}
 					isClearable
+					hideSelectedOptions
 				/>
 				{props.required && (
 					<input
 						tabIndex={-1}
 						autoComplete="off"
 						style={{ opacity: 0, height: 0 }}
-						value={props.value}
+						value={value}
 						required
+						readOnly
 					/>
 				)}
 			</>
@@ -119,22 +133,23 @@ function ChoiceField(props) {
 	return (
 		<>
 			<Select
-				options={props.choices}
-				loadingMessage={loadingMessage}
+				options={choices}
 				noOptionsMessage={noOptionsMessage}
 				components={components}
 				styles={styles}
 				placeholder=""
-				onChange={onChange}
+				onChange={handleOnChange}
 				isClearable
+				hideSelectedOptions
 			/>
 			{props.required && (
 				<input
 					tabIndex={-1}
 					autoComplete="off"
 					style={{ opacity: 0, height: 0 }}
-					value={props.value}
+					value={value}
 					required
+					readOnly
 				/>
 			)}
 		</>
@@ -150,6 +165,8 @@ ChoiceField.prototype.propTypes = {
 			value: PropTypes.string.isRequired,
 		}).isRequired
 	).isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	onChange: PropTypes.func.isRequired,
 }
 
 FormControl.Label = Label

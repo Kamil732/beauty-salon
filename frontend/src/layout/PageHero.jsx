@@ -1,57 +1,41 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function PageHero(props) {
+function PageHero({ children, ...props }) {
 	return (
 		<div className="page-hero" {...props}>
-			{props.children}
+			{children}
 		</div>
 	)
 }
 
-function Body(props) {
+function Body({ children, vertical, ...props }) {
 	return (
 		<div
-			className={`page-hero__body${props.vertical ? ' vertical' : ''}`}
+			className={`page-hero__body${vertical ? ' vertical' : ''}`}
 			{...props}
 		>
-			{props.children}
+			{children}
 		</div>
 	)
 }
 
-function Content(props) {
+Body.prototype.propTypes = {
+	vertical: PropTypes.bool,
+}
+
+function Content({ children, ...props }) {
 	return (
 		<div className="page-hero__content" {...props}>
-			{props.children}
+			{children}
 		</div>
 	)
 }
 
-function Img(props) {
+function Img({ src, alt, ...props }) {
 	return (
 		<div className="page-hero__img-container">
-			<img
-				src={props.src}
-				alt={props.alt ? props.alt : ''}
-				className="page-hero__img"
-			/>
-			{props.children}
-		</div>
-	)
-}
-
-function Title(props) {
-	return (
-		<div className="page-hero__title" {...props}>
-			{props.children}
-		</div>
-	)
-}
-
-function Text(props) {
-	return (
-		<div className="page-hero__text" {...props}>
+			<img src={src} alt={alt ? alt : ''} className="page-hero__img" />
 			{props.children}
 		</div>
 	)
@@ -60,6 +44,22 @@ function Text(props) {
 Img.prototype.propTypes = {
 	src: PropTypes.string.isRequired,
 	alt: PropTypes.string,
+}
+
+function Title({ children, ...props }) {
+	return (
+		<div className="page-hero__title" {...props}>
+			{children}
+		</div>
+	)
+}
+
+function Text({ children, ...props }) {
+	return (
+		<div className="page-hero__text" {...props}>
+			{children}
+		</div>
+	)
 }
 
 PageHero.Body = Body

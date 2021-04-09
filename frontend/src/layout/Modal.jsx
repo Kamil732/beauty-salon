@@ -1,18 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function Modal(props) {
+function Modal({ children, isOpen, closeModal, ...props }) {
 	return (
 		<>
-			{props.isOpen && (
-				<div className="dark-bg" onClick={props.closeModal}></div>
-			)}
-			<div className={`modal${props.isOpen ? ' show' : ''}`} {...props}>
+			{isOpen && <div className="dark-bg" onClick={closeModal}></div>}
+			<div className={`modal${isOpen ? ' show' : ''}`} {...props}>
 				<span
 					className="btn-close rt-corner"
-					onClick={props.closeModal}
+					onClick={closeModal}
 				></span>
-				{props.children}
+				{children}
 			</div>
 		</>
 	)
