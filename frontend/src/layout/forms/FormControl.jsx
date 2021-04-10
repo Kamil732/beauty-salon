@@ -30,31 +30,36 @@ function Input(props) {
 	)
 }
 
-function SelectSearchInput({ children, getValue, hasValue, ...props }) {
-	const values = getValue()
+function SelectSearchInput({
+	children,
+	cx,
+	isHidden,
+	isDisabled,
+	innerRef,
 
-	// if (!hasValue)
+	clearValue,
+	getStyles,
+	getValue,
+	hasValue,
+	isMulti,
+	isRtl,
+	options,
+	selectOption,
+	setValue,
+	selectProps,
+	...props
+}) {
 	return (
 		<input
 			className="form-control__input"
-			// value={values[0] ? values[0].label : ''}
+			hidden={isHidden}
+			disabled={isDisabled}
+			ref={innerRef}
 			{...props}
 		>
 			{children}
 		</input>
 	)
-
-	// return (
-	// 	<components.Input
-	// 		className="form-control__input"
-	// 		// value={values[0] ? values[0].label : ''}
-	// 		getValue={getValue}
-	// 		hasValue={hasValue}
-	// 		{...props}
-	// 	>
-	// 		{children}
-	// 	</components.Input>
-	// )
 }
 
 function SelectSingleValue({ children, id, ...props }) {
@@ -83,6 +88,7 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 		}),
 		valueContainer: (provided, _) => ({
 			...provided,
+			padding: 0,
 		}),
 		menu: (provided, _) => ({
 			...provided,
