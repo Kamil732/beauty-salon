@@ -47,16 +47,11 @@ function SelectSearchInput({
 	selectOption,
 	setValue,
 	selectProps,
+	theme,
 	...props
 }) {
 	return (
-		<input
-			className="form-control__input"
-			hidden={isHidden}
-			disabled={isDisabled}
-			ref={innerRef}
-			{...props}
-		>
+		<input className="form-control__input" {...props}>
 			{children}
 		</input>
 	)
@@ -79,7 +74,6 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 			display: state.hasValue ? 'flex' : 'block',
 			justifyContent: 'start-flex',
 			alignItems: 'center',
-			position: 'relative',
 		}),
 		indicatorSeparator: () => ({}),
 		indicatorsContainer: () => ({
@@ -130,7 +124,6 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 						style={{ opacity: 0, height: 0 }}
 						value={value}
 						required
-						readOnly
 					/>
 				)}
 			</>
@@ -155,7 +148,6 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 					style={{ opacity: 0, height: 0 }}
 					value={value}
 					required
-					readOnly
 				/>
 			)}
 		</>
