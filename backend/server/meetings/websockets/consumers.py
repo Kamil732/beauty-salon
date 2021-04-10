@@ -2,9 +2,13 @@ import datetime
 import json
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.db import database_sync_to_async
 
 from meetings.api.serializers import MeetingSerializer
 from meetings.models import Meeting
+from meetings.api.serializers import MeetingSerializer
+
+from accounts.models import Account
 
 class MeetingConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
@@ -24,24 +28,49 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
+    @database_sync_to_async
+    def delete_meeting(self, id):
+        Meeting.objects.get(id=id).delete()
+
+    @database_sync_to_async
+    def create_meeting(self, payload):
+        start = payload['start']
+        end = payload['end']
+        customer = Account.objects.get(slug=payload['customer']) if payload['customer'] else None
+        customer_first_name = payload['customer_first_name']
+        type = payload['type']
+
+        meeting = Meeting.objects.create(
+            start=start,
+            end=end,
+            customer=customer,
+            customer_first_name=customer_first_name,
+            type=type
+        )
+
+        return MeetingSerializer(meeting).data
+
     async def receive(self, text_data):
         response = json.loads(text_data)
-        type = response.get('type')
+        event = response.get('event')
         payload = response.get('payload')
 
-        if type == 'DELETE_MEETING':
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'delete_meeting',
-                    'payload': payload,
-                }
-            )
+        if event == 'DELETE_MEETING':
+            await self.delete_meeting(payload)
+        elif event == 'ADD_MEETING':
+            await self.create_meeting(payload)
 
-    async def delete_meeting(self, event):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'send_meeting',
+                'event': event,
+                'payload': payload,
+            }
+        )
 
-        # Send message to WebSocket
+    async def send_meeting(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'DELETE_MEETING',
+            'event': event['event'],
             'payload': event['payload'],
         }))
