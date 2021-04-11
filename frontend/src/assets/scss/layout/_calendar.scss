@@ -57,6 +57,7 @@ $rbc-css-prefix: calendar;
 	&-content {
 		font-size: 0.9em;
 		width: 100%;
+		flex: 0 1;
 	}
 
 	&.selectable {
@@ -99,7 +100,7 @@ $rbc-css-prefix: calendar;
 	}
 
 	&.disabled {
-		background-color: rgba($error-color, 0.15);
+		background-color: rgba($error-color, 0.2s);
 		cursor: not-allowed;
 		pointer-events: none;
 	}
@@ -112,10 +113,6 @@ $rbc-css-prefix: calendar;
 
 .rbc-current-time-indicator {
 	height: 2px;
-}
-
-.rbc-slot-selection {
-	display: none;
 }
 
 @include media-tablet {

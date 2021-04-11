@@ -70,7 +70,7 @@ class AddMeetingForm extends Component {
 							onChange={(label, value) => {
 								this.setState({
 									customer: value,
-									customer_first_name: label,
+									customer_first_name: label.split(' ')[0],
 								})
 							}}
 							searchAsync
@@ -94,7 +94,8 @@ class AddMeetingForm extends Component {
 								if (!customer) this.onChange(e)
 							}}
 							value={customer_first_name}
-							min="3"
+							minLength="3"
+							maxLength="20"
 						/>
 					</FormControl>
 				</FormGroup>

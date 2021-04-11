@@ -20,6 +20,7 @@ import {
 import Toolbar from './Toolbar'
 import AddMeetingForm from './AddMeetingForm'
 import { connect } from 'react-redux'
+import Legend from './Legend'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -78,11 +79,6 @@ class Calendar extends Component {
 
 	openModal = (type, selected) => {
 		// if (this.props.isAuthenticated)
-
-		console.log(selected)
-		if (!selected.do_not_work)
-			selected.end = moment(selected.start).add(30, 'minutes').toDate()
-
 		this.setState({
 			selected: {
 				selected_type: type,
@@ -98,8 +94,6 @@ class Calendar extends Component {
 	}
 
 	setData = (data) => {
-		const { isAdminPanel } = this.props
-
 		for (let i = 0; i < data.length; i++) {
 			data[i].start = moment.utc(data[i].start).toDate()
 			data[i].end = moment.utc(data[i].end).toDate()
@@ -263,8 +257,6 @@ class Calendar extends Component {
 
 		let isDisabled = false
 		const weekDay = moment(date).format('dddd')
-		// let start = new Date()
-		// let end = new Date()
 		let start, end
 
 		if (weekDay === 'poniedziałek') {
@@ -404,43 +396,7 @@ class Calendar extends Component {
 
 				<Card>
 					<Card.Body>
-						<div className="legend">
-							<div className="legend__item">
-								<span
-									style={{
-										width: '2rem',
-										height: '1rem',
-									}}
-									className="s-color"
-								></span>
-								<span>Obecna data</span>
-							</div>
-							<div className="legend__item">
-								<span
-									className="rbc-current-time-indicator"
-									style={{ width: '2rem' }}
-								></span>
-								<span>Obecny czas</span>
-							</div>
-							<div className="legend__item">
-								<span
-									className="rbc-event"
-									style={{ width: '2rem', height: '1rem' }}
-								></span>
-								<span>Umówiona wizyta</span>
-							</div>
-							<div className="legend__item">
-								<span
-									className="rbc-event-allday"
-									style={{
-										width: '2rem',
-										height: '1rem',
-										borderRadius: '8px',
-									}}
-								></span>
-								<span>Nie pracuje</span>
-							</div>
-						</div>
+						<Legend />
 					</Card.Body>
 					<Card.Body>
 						<BigCalendar
@@ -461,9 +417,12 @@ class Calendar extends Component {
 							eventPropGetter={() => ({
 								className: isAdminPanel ? 'selectable' : '',
 							})}
-							onSelectSlot={(slot) =>
+							onSelecting={() => false}
+							longPressThreshold={10}
+							onSelectSlot={(slot) => {
+								console.log(slot)
 								this.openModal('slot', slot)
-							}
+							}}
 							onSelectEvent={(event) => {
 								if (isAdminPanel) this.openModal('event', event)
 							}}
