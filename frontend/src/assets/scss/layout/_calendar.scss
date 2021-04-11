@@ -74,7 +74,7 @@ $rbc-css-prefix: calendar;
 	color: set-text-color($error-color);
 
 	&.rbc-selected {
-		cursor: default !important;
+		cursor: default;
 		background-color: darken($error-color, 20%);
 		color: set-text-color(darken($error-color, 20%));
 	}
@@ -99,7 +99,7 @@ $rbc-css-prefix: calendar;
 	}
 
 	&.disabled {
-		background-color: $error-color;
+		background-color: rgba($error-color, 0.15);
 		cursor: not-allowed;
 		pointer-events: none;
 	}

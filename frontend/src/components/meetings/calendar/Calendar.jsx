@@ -52,7 +52,7 @@ class Calendar extends Component {
 		this.minDate.setHours(8, 0)
 
 		this.maxDate = new Date()
-		this.maxDate.setHours(20, 0)
+		this.maxDate.setHours(22, 30)
 
 		this.timeout = 250
 
@@ -104,7 +104,7 @@ class Calendar extends Component {
 			data[i].start = moment.utc(data[i].start).toDate()
 			data[i].end = moment.utc(data[i].end).toDate()
 
-			if (isAdminPanel)
+			if (data[i].customer_first_name)
 				data[
 					i
 				].title = `${data[i].customer_first_name}, ${data[i].type}`
@@ -241,7 +241,7 @@ class Calendar extends Component {
 		this.setState({ selected: {} })
 	}
 
-	render() {
+	slotPropGetter = (date) => {
 		const {
 			isAdminPanel,
 
@@ -260,6 +260,100 @@ class Calendar extends Component {
 			start_work_sunday,
 			end_work_sunday,
 		} = this.props
+
+		let isDisabled = false
+		const weekDay = moment(date).format('dddd')
+		// let start = new Date()
+		// let end = new Date()
+		let start, end
+
+		if (weekDay === 'poniedziałek') {
+			if (!start_work_monday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_monday.split(':')[0]) * 60 +
+					parseInt(start_work_monday.split(':')[1])
+				end =
+					parseInt(end_work_monday.split(':')[0]) * 60 +
+					parseInt(end_work_monday.split(':')[1])
+			}
+		} else if (weekDay === 'wtorek') {
+			if (!start_work_tuesday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_tuesday.split(':')[0]) * 60 +
+					parseInt(start_work_tuesday.split(':')[1])
+				end =
+					parseInt(end_work_tuesday.split(':')[0]) * 60 +
+					parseInt(end_work_tuesday.split(':')[1])
+			}
+		} else if (weekDay === 'środa') {
+			if (!start_work_wednesday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_wednesday.split(':')[0]) * 60 +
+					parseInt(start_work_wednesday.split(':')[1])
+				end =
+					parseInt(end_work_wednesday.split(':')[0]) * 60 +
+					parseInt(end_work_wednesday.split(':')[1])
+			}
+		} else if (weekDay === 'czwartek') {
+			if (!start_work_thursday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_thursday.split(':')[0]) * 60 +
+					parseInt(start_work_thursday.split(':')[1])
+				end =
+					parseInt(end_work_thursday.split(':')[0]) * 60 +
+					parseInt(end_work_thursday.split(':')[1])
+			}
+		} else if (weekDay === 'piątek') {
+			if (!start_work_friday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_friday.split(':')[0]) * 60 +
+					parseInt(start_work_friday.split(':')[1])
+				end =
+					parseInt(end_work_friday.split(':')[0]) * 60 +
+					parseInt(end_work_friday.split(':')[1])
+			}
+		} else if (weekDay === 'sobota') {
+			if (!start_work_saturday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_saturday.split(':')[0]) * 60 +
+					parseInt(start_work_saturday.split(':')[1])
+				end =
+					parseInt(end_work_saturday.split(':')[0]) * 60 +
+					parseInt(end_work_saturday.split(':')[1])
+			}
+		} else if (weekDay === 'niedziela') {
+			if (!start_work_sunday) isDisabled = true
+			else {
+				start =
+					parseInt(start_work_sunday.split(':')[0]) * 60 +
+					parseInt(start_work_sunday.split(':')[1])
+				end =
+					parseInt(end_work_sunday.split(':')[0]) * 60 +
+					parseInt(end_work_sunday.split(':')[1])
+			}
+		}
+
+		if (!isDisabled) {
+			date = date.getHours() * 60 + date.getMinutes()
+			isDisabled = date < start || date > end
+		}
+
+		return {
+			className: isDisabled ? 'disabled' : '',
+			style: {
+				minHeight: isAdminPanel ? '60px' : 'auto',
+			},
+		}
+	}
+
+	render() {
+		const { isAdminPanel } = this.props
 		const { windowWidth, loading, data, selected } = this.state
 
 		if (loading) return <BrickLoader />
@@ -361,149 +455,7 @@ class Calendar extends Component {
 							min={this.minDate}
 							max={this.maxDate}
 							dayLayoutAlgorithm="no-overlap"
-							slotPropGetter={(date) => {
-								let isDisabled = false
-
-								const weekDay = moment(date).format('dddd')
-								const currentDay = date.getDay()
-								let start = new Date()
-								let end = new Date()
-
-								if (weekDay === 'poniedziałek') {
-									if (!start_work_monday) isDisabled = true
-									else {
-										const distance = 1 - currentDay
-
-										start.setHours(
-											start_work_monday.split(':')[0],
-											start_work_monday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_monday.split(':')[0],
-											end_work_monday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								} else if (weekDay === 'wtorek') {
-									if (!start_work_tuesday) isDisabled = true
-									else {
-										const distance = 2 - currentDay
-
-										start.setHours(
-											start_work_tuesday.split(':')[0],
-											start_work_tuesday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_tuesday.split(':')[0],
-											end_work_tuesday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								} else if (weekDay === 'środa') {
-									if (!start_work_wednesday) isDisabled = true
-									else {
-										const distance = 3 - currentDay
-
-										start.setHours(
-											start_work_wednesday.split(':')[0],
-											start_work_wednesday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_wednesday.split(':')[0],
-											end_work_wednesday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								} else if (weekDay === 'czwartek') {
-									if (!start_work_thursday) isDisabled = true
-									else {
-										const distance = 4 - currentDay
-
-										start.setHours(
-											start_work_thursday.split(':')[0],
-											start_work_thursday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_thursday.split(':')[0],
-											end_work_thursday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								} else if (weekDay === 'piątek') {
-									if (!start_work_friday) isDisabled = true
-									else {
-										const distance = 5 - currentDay
-
-										start.setHours(
-											start_work_friday.split(':')[0],
-											start_work_friday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_friday.split(':')[0],
-											end_work_friday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								} else if (weekDay === 'sobota') {
-									if (!start_work_saturday) isDisabled = true
-									else {
-										const distance = 6 - currentDay
-
-										start.setHours(
-											start_work_saturday.split(':')[0],
-											start_work_saturday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_saturday.split(':')[0],
-											end_work_saturday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								} else if (weekDay === 'niedziela') {
-									if (!start_work_sunday) isDisabled = true
-									else {
-										const distance = 0 - currentDay
-
-										start.setHours(
-											start_work_sunday.split(':')[0],
-											start_work_sunday.split(':')[1]
-										)
-										start.setDate(date.getDate() + distance)
-										end.setHours(
-											end_work_sunday.split(':')[0],
-											end_work_sunday.split(':')[1]
-										)
-
-										end.setDate(date.getDate() + distance)
-									}
-								}
-
-								isDisabled =
-									moment(date, 'H:mm') <
-										moment(start, 'H:mm') ||
-									moment(date, 'H:mm') > moment(end, 'H:mm')
-
-								return {
-									className: isDisabled ? 'disabled' : '',
-									style: {
-										minHeight: isAdminPanel
-											? '60px'
-											: 'auto',
-									},
-								}
-							}}
+							slotPropGetter={this.slotPropGetter}
 							selectable={true}
 							selected={selected}
 							eventPropGetter={() => ({
