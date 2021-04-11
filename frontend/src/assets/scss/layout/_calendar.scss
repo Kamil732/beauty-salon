@@ -97,6 +97,12 @@ $rbc-css-prefix: calendar;
 	&:hover {
 		background-color: #ccc;
 	}
+
+	&.disabled {
+		background-color: $error-color;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
 }
 
 .rbc-calendar {

@@ -28,6 +28,21 @@ class Calendar extends Component {
 	static propTypes = {
 		isAdminPanel: PropTypes.bool,
 		isAuthenticated: PropTypes.bool,
+
+		end_work_sunday: PropTypes.string,
+		start_work_sunday: PropTypes.string,
+		end_work_saturday: PropTypes.string,
+		start_work_saturday: PropTypes.string,
+		end_work_friday: PropTypes.string,
+		start_work_friday: PropTypes.string,
+		end_work_thursday: PropTypes.string,
+		start_work_thursday: PropTypes.string,
+		end_work_wednesday: PropTypes.string,
+		start_work_wednesday: PropTypes.string,
+		end_work_tuesday: PropTypes.string,
+		start_work_tuesday: PropTypes.string,
+		end_work_monday: PropTypes.string,
+		start_work_monday: PropTypes.string,
 	}
 
 	constructor(props) {
@@ -42,8 +57,8 @@ class Calendar extends Component {
 		this.timeout = 250
 
 		this.state = {
-			windowWidth: window.innerWidth,
 			ws: null,
+			windowWidth: window.innerWidth,
 			loading: true,
 			data: [],
 			selected: {},
@@ -54,20 +69,27 @@ class Calendar extends Component {
 		this.setData = this.setData.bind(this)
 		this.connectWebSocket = this.connectWebSocket.bind(this)
 		this.openModal = this.openModal.bind(this)
-	}
-
-	openModal = (type, selected) => {
-		// if (this.props.isAuthenticated)
-		this.setState({
-			selected: {
-				type,
-				...selected,
-			},
-		})
+		this.deleteMeeting = this.deleteMeeting.bind(this)
+		this.addMeeting = this.addMeeting.bind(this)
 	}
 
 	updateWindowDimensions = () =>
 		this.setState({ windowWidth: window.innerWidth })
+
+	openModal = (type, selected) => {
+		// if (this.props.isAuthenticated)
+
+		console.log(selected)
+		if (!selected.do_not_work)
+			selected.end = moment(selected.start).add(30, 'minutes').toDate()
+
+		this.setState({
+			selected: {
+				selected_type: type,
+				...selected,
+			},
+		})
+	}
 
 	// Check if websocket instance is closed, if so call `connect` function.
 	checkIsWebSocketClosed = () => {
@@ -123,15 +145,15 @@ class Calendar extends Component {
 
 		ws.onmessage = (e) => {
 			const data = JSON.parse(e.data)
-			NotificationManager.info('Zaktualizowano kalendarz', null, 5000)
-			console.debug('Websocket message received')
 
-			if (data.type === 'DELETE_MEETING')
+			if (data.event === 'DELETE_MEETING')
 				this.setData(
 					this.state.data.filter(
 						(meeting) => meeting.id !== data.payload
 					)
 				)
+			else if (data.event === 'ADD_MEETING')
+				this.setData([...this.state.data, data.payload])
 		}
 
 		ws.onclose = (e) => {
@@ -142,6 +164,14 @@ class Calendar extends Component {
 					(that.timeout + that.timeout) / 1000
 				)} second.`,
 				e.reason
+			)
+			NotificationManager.error(
+				`Nie można połączyć się z kalendarzem. Następna próba nastąpi za: ${Math.min(
+					10000 / 1000,
+					(that.timeout + that.timeout) / 1000
+				)} sekund`,
+				'Błąd',
+				5000
 			)
 
 			that.timeout = that.timeout + that.timeout //increment retry interval
@@ -157,11 +187,6 @@ class Calendar extends Component {
 				'Socket encountered error: ',
 				err.message,
 				'Closing socket'
-			)
-			NotificationManager.error(
-				'Nie można połączyć się z kalendarzem',
-				'Błąd',
-				5000
 			)
 
 			ws.close()
@@ -186,7 +211,6 @@ class Calendar extends Component {
 	}
 
 	componentWillUnmount() {
-		if (this.state.ws) this.state.ws.close()
 		window.removeEventListener('resize', this.updateWindowDimensions)
 	}
 
@@ -195,14 +219,47 @@ class Calendar extends Component {
 
 		this.state.ws.send(
 			JSON.stringify({
-				type: 'DELETE_MEETING',
+				event: 'DELETE_MEETING',
 				payload: selected.id,
 			})
 		)
+		this.setState({ selected: {} })
+	}
+
+	addMeeting = (data) => {
+		const { start, end } = this.state.selected
+		const { customer, customer_first_name, type } = data
+
+		const payload = { start, end, customer, customer_first_name, type }
+
+		this.state.ws.send(
+			JSON.stringify({
+				event: 'ADD_MEETING',
+				payload,
+			})
+		)
+		this.setState({ selected: {} })
 	}
 
 	render() {
-		const { isAdminPanel } = this.props
+		const {
+			isAdminPanel,
+
+			start_work_monday,
+			end_work_monday,
+			start_work_tuesday,
+			end_work_tuesday,
+			start_work_wednesday,
+			end_work_wednesday,
+			start_work_thursday,
+			end_work_thursday,
+			start_work_friday,
+			end_work_friday,
+			start_work_saturday,
+			end_work_saturday,
+			start_work_sunday,
+			end_work_sunday,
+		} = this.props
 		const { windowWidth, loading, data, selected } = this.state
 
 		if (loading) return <BrickLoader />
@@ -229,7 +286,7 @@ class Calendar extends Component {
 						{selected?.title}
 					</Modal.Header>
 					<Modal.Body>
-						{selected.type === 'event' ? (
+						{selected.selected_type === 'event' ? (
 							<ButtonContainer>
 								<Button primary small>
 									Edytuj
@@ -246,9 +303,7 @@ class Calendar extends Component {
 								</Button>
 							</ButtonContainer>
 						) : (
-							<>
-								<AddMeetingForm />
-							</>
+							<AddMeetingForm addMeeting={this.addMeeting} />
 						)}
 					</Modal.Body>
 				</Modal>
@@ -283,7 +338,11 @@ class Calendar extends Component {
 							<div className="legend__item">
 								<span
 									className="rbc-event-allday"
-									style={{ width: '2rem', height: '1rem' }}
+									style={{
+										width: '2rem',
+										height: '1rem',
+										borderRadius: '8px',
+									}}
 								></span>
 								<span>Nie pracuje</span>
 							</div>
@@ -302,25 +361,157 @@ class Calendar extends Component {
 							min={this.minDate}
 							max={this.maxDate}
 							dayLayoutAlgorithm="no-overlap"
-							slotPropGetter={(date) => ({
-								style: {
-									minHeight: isAdminPanel ? '60px' : 'auto',
-								},
-							})}
+							slotPropGetter={(date) => {
+								let isDisabled = false
+
+								const weekDay = moment(date).format('dddd')
+								const currentDay = date.getDay()
+								let start = new Date()
+								let end = new Date()
+
+								if (weekDay === 'poniedziałek') {
+									if (!start_work_monday) isDisabled = true
+									else {
+										const distance = 1 - currentDay
+
+										start.setHours(
+											start_work_monday.split(':')[0],
+											start_work_monday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_monday.split(':')[0],
+											end_work_monday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								} else if (weekDay === 'wtorek') {
+									if (!start_work_tuesday) isDisabled = true
+									else {
+										const distance = 2 - currentDay
+
+										start.setHours(
+											start_work_tuesday.split(':')[0],
+											start_work_tuesday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_tuesday.split(':')[0],
+											end_work_tuesday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								} else if (weekDay === 'środa') {
+									if (!start_work_wednesday) isDisabled = true
+									else {
+										const distance = 3 - currentDay
+
+										start.setHours(
+											start_work_wednesday.split(':')[0],
+											start_work_wednesday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_wednesday.split(':')[0],
+											end_work_wednesday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								} else if (weekDay === 'czwartek') {
+									if (!start_work_thursday) isDisabled = true
+									else {
+										const distance = 4 - currentDay
+
+										start.setHours(
+											start_work_thursday.split(':')[0],
+											start_work_thursday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_thursday.split(':')[0],
+											end_work_thursday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								} else if (weekDay === 'piątek') {
+									if (!start_work_friday) isDisabled = true
+									else {
+										const distance = 5 - currentDay
+
+										start.setHours(
+											start_work_friday.split(':')[0],
+											start_work_friday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_friday.split(':')[0],
+											end_work_friday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								} else if (weekDay === 'sobota') {
+									if (!start_work_saturday) isDisabled = true
+									else {
+										const distance = 6 - currentDay
+
+										start.setHours(
+											start_work_saturday.split(':')[0],
+											start_work_saturday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_saturday.split(':')[0],
+											end_work_saturday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								} else if (weekDay === 'niedziela') {
+									if (!start_work_sunday) isDisabled = true
+									else {
+										const distance = 0 - currentDay
+
+										start.setHours(
+											start_work_sunday.split(':')[0],
+											start_work_sunday.split(':')[1]
+										)
+										start.setDate(date.getDate() + distance)
+										end.setHours(
+											end_work_sunday.split(':')[0],
+											end_work_sunday.split(':')[1]
+										)
+
+										end.setDate(date.getDate() + distance)
+									}
+								}
+
+								isDisabled =
+									moment(date, 'H:mm') <
+										moment(start, 'H:mm') ||
+									moment(date, 'H:mm') > moment(end, 'H:mm')
+
+								return {
+									className: isDisabled ? 'disabled' : '',
+									style: {
+										minHeight: isAdminPanel
+											? '60px'
+											: 'auto',
+									},
+								}
+							}}
 							selectable={true}
 							selected={selected}
-							eventPropGetter={(
-								event,
-								start,
-								end,
-								isSelected
-							) => ({
+							eventPropGetter={() => ({
 								className: isAdminPanel ? 'selectable' : '',
 							})}
-							onSelectSlot={(slot) => {
-								if (slot.action === 'click')
-									this.openModal('slot', slot)
-							}}
+							onSelectSlot={(slot) =>
+								this.openModal('slot', slot)
+							}
 							onSelectEvent={(event) => {
 								if (isAdminPanel) this.openModal('event', event)
 							}}
@@ -337,6 +528,21 @@ class Calendar extends Component {
 
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
+
+	end_work_sunday: state.data.data.end_work_sunday,
+	start_work_sunday: state.data.data.start_work_sunday,
+	end_work_saturday: state.data.data.end_work_saturday,
+	start_work_saturday: state.data.data.start_work_saturday,
+	end_work_friday: state.data.data.end_work_friday,
+	start_work_friday: state.data.data.start_work_friday,
+	end_work_thursday: state.data.data.end_work_thursday,
+	start_work_thursday: state.data.data.start_work_thursday,
+	end_work_wednesday: state.data.data.end_work_wednesday,
+	start_work_wednesday: state.data.data.start_work_wednesday,
+	end_work_tuesday: state.data.data.end_work_tuesday,
+	start_work_tuesday: state.data.data.start_work_tuesday,
+	end_work_monday: state.data.data.end_work_monday,
+	start_work_monday: state.data.data.start_work_monday,
 })
 
 export default connect(mapStateToProps, null)(Calendar)

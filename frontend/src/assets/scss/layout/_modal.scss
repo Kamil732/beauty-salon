@@ -2,7 +2,7 @@
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	min-width: 500px;
+	min-width: 90%;
 	right: auto;
 	background-color: $surface-color;
 	border-radius: 8px;
@@ -39,5 +39,11 @@
 		z-index: 999;
 		transform: scale(1) translate(-50%, -50%);
 		opacity: 1;
+	}
+}
+
+@include media-tablet {
+	.modal {
+		min-width: 40%;
 	}
 }

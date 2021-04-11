@@ -107,47 +107,35 @@ function WorkHours({
 }
 
 WorkHours.prototype.propTypes = {
-	end_work_sunday: PropTypes.string.isRequired,
-	start_work_sunday: PropTypes.string.isRequired,
-
-	end_work_saturday: PropTypes.string.isRequired,
-	start_work_saturday: PropTypes.string.isRequired,
-
-	end_work_friday: PropTypes.string.isRequired,
-	start_work_friday: PropTypes.string.isRequired,
-
-	end_work_thursday: PropTypes.string.isRequired,
-	start_work_thursday: PropTypes.string.isRequired,
-
-	end_work_wednesday: PropTypes.string.isRequired,
-	start_work_wednesday: PropTypes.string.isRequired,
-
-	end_work_tuesday: PropTypes.string.isRequired,
-	start_work_tuesday: PropTypes.string.isRequired,
-
-	end_work_monday: PropTypes.string.isRequired,
-	start_work_monday: PropTypes.string.isRequired,
+	end_work_sunday: PropTypes.string,
+	start_work_sunday: PropTypes.string,
+	end_work_saturday: PropTypes.string,
+	start_work_saturday: PropTypes.string,
+	end_work_friday: PropTypes.string,
+	start_work_friday: PropTypes.string,
+	end_work_thursday: PropTypes.string,
+	start_work_thursday: PropTypes.string,
+	end_work_wednesday: PropTypes.string,
+	start_work_wednesday: PropTypes.string,
+	end_work_tuesday: PropTypes.string,
+	start_work_tuesday: PropTypes.string,
+	end_work_monday: PropTypes.string,
+	start_work_monday: PropTypes.string,
 }
 
 const mapStateToProps = (state) => ({
 	end_work_sunday: state.data.data.end_work_sunday,
 	start_work_sunday: state.data.data.start_work_sunday,
-
 	end_work_saturday: state.data.data.end_work_saturday,
 	start_work_saturday: state.data.data.start_work_saturday,
-
 	end_work_friday: state.data.data.end_work_friday,
 	start_work_friday: state.data.data.start_work_friday,
-
 	end_work_thursday: state.data.data.end_work_thursday,
 	start_work_thursday: state.data.data.start_work_thursday,
-
 	end_work_wednesday: state.data.data.end_work_wednesday,
 	start_work_wednesday: state.data.data.start_work_wednesday,
-
 	end_work_tuesday: state.data.data.end_work_tuesday,
 	start_work_tuesday: state.data.data.start_work_tuesday,
-
 	end_work_monday: state.data.data.end_work_monday,
 	start_work_monday: state.data.data.start_work_monday,
 })

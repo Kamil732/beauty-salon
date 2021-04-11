@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import FormControl from '../../../layout/forms/FormControl'
 import FormGroup from '../../../layout/forms/FormGroup'
@@ -7,6 +8,10 @@ import axios from 'axios'
 import { NotificationManager } from 'react-notifications'
 
 class AddMeetingForm extends Component {
+	static propTypes = {
+		addMeeting: PropTypes.func.isRequired,
+	}
+
 	constructor(props) {
 		super(props)
 
@@ -23,7 +28,8 @@ class AddMeetingForm extends Component {
 
 	onSubmit = (e) => {
 		e.preventDefault()
-		console.log(this.state)
+
+		this.props.addMeeting(this.state)
 	}
 
 	onChange = (e) => this.setState({ [e.target.name]: e.target.value })
