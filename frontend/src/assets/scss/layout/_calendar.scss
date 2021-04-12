@@ -100,9 +100,9 @@ $rbc-css-prefix: calendar;
 	}
 
 	&.disabled {
-		background-color: rgba($error-color, 0.2s);
+		background-color: rgba($error-color, 0.1);
 		cursor: not-allowed;
-		pointer-events: none;
+		pointer-events: none !important;
 	}
 }
 
