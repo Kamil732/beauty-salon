@@ -445,9 +445,15 @@ class Calendar extends Component {
 							})}
 							onSelecting={() => (isAdminPanel ? true : false)}
 							longPressThreshold={10}
-							onSelectSlot={(slot) =>
-								this.openModal('slot', slot)
-							}
+							onSelectSlot={(slot) => {
+								console.log(slot)
+								if (
+									isAdminPanel ||
+									(slot.slots.length == 2 &&
+										slot.action !== 'select')
+								)
+									this.openModal('slot', slot)
+							}}
 							onSelectEvent={(event) => {
 								if (isAdminPanel) this.openModal('event', event)
 							}}
