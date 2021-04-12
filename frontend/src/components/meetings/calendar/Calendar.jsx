@@ -18,9 +18,10 @@ import {
 	Views,
 } from 'react-big-calendar'
 import Toolbar from './Toolbar'
-import AddMeetingForm from './AddMeetingForm'
+import AddMeetingAdminForm from './AddMeetingAdminForm'
 import { connect } from 'react-redux'
 import Legend from './Legend'
+import AddMeetingForm from './AddMeetingForm'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -104,8 +105,12 @@ class Calendar extends Component {
 				].title = `${data[i].customer_first_name}, ${data[i].type}`
 
 			if (data[i].do_not_work) {
-				data[i].allDay = true
 				data[i].title = 'NIE PRACUJE'
+
+				if (parseInt(moment(data[i].start).hours()) === 0) {
+					data[i].end = moment(data[i].end).add(1, 'minutes')
+					data[i].allDay = true
+				}
 			}
 		}
 
@@ -221,10 +226,18 @@ class Calendar extends Component {
 	}
 
 	addMeeting = (data) => {
-		const { start, end } = this.state.selected
-		const { customer, customer_first_name, type } = data
+		const { start } = this.state.selected
+		let { end } = this.state.selected
+		const { do_not_work, customer, customer_first_name, type } = data
 
-		const payload = { start, end, customer, customer_first_name, type }
+		const payload = {
+			do_not_work,
+			start,
+			end,
+			customer,
+			customer_first_name,
+			type,
+		}
 
 		this.state.ws.send(
 			JSON.stringify({
@@ -352,47 +365,60 @@ class Calendar extends Component {
 
 		return (
 			<>
-				<Modal
-					isOpen={Object.keys(selected).length > 0}
-					closeModal={() => this.setState({ selected: {} })}
-				>
-					<Modal.Header>
-						{selected.do_not_work ? (
-							<>
-								{moment(selected.start).format('DD/MM/YYYY')} -{' '}
-								{moment(selected.end).format('DD/MM/YYYY')}
-							</>
-						) : (
-							<>
-								{moment(selected.start).format('DD/H:mm')} -{' '}
-								{moment(selected.end).format('DD/H:mm')}
-							</>
-						)}
-						<br />
-						{selected?.title}
-					</Modal.Header>
-					<Modal.Body>
-						{selected.selected_type === 'event' ? (
-							<ButtonContainer>
-								<Button primary small>
-									Edytuj
-								</Button>
-								<Button
-									danger
-									small
-									onClick={this.deleteMeeting}
-								>
-									Usuń{' '}
-									{selected.do_not_work
-										? 'wolne od pracy'
-										: 'wizytę'}
-								</Button>
-							</ButtonContainer>
-						) : (
-							<AddMeetingForm addMeeting={this.addMeeting} />
-						)}
-					</Modal.Body>
-				</Modal>
+				{Object.keys(selected).length ? (
+					<Modal
+						isOpen={Object.keys(selected).length > 0}
+						closeModal={() => this.setState({ selected: {} })}
+					>
+						<Modal.Header>
+							{selected.do_not_work ? (
+								<>
+									{moment(selected.start).format(
+										'DD/MM/YYYY'
+									)}{' '}
+									-{' '}
+									{moment(selected.end).format('DD/MM/YYYY')}
+								</>
+							) : (
+								<>
+									{moment(selected.start).format('DD/H:mm')} -{' '}
+									{moment(selected.end).format('DD/H:mm')}
+								</>
+							)}
+							<br />
+							{selected?.title}
+						</Modal.Header>
+						<Modal.Body>
+							{selected.selected_type === 'event' ? (
+								<ButtonContainer>
+									<Button primary small>
+										Edytuj
+									</Button>
+									<Button
+										danger
+										small
+										onClick={this.deleteMeeting}
+									>
+										Usuń{' '}
+										{selected.do_not_work
+											? 'wolne od pracy'
+											: 'wizytę'}
+									</Button>
+								</ButtonContainer>
+							) : isAdminPanel ? (
+								<AddMeetingAdminForm
+									addMeeting={this.addMeeting}
+									doNotWork={
+										selected.slots.length > 2 ||
+										selected.start.getHours() === 0
+									}
+								/>
+							) : (
+								<AddMeetingForm />
+							)}
+						</Modal.Body>
+					</Modal>
+				) : null}
 
 				<Card>
 					<Card.Body>
@@ -417,12 +443,11 @@ class Calendar extends Component {
 							eventPropGetter={() => ({
 								className: isAdminPanel ? 'selectable' : '',
 							})}
-							onSelecting={() => false}
+							onSelecting={() => (isAdminPanel ? true : false)}
 							longPressThreshold={10}
-							onSelectSlot={(slot) => {
-								console.log(slot)
+							onSelectSlot={(slot) =>
 								this.openModal('slot', slot)
-							}}
+							}
 							onSelectEvent={(event) => {
 								if (isAdminPanel) this.openModal('event', event)
 							}}

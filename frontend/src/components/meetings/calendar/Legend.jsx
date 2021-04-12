@@ -36,7 +36,7 @@ function Legend() {
 						flex: 'none',
 					}}
 				></span>
-				<span>Nie pracuje</span>
+				<span>Godziny niepracujące</span>
 			</div>
 		</div>
 	)

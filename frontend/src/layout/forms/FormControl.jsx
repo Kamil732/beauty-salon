@@ -20,6 +20,10 @@ Label.prototype.propTypes = {
 	inputValue: PropTypes.any.isRequired,
 }
 
+function CheckBoxLabel(props) {
+	return <label className="form-control__checkbox-label" {...props} />
+}
+
 function Input(props) {
 	return (
 		<input
@@ -28,6 +32,28 @@ function Input(props) {
 			{...props}
 		/>
 	)
+}
+
+function CheckBox({ name, checked, onChange, ...props }) {
+	return (
+		<>
+			<input
+				type="checkbox"
+				className="form-control__checkbox"
+				name={name}
+				checked={checked}
+				onChange={onChange}
+				{...props}
+			/>
+			<span className="form-control__checkbox-checkmark"></span>
+		</>
+	)
+}
+
+CheckBox.prototype.propTypes = {
+	name: PropTypes.string.isRequired,
+	checked: PropTypes.bool,
+	onChange: PropTypes.func.isRequired,
 }
 
 function SelectSearchInput({
@@ -115,7 +141,7 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 					placeholder=""
 					onChange={handleOnChange}
 					isClearable
-					hideSelectedOptions
+					hideSelectedOptions={value}
 				/>
 				{props.required && (
 					<input
@@ -140,6 +166,7 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 				onChange={handleOnChange}
 				isClearable
 				hideSelectedOptions
+				isOptionSelected={value}
 			/>
 			{props.required && (
 				<input
@@ -168,7 +195,9 @@ ChoiceField.prototype.propTypes = {
 }
 
 FormControl.Label = Label
+FormControl.CheckBoxLabel = CheckBoxLabel
 FormControl.Input = Input
+FormControl.CheckBox = CheckBox
 FormControl.ChoiceField = ChoiceField
 
 export default FormControl
