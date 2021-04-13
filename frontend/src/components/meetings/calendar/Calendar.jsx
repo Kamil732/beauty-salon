@@ -69,6 +69,11 @@ class Calendar extends Component {
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
 		this.checkIsWebSocketClosed = this.checkIsWebSocketClosed.bind(this)
 		this.setData = this.setData.bind(this)
+		this.eventPropGetter = this.eventPropGetter.bind(this)
+		this.slotPropGetter = this.slotPropGetter.bind(this)
+		this.onSelecting = this.onSelecting.bind(this)
+		this.onSelectEvent = this.onSelectEvent.bind(this)
+		this.onSelectSlot = this.onSelectSlot.bind(this)
 		this.connectWebSocket = this.connectWebSocket.bind(this)
 		this.openModal = this.openModal.bind(this)
 		this.deleteMeeting = this.deleteMeeting.bind(this)
@@ -248,10 +253,8 @@ class Calendar extends Component {
 		this.setState({ selected: {} })
 	}
 
-	slotPropGetter = (date) => {
+	checkWorkingHours = (weekDay) => {
 		const {
-			isAdminPanel,
-
 			start_work_monday,
 			end_work_monday,
 			start_work_tuesday,
@@ -268,12 +271,11 @@ class Calendar extends Component {
 			end_work_sunday,
 		} = this.props
 
-		let isDisabled = false
-		const weekDay = moment(date).format('dddd')
+		let isNonWorkingHour = false
 		let start, end
 
 		if (weekDay === 'poniedziałek') {
-			if (!start_work_monday) isDisabled = true
+			if (!start_work_monday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_monday.split(':')[0]) * 60 +
@@ -283,7 +285,7 @@ class Calendar extends Component {
 					parseInt(end_work_monday.split(':')[1])
 			}
 		} else if (weekDay === 'wtorek') {
-			if (!start_work_tuesday) isDisabled = true
+			if (!start_work_tuesday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_tuesday.split(':')[0]) * 60 +
@@ -293,7 +295,7 @@ class Calendar extends Component {
 					parseInt(end_work_tuesday.split(':')[1])
 			}
 		} else if (weekDay === 'środa') {
-			if (!start_work_wednesday) isDisabled = true
+			if (!start_work_wednesday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_wednesday.split(':')[0]) * 60 +
@@ -303,7 +305,7 @@ class Calendar extends Component {
 					parseInt(end_work_wednesday.split(':')[1])
 			}
 		} else if (weekDay === 'czwartek') {
-			if (!start_work_thursday) isDisabled = true
+			if (!start_work_thursday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_thursday.split(':')[0]) * 60 +
@@ -313,7 +315,7 @@ class Calendar extends Component {
 					parseInt(end_work_thursday.split(':')[1])
 			}
 		} else if (weekDay === 'piątek') {
-			if (!start_work_friday) isDisabled = true
+			if (!start_work_friday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_friday.split(':')[0]) * 60 +
@@ -323,7 +325,7 @@ class Calendar extends Component {
 					parseInt(end_work_friday.split(':')[1])
 			}
 		} else if (weekDay === 'sobota') {
-			if (!start_work_saturday) isDisabled = true
+			if (!start_work_saturday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_saturday.split(':')[0]) * 60 +
@@ -333,7 +335,7 @@ class Calendar extends Component {
 					parseInt(end_work_saturday.split(':')[1])
 			}
 		} else if (weekDay === 'niedziela') {
-			if (!start_work_sunday) isDisabled = true
+			if (!start_work_sunday) isNonWorkingHour = true
 			else {
 				start =
 					parseInt(start_work_sunday.split(':')[0]) * 60 +
@@ -344,9 +346,22 @@ class Calendar extends Component {
 			}
 		}
 
+		return {
+			start,
+			end,
+			isNonWorkingHour,
+		}
+	}
+
+	slotPropGetter = (date) => {
+		const { isAdminPanel } = this.props
+		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
+		let isDisabled = workingHours.isNonWorkingHour
+
 		if (!isDisabled) {
 			date = date.getHours() * 60 + date.getMinutes()
-			isDisabled = date < start || date > end
+			isDisabled =
+				date < workingHours.start || date > workingHours.end - 30
 		}
 
 		return {
@@ -355,6 +370,59 @@ class Calendar extends Component {
 				minHeight: isAdminPanel ? '60px' : 'auto',
 			},
 		}
+	}
+
+	eventPropGetter = () => ({
+		className: this.props.isAdminPanel ? 'selectable' : '',
+	})
+
+	onSelecting = () => (this.props.isAdminPanel ? true : false)
+
+	onSelectEvent = (event) => {
+		if (this.props.isAdminPanel) this.openModal('event', event)
+	}
+
+	onSelectSlot = (slot) => {
+		const workingHours = this.checkWorkingHours(
+			moment(slot.start).format('dddd')
+		)
+		let [isEventOnTheSlot, isNonWorkingHour] = [
+			false,
+			workingHours.isNonWorkingHour,
+		]
+
+		if (slot.start.getHours() !== 0) {
+			if (
+				!workingHours.isNonWorkingHour &&
+				(slot.start.getHours() * 60 + slot.start.getMinutes() <
+					workingHours.start ||
+					slot.end.getHours() * 60 + slot.end.getMinutes() >
+						workingHours.end)
+			)
+				isNonWorkingHour = true
+
+			if (!isNonWorkingHour)
+				isEventOnTheSlot =
+					this.state.data.filter(
+						(meeting) =>
+							(meeting.start >= slot.start &&
+								meeting.end <= slot.end) ||
+							(meeting.start <= slot.start &&
+								meeting.end >= slot.end) ||
+							(meeting.start >= slot.start &&
+								slot.end > meeting.start) ||
+							(meeting.end <= slot.end &&
+								slot.start < meeting.end)
+					).length > 0
+		}
+
+		if (
+			!isEventOnTheSlot &&
+			!isNonWorkingHour &&
+			(this.props.isAdminPanel ||
+				(slot.slots.length === 2 && slot.action !== 'select'))
+		)
+			this.openModal('slot', slot)
 	}
 
 	render() {
@@ -437,26 +505,15 @@ class Calendar extends Component {
 							min={this.minDate}
 							max={this.maxDate}
 							dayLayoutAlgorithm="no-overlap"
+							longPressThreshold={10}
 							slotPropGetter={this.slotPropGetter}
+							eventPropGetter={this.eventPropGetter}
+							dayPropGetter={this.dayPropGetter}
 							selectable={true}
 							selected={selected}
-							eventPropGetter={() => ({
-								className: isAdminPanel ? 'selectable' : '',
-							})}
-							onSelecting={() => (isAdminPanel ? true : false)}
-							longPressThreshold={10}
-							onSelectSlot={(slot) => {
-								console.log(slot)
-								if (
-									isAdminPanel ||
-									(slot.slots.length == 2 &&
-										slot.action !== 'select')
-								)
-									this.openModal('slot', slot)
-							}}
-							onSelectEvent={(event) => {
-								if (isAdminPanel) this.openModal('event', event)
-							}}
+							onSelecting={this.onSelecting}
+							onSelectSlot={this.onSelectSlot}
+							onSelectEvent={this.onSelectEvent}
 							components={{
 								toolbar: Toolbar,
 							}}
