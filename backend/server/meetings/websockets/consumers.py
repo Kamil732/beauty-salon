@@ -4,9 +4,8 @@ import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 
-from meetings.api.serializers import MeetingSerializer
 from meetings.models import Meeting
-from meetings.api.serializers import MeetingSerializer
+from meetings.api.serializers import AdminMeetingSerializer
 
 from accounts.models import Account
 
@@ -34,11 +33,12 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def create_meeting(self, payload):
+        do_not_work = payload.get('do_not_work')
         start = payload['start']
         end = payload['end']
         customer = Account.objects.get(slug=payload['customer']) if payload['customer'] else None
         customer_first_name = payload['customer_first_name']
-        type = payload['type']
+        type = payload['type'] if not(do_not_work) else Meeting.TYPES[2][0]
 
         meeting = Meeting.objects.create(
             start=start,
@@ -48,7 +48,7 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
             type=type
         )
 
-        return MeetingSerializer(meeting).data
+        return AdminMeetingSerializer(meeting).data
 
     async def receive(self, text_data):
         response = json.loads(text_data)
@@ -58,7 +58,7 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
         if event == 'DELETE_MEETING':
             await self.delete_meeting(payload)
         elif event == 'ADD_MEETING':
-            await self.create_meeting(payload)
+            payload = await self.create_meeting(payload)
 
         await self.channel_layer.group_send(
             self.room_group_name,
