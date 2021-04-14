@@ -9,5 +9,9 @@ export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const REGISTER_FAIL = 'REGISTER_FAIL'
 export const LOGOUT = 'LOGOUT'
 
-// Notifications
-export const ADD_NOTIFICATION = 'ADD_NOTIFICATION'
+// Meetings
+export const MEETINGS_LOADING = 'MEETINGS_LOADING'
+export const MEETINGS_CONNECT_WS = 'MEETINGS_CONNECT_WS'
+export const GET_MEETINGS = 'GET_MEETINGS'
+export const ADD_MEETING = 'ADD_MEETING'
+export const REMOVE_MEETING = 'REMOVE_MEETING'

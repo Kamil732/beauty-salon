@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import axios from 'axios'
+
+import {
+	getMeetings,
+	addMeeting,
+	removeMeeting,
+} from '../../../redux/actions/meetings'
 
 import moment from 'moment'
 import 'moment/locale/pl'
@@ -30,6 +35,13 @@ class Calendar extends Component {
 	static propTypes = {
 		isAdminPanel: PropTypes.bool,
 		isAuthenticated: PropTypes.bool,
+		ws: PropTypes.object,
+		loading: PropTypes.bool,
+		meetings: PropTypes.array,
+		userChoiceList: PropTypes.array,
+		getMeetings: PropTypes.func.isRequired,
+		addMeeting: PropTypes.func.isRequired,
+		removeMeeting: PropTypes.func.isRequired,
 
 		end_work_sunday: PropTypes.string,
 		start_work_sunday: PropTypes.string,
@@ -108,20 +120,15 @@ class Calendar extends Component {
 		this.state = {
 			ws: null,
 			windowWidth: window.innerWidth,
-			loading: true,
-			data: [],
 			selected: {},
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
-		this.checkIsWebSocketClosed = this.checkIsWebSocketClosed.bind(this)
-		this.setData = this.setData.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
 		this.slotPropGetter = this.slotPropGetter.bind(this)
 		this.onSelecting = this.onSelecting.bind(this)
 		this.onSelectEvent = this.onSelectEvent.bind(this)
 		this.onSelectSlot = this.onSelectSlot.bind(this)
-		this.connectWebSocket = this.connectWebSocket.bind(this)
 		this.openModal = this.openModal.bind(this)
 		this.deleteMeeting = this.deleteMeeting.bind(this)
 		this.addMeeting = this.addMeeting.bind(this)
@@ -140,125 +147,10 @@ class Calendar extends Component {
 		})
 	}
 
-	// Check if websocket instance is closed, if so call `connect` function.
-	checkIsWebSocketClosed = () => {
-		const { ws } = this.state
-		if (!ws || ws.readyState === WebSocket.CLOSED) this.connectWebSocket()
-	}
-
-	setData = (data) => {
-		for (let i = 0; i < data.length; i++) {
-			data[i].start = moment.utc(data[i].start).toDate()
-			data[i].end = moment.utc(data[i].end).toDate()
-
-			if (data[i].customer_first_name)
-				data[
-					i
-				].title = `${data[i].customer_first_name}, ${data[i].type}`
-
-			if (data[i].do_not_work) {
-				data[i].title = 'NIE PRACUJE'
-
-				if (parseInt(moment(data[i].end).hours()) === 0) {
-					data[i].end = moment(data[i].end).add(23, 'hours')
-					data[i].allDay = true
-				}
-			}
-		}
-
-		this.setState({
-			loading: false,
-			data,
-			selected: {},
-		})
-	}
-
-	connectWebSocket = () => {
-		const ws = new WebSocket(
-			`${process.env.REACT_APP_SOCKET_URL}/meetings/`
-		)
-		const that = this // cache the this
-		let connectInterval = null
-
-		// websocket onopen event listener
-		ws.onopen = () => {
-			console.log('connected websocket')
-
-			this.setState({
-				loading: false,
-				ws,
-			})
-
-			that.timeout = 250 // reset timer to 250 on open of websocket connection
-			clearTimeout(connectInterval) // clear Interval on on open of websocket connection
-			connectInterval = null
-		}
-
-		ws.onmessage = (e) => {
-			const data = JSON.parse(e.data)
-
-			if (data.event === 'DELETE_MEETING')
-				this.setData(
-					this.state.data.filter(
-						(meeting) => meeting.id !== data.payload
-					)
-				)
-			else if (data.event === 'ADD_MEETING')
-				this.setData([...this.state.data, data.payload])
-		}
-
-		ws.onclose = (e) => {
-			this.setState({ loading: true })
-			console.log(
-				`Socket is closed. Reconnect will be attempted in ${Math.min(
-					10000 / 1000,
-					(that.timeout + that.timeout) / 1000
-				)} second.`,
-				e.reason
-			)
-			NotificationManager.error(
-				`Nie można połączyć się z kalendarzem. Następna próba nastąpi za: ${Math.min(
-					10000 / 1000,
-					(that.timeout + that.timeout) / 1000
-				)} sekund`,
-				'Błąd',
-				5000
-			)
-
-			that.timeout = that.timeout + that.timeout //increment retry interval
-			connectInterval = setTimeout(
-				this.checkIsWebSocketClosed,
-				Math.min(10000, that.timeout)
-			) //call checkIsWebSocketClosed function after timeout
-		}
-
-		ws.onerror = (err) => {
-			this.setState({ loading: true })
-			console.error(
-				'Socket encountered error: ',
-				err.message,
-				'Closing socket'
-			)
-
-			ws.close()
-		}
-	}
-
 	componentDidMount = async () => {
-		this.connectWebSocket()
 		window.addEventListener('resize', this.updateWindowDimensions)
 
-		try {
-			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/meetings/`
-			)
-
-			this.setData(res.data)
-		} catch (err) {
-			this.setState({
-				loading: false,
-			})
-		}
+		if (this.props.meetings.length === 0) this.props.getMeetings()
 	}
 
 	componentWillUnmount() {
@@ -268,7 +160,7 @@ class Calendar extends Component {
 	deleteMeeting = () => {
 		const { selected } = this.state
 
-		this.state.ws.send(
+		this.props.ws.send(
 			JSON.stringify({
 				event: 'DELETE_MEETING',
 				payload: selected.id,
@@ -291,7 +183,7 @@ class Calendar extends Component {
 			type,
 		}
 
-		this.state.ws.send(
+		this.props.ws.send(
 			JSON.stringify({
 				event: 'ADD_MEETING',
 				payload,
@@ -406,7 +298,7 @@ class Calendar extends Component {
 		let isDisabled = workingHours.isNonWorkingHour
 
 		const isEventOnTheSlot =
-			this.state.data.filter(
+			this.props.meetings.filter(
 				(meeting) =>
 					meeting.do_not_work &&
 					meeting.start <= date &&
@@ -459,7 +351,7 @@ class Calendar extends Component {
 
 			if (!isNonWorkingHour)
 				isEventOnTheSlot =
-					this.state.data.filter(
+					this.props.meetings.filter(
 						(meeting) =>
 							(meeting.start >= slot.start &&
 								meeting.end <= slot.end) ||
@@ -486,12 +378,12 @@ class Calendar extends Component {
 	}
 
 	render() {
-		const { isAdminPanel } = this.props
-		const { windowWidth, loading, selected } = this.state
+		const { isAdminPanel, loading } = this.props
+		const { windowWidth, selected } = this.state
 
-		const data = isAdminPanel
-			? this.state.data
-			: this.state.data.filter((meeting) => !meeting.do_not_work)
+		const meetings = isAdminPanel
+			? this.props.meetings
+			: this.props.meetings.filter((meeting) => !meeting.do_not_work)
 
 		if (loading) return <BrickLoader />
 
@@ -559,7 +451,7 @@ class Calendar extends Component {
 					<Card.Body>
 						<BigCalendar
 							localizer={localizer}
-							events={data}
+							events={meetings}
 							step={30}
 							timeslots={1}
 							views={
@@ -591,6 +483,10 @@ class Calendar extends Component {
 
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
+	ws: state.meetings.ws,
+	loading: state.meetings.loading,
+	meetings: state.meetings.data,
+	userChoiceList: state.meetings.userChoiceList,
 
 	end_work_sunday: state.data.data.end_work_sunday,
 	start_work_sunday: state.data.data.start_work_sunday,
@@ -608,4 +504,10 @@ const mapStateToProps = (state) => ({
 	start_work_monday: state.data.data.start_work_monday,
 })
 
-export default connect(mapStateToProps, null)(Calendar)
+const mapDispatchToProps = {
+	getMeetings,
+	addMeeting,
+	removeMeeting,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
