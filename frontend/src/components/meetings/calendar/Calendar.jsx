@@ -112,8 +112,8 @@ class Calendar extends Component {
 			if (data[i].do_not_work) {
 				data[i].title = 'NIE PRACUJE'
 
-				if (parseInt(moment(data[i].start).hours()) === 0) {
-					data[i].end = moment(data[i].end).add(1, 'minutes')
+				if (parseInt(moment(data[i].end).hours()) === 0) {
+					data[i].end = moment(data[i].end).add(23, 'hours')
 					data[i].allDay = true
 				}
 			}
@@ -358,7 +358,16 @@ class Calendar extends Component {
 		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
 		let isDisabled = workingHours.isNonWorkingHour
 
-		if (!isDisabled) {
+		const isEventOnTheSlot =
+			this.state.data.filter(
+				(meeting) =>
+					meeting.do_not_work &&
+					meeting.start <= date &&
+					meeting.end > date
+			).length > 0
+
+		if (isEventOnTheSlot) isDisabled = true
+		else if (!isDisabled) {
 			date = date.getHours() * 60 + date.getMinutes()
 			isDisabled =
 				date < workingHours.start || date > workingHours.end - 30
@@ -427,7 +436,11 @@ class Calendar extends Component {
 
 	render() {
 		const { isAdminPanel } = this.props
-		const { windowWidth, loading, data, selected } = this.state
+		const { windowWidth, loading, selected } = this.state
+
+		const data = isAdminPanel
+			? this.state.data
+			: this.state.data.filter((meeting) => !meeting.do_not_work)
 
 		if (loading) return <BrickLoader />
 
