@@ -50,11 +50,58 @@ class Calendar extends Component {
 	constructor(props) {
 		super(props)
 
-		this.minDate = new Date()
-		this.minDate.setHours(8, 0)
+		const today = new Date()
+		const defaultStart = '8:00'
+		const defaultEnd = '17:00'
 
-		this.maxDate = new Date()
-		this.maxDate.setHours(22, 30)
+		let workHours = [
+			props.end_work_sunday ? props.end_work_sunday : defaultEnd,
+			props.start_work_sunday ? props.start_work_sunday : defaultStart,
+			props.end_work_saturday ? props.end_work_saturday : defaultEnd,
+			props.start_work_saturday
+				? props.start_work_saturday
+				: defaultStart,
+			props.end_work_friday ? props.end_work_friday : defaultEnd,
+			props.start_work_friday ? props.start_work_friday : defaultEnd,
+			props.end_work_thursday ? props.end_work_thursday : defaultStart,
+			props.start_work_thursday ? props.start_work_thursday : defaultEnd,
+			props.end_work_wednesday ? props.end_work_wednesday : defaultStart,
+			props.start_work_wednesday
+				? props.start_work_wednesday
+				: defaultEnd,
+			props.end_work_tuesday ? props.end_work_tuesday : defaultStart,
+			props.start_work_tuesday ? props.start_work_tuesday : defaultEnd,
+			props.end_work_monday ? props.end_work_monday : defaultStart,
+			props.start_work_monday ? props.start_work_monday : defaultEnd,
+		]
+
+		workHours = workHours.map((workHour) =>
+			moment(
+				new Date(
+					today.getFullYear(),
+					today.getMonth(),
+					today.getDate(),
+					workHour.split(':')[0],
+					workHour.split(':')[1]
+				)
+			)
+		)
+
+		this.minDate = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate(),
+			moment.min(workHours).hours(),
+			moment.min(workHours).minutes() - 30
+		)
+
+		this.maxDate = new Date(
+			today.getFullYear(),
+			today.getMonth(),
+			today.getDate(),
+			moment.max(workHours).hours(),
+			moment.max(workHours).minutes()
+		)
 
 		this.timeout = 250
 
@@ -432,6 +479,10 @@ class Calendar extends Component {
 				(slot.slots.length === 2 && slot.action !== 'select'))
 		)
 			this.openModal('slot', slot)
+		else if (this.props.isAdminPanel)
+			NotificationManager.error(
+				'Nie mozna dodać wizyty na zaznaczonym polu'
+			)
 	}
 
 	render() {

@@ -9,7 +9,7 @@ function Legend() {
 						width: '2rem',
 						height: '1rem',
 					}}
-					className="s-color"
+					className="rbc-today"
 				></span>
 				<span>Obecna data</span>
 			</div>
