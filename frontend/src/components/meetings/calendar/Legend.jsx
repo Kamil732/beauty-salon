@@ -22,13 +22,6 @@ function Legend() {
 			</div>
 			<div className="legend__item">
 				<span
-					className="rbc-event"
-					style={{ width: '2rem', height: '1rem' }}
-				></span>
-				<span>Umówiona wizyta</span>
-			</div>
-			<div className="legend__item">
-				<span
 					className="rbc-time-slot disabled"
 					style={{
 						width: '2rem',
@@ -36,7 +29,7 @@ function Legend() {
 						flex: 'none',
 					}}
 				></span>
-				<span>Godziny niepracujące</span>
+				<span>Nie można umówić wizyty</span>
 			</div>
 		</div>
 	)

@@ -15,8 +15,10 @@ const setMeeting = (data) => {
 	data.start = moment.utc(data.start).toDate()
 	data.end = moment.utc(data.end).toDate()
 
-	if (data.customer_first_name)
-		data.title = `${data.customer_first_name}, ${data.type}`
+	if (data.customer_first_name) {
+		data.title = `${data.customer_first_name}, fr. ${data.barber_first_name}`
+		data.full_title = `${data.customer_first_name}, fr. ${data.barber_first_name}, ${data.type}`
+	}
 
 	if (data.do_not_work) {
 		data.title = 'NIE PRACUJE'
@@ -52,7 +54,6 @@ export const connectWebSocket = () => (dispatch) => {
 
 	// Check if websocket instance is closed, if so call `connect` function.
 	const checkIsWebSocketClosed = () => {
-		const { ws } = this.state
 		if (!ws || ws.readyState === WebSocket.CLOSED)
 			dispatch(connectWebSocket())
 	}
@@ -125,9 +126,7 @@ export const getMeetings = () => async (dispatch) => {
 		)
 		let data = res.data
 
-		for (let i = 0; i < data.length; i++) {
-			data[i] = setMeeting(data[i])
-		}
+		for (let i = 0; i < data.length; i++) data[i] = setMeeting(data[i])
 
 		dispatch({
 			type: GET_MEETINGS,

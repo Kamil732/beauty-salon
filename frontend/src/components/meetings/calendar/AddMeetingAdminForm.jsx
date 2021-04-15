@@ -5,7 +5,7 @@ import FormControl from '../../../layout/forms/FormControl'
 import FormGroup from '../../../layout/forms/FormGroup'
 import Button from '../../../layout/buttons/Button'
 import axios from 'axios'
-import { NotificationManager } from 'react-notifications'
+import NotificationManager from 'react-notifications/lib/NotificationManager'
 
 class AddMeetingAdminForm extends Component {
 	static propTypes = {
@@ -20,12 +20,14 @@ class AddMeetingAdminForm extends Component {
 			do_not_work: props.doNotWork,
 			customer: '',
 			customer_first_name: '',
+			barber: '',
 			type: '',
 		}
 
 		this.onChange = this.onChange.bind(this)
 		this.onSubmit = this.onSubmit.bind(this)
-		this.loadOptions = this.loadOptions.bind(this)
+		this.loadBarbers = this.loadBarbers.bind(this)
+		this.loadCustomers = this.loadCustomers.bind(this)
 	}
 
 	onSubmit = (e) => {
@@ -41,16 +43,32 @@ class AddMeetingAdminForm extends Component {
 		this.setState({ [e.target.name]: value })
 	}
 
-	loadOptions = async (value) => {
+	loadBarbers = async (value) => {
 		try {
 			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/choice-list/?search=${value}`
+				`${process.env.REACT_APP_API_URL}/accounts/choice-list/barbers/?search=${value}`
 			)
 
 			return res.data
 		} catch (err) {
 			NotificationManager.error(
-				'Nie udało się załadować listy urzytkowników',
+				'Nie udało się załadować listy fryzjerów',
+				'Błąd',
+				4000
+			)
+		}
+	}
+
+	loadCustomers = async (value) => {
+		try {
+			const res = await axios.get(
+				`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
+			)
+
+			return res.data
+		} catch (err) {
+			NotificationManager.error(
+				'Nie udało się załadować listy fryzjerów',
 				'Błąd',
 				4000
 			)
@@ -58,7 +76,13 @@ class AddMeetingAdminForm extends Component {
 	}
 
 	render() {
-		const { do_not_work, customer, customer_first_name, type } = this.state
+		const {
+			do_not_work,
+			customer,
+			customer_first_name,
+			barber,
+			type,
+		} = this.state
 
 		return (
 			<form onSubmit={this.onSubmit}>
@@ -100,7 +124,8 @@ class AddMeetingAdminForm extends Component {
 											})
 										}
 										searchAsync
-										choices={this.loadOptions}
+										defaultOptions={this.props.customerList}
+										choices={this.loadCustomers}
 									/>
 								</FormControl>
 
@@ -112,7 +137,7 @@ class AddMeetingAdminForm extends Component {
 										Imię klienta
 									</FormControl.Label>
 									<FormControl.Input
-										require={!do_not_work}
+										required={!do_not_work}
 										type="text"
 										id="customer_first_name"
 										name="customer_first_name"
@@ -126,27 +151,52 @@ class AddMeetingAdminForm extends Component {
 								</FormControl>
 							</FormGroup>
 
-							<FormControl>
-								<FormControl.Label
-									htmlFor="type"
-									inputValue={type}
-								>
-									Typ Wizyty
-								</FormControl.Label>
-								<FormControl.ChoiceField
-									required={!do_not_work}
-									id="type"
-									name="type"
-									onChange={(_, value) =>
-										this.setState({ type: value })
-									}
-									value={type}
-									choices={[
-										{ value: 'hair', label: 'Włosy' },
-										{ value: 'beard', label: 'Broda' },
-									]}
-								/>
-							</FormControl>
+							<FormGroup>
+								<FormControl>
+									<FormControl.Label
+										htmlFor="type"
+										inputValue={type}
+									>
+										Typ Wizyty
+									</FormControl.Label>
+									<FormControl.ChoiceField
+										required={!do_not_work}
+										id="type"
+										name="type"
+										onChange={(_, value) =>
+											this.setState({ type: value })
+										}
+										value={type}
+										choices={[
+											{ value: 'hair', label: 'Włosy' },
+											{ value: 'beard', label: 'Broda' },
+										]}
+									/>
+								</FormControl>
+
+								<FormControl>
+									<FormControl.Label
+										htmlFor="barber"
+										inputValue={barber}
+									>
+										Fryzjer
+									</FormControl.Label>
+
+									<FormControl.ChoiceField
+										required={!do_not_work}
+										id="barber"
+										name="barber"
+										value={barber}
+										onChange={(_, value) =>
+											this.setState({
+												barber: value,
+											})
+										}
+										searchAsync
+										choices={this.loadBarbers}
+									/>
+								</FormControl>
+							</FormGroup>
 						</div>
 					</>
 				) : null}

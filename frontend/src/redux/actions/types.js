@@ -10,6 +10,9 @@ export const REGISTER_FAIL = 'REGISTER_FAIL'
 export const LOGOUT = 'LOGOUT'
 
 // Meetings
+export const LOAD_BARBERS = 'LOAD_BARBERS'
+export const LOAD_CUSTOMERS = 'LOAD_CUSTOMERS'
+
 export const MEETINGS_LOADING = 'MEETINGS_LOADING'
 export const MEETINGS_CONNECT_WS = 'MEETINGS_CONNECT_WS'
 export const GET_MEETINGS = 'GET_MEETINGS'

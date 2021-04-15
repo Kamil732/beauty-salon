@@ -11,7 +11,6 @@ import ButtonContainer from '../../../layout/buttons/ButtonContainer'
 import Button from '../../../layout/buttons/Button'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
 import Modal from '../../../layout/Modal'
-import { NotificationManager } from 'react-notifications'
 
 import {
 	Calendar as BigCalendar,
@@ -34,7 +33,6 @@ class Calendar extends Component {
 		ws: PropTypes.object,
 		loading: PropTypes.bool,
 		meetings: PropTypes.array,
-		userChoiceList: PropTypes.array,
 		addMeeting: PropTypes.func.isRequired,
 		removeMeeting: PropTypes.func.isRequired,
 
@@ -164,7 +162,13 @@ class Calendar extends Component {
 	addMeeting = (data) => {
 		const { start } = this.state.selected
 		let { end } = this.state.selected
-		const { do_not_work, customer, customer_first_name, type } = data
+		const {
+			do_not_work,
+			customer,
+			customer_first_name,
+			barber,
+			type,
+		} = data
 
 		const payload = {
 			do_not_work,
@@ -172,6 +176,7 @@ class Calendar extends Component {
 			end,
 			customer,
 			customer_first_name,
+			barber,
 			type,
 		}
 
@@ -293,7 +298,10 @@ class Calendar extends Component {
 		if (
 			(!isAdminPanel &&
 				this.props.meetings.filter(
-					(meeting) => meeting.start <= date && meeting.end > date
+					(meeting) =>
+						!meeting.do_not_work &&
+						meeting.start <= date &&
+						meeting.end > date
 				).length >= one_slot_meetings_count) ||
 			this.props.meetings.filter(
 				(meeting) =>
@@ -312,7 +320,7 @@ class Calendar extends Component {
 		return {
 			className: isDisabled ? 'disabled' : '',
 			style: {
-				minHeight: isAdminPanel ? '60px' : 'auto',
+				minHeight: isAdminPanel ? '80px' : 'auto',
 			},
 		}
 	}
@@ -328,6 +336,11 @@ class Calendar extends Component {
 	}
 
 	onSelectSlot = (slot) => {
+		if (this.props.isAdminPanel) {
+			this.openModal('slot', slot)
+			return
+		}
+
 		const workingHours = this.checkWorkingHours(
 			moment(slot.start).format('dddd')
 		)
@@ -368,10 +381,9 @@ class Calendar extends Component {
 		}
 
 		if (
-			this.props.isAdminPanel ||
-			(eventsOnTheSlot < this.props.one_slot_meetings_count &&
-				!isNonWorkingHour &&
-				start !== 0)
+			eventsOnTheSlot < this.props.one_slot_meetings_count &&
+			!isNonWorkingHour &&
+			start !== 0
 		)
 			this.openModal('slot', slot)
 	}
@@ -407,7 +419,7 @@ class Calendar extends Component {
 								</>
 							)}
 							<br />
-							{selected?.title}
+							{selected?.full_title}
 						</Modal.Header>
 						<Modal.Body>
 							{selected.selected_type === 'event' ? (
@@ -431,7 +443,9 @@ class Calendar extends Component {
 									addMeeting={this.addMeeting}
 									doNotWork={
 										selected.slots.length > 2 ||
-										selected.start.getHours() === 0
+										selected.start.getHours() * 60 +
+											selected.start.getMinutes() ===
+											0
 									}
 								/>
 							) : (
@@ -483,7 +497,6 @@ const mapStateToProps = (state) => ({
 	ws: state.meetings.ws,
 	loading: state.meetings.loading,
 	meetings: state.meetings.data,
-	userChoiceList: state.meetings.userChoiceList,
 
 	one_slot_meetings_count: state.data.data.one_slot_meetings_count,
 	end_work_sunday: state.data.data.end_work_sunday,

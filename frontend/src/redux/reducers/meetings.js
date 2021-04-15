@@ -9,7 +9,6 @@ import {
 const initialState = {
 	loading: true,
 	data: [],
-	userChoiceList: [],
 	ws: null,
 }
 
