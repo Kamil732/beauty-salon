@@ -38,7 +38,7 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
         end = payload['end']
         customer = Account.objects.get(slug=payload['customer']) if payload['customer'] else None
         customer_first_name = payload['customer_first_name']
-        barber = Account.objects.get(slug=payload['barber'])
+        barber = Account.objects.get(slug=payload['barber']) if payload['barber'] else None
         type = payload['type'] if not(do_not_work) else Meeting.TYPES[2][0]
 
         meeting = Meeting.objects.create(

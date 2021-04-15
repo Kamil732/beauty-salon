@@ -67,13 +67,28 @@ class CustomerImageViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CustomerImageSerializer
     pagination_class = pagination.CustomerImagesPagination
 
-class ChoiceListAPIView(APIView):
-    permission_classes = (permissions.IsAdminUser,)
+class CustomerListAPIView(APIView):
+    # permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')
 
-        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(last_name__istartswith=search_field))[:10].values('slug', 'first_name', 'last_name')
+        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=True)[:10].values('slug', 'first_name', 'last_name')
+        res = [
+            {
+                'label': f"{account['first_name']} {account['last_name']}",
+                'value': account['slug'],
+            }
+            for account in accounts
+        ]
+
+        return Response(res)
+
+class BarberListAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        search_field = request.query_params.get('search', '')
+
+        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=False)[:10].values('slug', 'first_name', 'last_name')
         res = [
             {
                 'label': f"{account['first_name']} {account['last_name']}",
