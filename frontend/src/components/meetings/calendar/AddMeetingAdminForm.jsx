@@ -62,6 +62,19 @@ class AddMeetingAdminForm extends Component {
 
 		return (
 			<form onSubmit={this.onSubmit}>
+				{!this.props.doNotWork ? (
+					<FormControl>
+						<FormControl.CheckBoxLabel>
+							Nie pracuje
+							<FormControl.CheckBox
+								name="do_not_work"
+								checked={do_not_work}
+								onChange={this.onChange}
+							/>
+						</FormControl.CheckBoxLabel>
+					</FormControl>
+				) : null}
+
 				{do_not_work ? (
 					<>
 						<p>
