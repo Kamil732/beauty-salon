@@ -285,20 +285,24 @@ class Calendar extends Component {
 	}
 
 	slotPropGetter = (date) => {
-		const { isAdminPanel } = this.props
+		const { isAdminPanel, one_slot_meetings_count } = this.props
 		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
 		let isDisabled = workingHours.isNonWorkingHour
 
-		// Check if there is do_not_work type of meeting on the slot
-		const isNonWorkingHourOnTheSlot =
+		// Check if on the slot can be added meeting for non admin
+		if (
+			(!isAdminPanel &&
+				this.props.meetings.filter(
+					(meeting) => meeting.start <= date && meeting.end > date
+				).length >= one_slot_meetings_count) ||
 			this.props.meetings.filter(
 				(meeting) =>
 					meeting.do_not_work &&
 					meeting.start <= date &&
 					meeting.end > date
 			).length > 0
-
-		if (isNonWorkingHourOnTheSlot) isDisabled = true
+		)
+			isDisabled = true
 		else if (!isDisabled) {
 			date = date.getHours() * 60 + date.getMinutes()
 			isDisabled =
@@ -327,32 +331,31 @@ class Calendar extends Component {
 		const workingHours = this.checkWorkingHours(
 			moment(slot.start).format('dddd')
 		)
+		const start = slot.start.getHours() * 60 + slot.start.getMinutes()
+
 		let [eventsOnTheSlot, isNonWorkingHour] = [
 			false,
 			workingHours.isNonWorkingHour,
 		]
 
-		if (slot.start.getHours() !== 0) {
+		if (start !== 0) {
 			if (
-				!workingHours.isNonWorkingHour &&
 				// Check if slot is not between work hours
-				(slot.start.getHours() * 60 + slot.start.getMinutes() <
-					workingHours.start ||
-					slot.end.getHours() * 60 + slot.end.getMinutes() >
-						workingHours.end ||
-					// Check if there is any do_not_work type of meeting
-					this.props.meetings.filter(
-						(meeting) =>
-							meeting.do_not_work &&
-							((meeting.start >= slot.start &&
-								meeting.end <= slot.end) ||
-								(meeting.start <= slot.start &&
-									meeting.end >= slot.end) ||
-								(meeting.start >= slot.start &&
-									slot.end > meeting.start) ||
-								(meeting.end <= slot.end &&
-									slot.start < meeting.end))
-					).length > 0)
+				start < workingHours.start ||
+				start > workingHours.end - 30 ||
+				// Check if there is any do_not_work type of meeting
+				this.props.meetings.filter(
+					(meeting) =>
+						meeting.do_not_work &&
+						((meeting.start >= slot.start &&
+							meeting.end <= slot.end) ||
+							(meeting.start <= slot.start &&
+								meeting.end >= slot.end) ||
+							(meeting.start >= slot.start &&
+								slot.end > meeting.start) ||
+							(meeting.end <= slot.end &&
+								slot.start < meeting.end))
+				).length > 0
 			)
 				isNonWorkingHour = true
 
@@ -368,7 +371,7 @@ class Calendar extends Component {
 			this.props.isAdminPanel ||
 			(eventsOnTheSlot < this.props.one_slot_meetings_count &&
 				!isNonWorkingHour &&
-				slot.start.getHours() !== 0)
+				start !== 0)
 		)
 			this.openModal('slot', slot)
 	}
@@ -377,9 +380,7 @@ class Calendar extends Component {
 		const { isAdminPanel, loading } = this.props
 		const { windowWidth, selected } = this.state
 
-		const meetings = isAdminPanel
-			? this.props.meetings
-			: this.props.meetings.filter((meeting) => !meeting.do_not_work)
+		const meetings = isAdminPanel ? this.props.meetings : []
 
 		if (loading) return <BrickLoader />
 
