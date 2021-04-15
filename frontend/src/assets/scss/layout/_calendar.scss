@@ -1,10 +1,10 @@
 $current-time-color: green;
-$today-highlight-bg: #eee;
+$today-highlight-bg: rgba($secondary-color, 0.3);
 
-$event-bg: $primary-color;
+$event-bg: rgba($primary-color, 0.8);
 $event-border: none;
 $event-outline: none;
-$event-color: set-text-color($primary-color);
+$event-color: set-text-color($event-bg);
 $event-border-radius: 8px;
 $event-padding: 0;
 
@@ -71,21 +71,22 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-event-allday {
-	background-color: $error-color;
-	color: set-text-color($error-color);
+	$bg-color: rgba($error-color, 0.8);
+	background-color: $bg-color;
+	color: set-text-color($bg-color);
 
 	&.rbc-selected {
 		cursor: default;
-		background-color: darken($error-color, 20%);
-		color: set-text-color(darken($error-color, 20%));
+		background-color: darken($bg-color, 15%);
+		color: set-text-color(darken($bg-color, 15%));
 	}
 
 	&.selectable {
 		cursor: pointer;
 
 		&:hover {
-			background-color: darken($error-color, 20%);
-			color: set-text-color(darken($error-color, 20%));
+			background-color: darken($bg-color, 15%);
+			color: set-text-color(darken($bg-color, 15%));
 		}
 	}
 }
@@ -96,7 +97,7 @@ $rbc-css-prefix: calendar;
 	opacity: 0.7;
 
 	&:hover {
-		background-color: #ccc;
+		background-color: rgba(darken(#fff, 20%), 0.6);
 	}
 
 	&.disabled {
