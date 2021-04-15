@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import {
-	getMeetings,
-	addMeeting,
-	removeMeeting,
-} from '../../../redux/actions/meetings'
+import { addMeeting, removeMeeting } from '../../../redux/actions/meetings'
 
 import moment from 'moment'
 import 'moment/locale/pl'
@@ -39,10 +35,10 @@ class Calendar extends Component {
 		loading: PropTypes.bool,
 		meetings: PropTypes.array,
 		userChoiceList: PropTypes.array,
-		getMeetings: PropTypes.func.isRequired,
 		addMeeting: PropTypes.func.isRequired,
 		removeMeeting: PropTypes.func.isRequired,
 
+		one_slot_meetings_count: PropTypes.string,
 		end_work_sunday: PropTypes.string,
 		start_work_sunday: PropTypes.string,
 		end_work_saturday: PropTypes.string,
@@ -147,15 +143,11 @@ class Calendar extends Component {
 		})
 	}
 
-	componentDidMount = async () => {
+	componentDidMount = () =>
 		window.addEventListener('resize', this.updateWindowDimensions)
 
-		if (this.props.meetings.length === 0) this.props.getMeetings()
-	}
-
-	componentWillUnmount() {
+	componentWillUnmount = () =>
 		window.removeEventListener('resize', this.updateWindowDimensions)
-	}
 
 	deleteMeeting = () => {
 		const { selected } = this.state
@@ -297,7 +289,8 @@ class Calendar extends Component {
 		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
 		let isDisabled = workingHours.isNonWorkingHour
 
-		const isEventOnTheSlot =
+		// Check if there is do_not_work type of meeting on the slot
+		const isNonWorkingHourOnTheSlot =
 			this.props.meetings.filter(
 				(meeting) =>
 					meeting.do_not_work &&
@@ -305,7 +298,7 @@ class Calendar extends Component {
 					meeting.end > date
 			).length > 0
 
-		if (isEventOnTheSlot) isDisabled = true
+		if (isNonWorkingHourOnTheSlot) isDisabled = true
 		else if (!isDisabled) {
 			date = date.getHours() * 60 + date.getMinutes()
 			isDisabled =
@@ -334,7 +327,7 @@ class Calendar extends Component {
 		const workingHours = this.checkWorkingHours(
 			moment(slot.start).format('dddd')
 		)
-		let [isEventOnTheSlot, isNonWorkingHour] = [
+		let [eventsOnTheSlot, isNonWorkingHour] = [
 			false,
 			workingHours.isNonWorkingHour,
 		]
@@ -342,39 +335,42 @@ class Calendar extends Component {
 		if (slot.start.getHours() !== 0) {
 			if (
 				!workingHours.isNonWorkingHour &&
+				// Check if slot is not between work hours
 				(slot.start.getHours() * 60 + slot.start.getMinutes() <
 					workingHours.start ||
 					slot.end.getHours() * 60 + slot.end.getMinutes() >
-						workingHours.end)
+						workingHours.end ||
+					// Check if there is any do_not_work type of meeting
+					this.props.meetings.filter(
+						(meeting) =>
+							meeting.do_not_work &&
+							((meeting.start >= slot.start &&
+								meeting.end <= slot.end) ||
+								(meeting.start <= slot.start &&
+									meeting.end >= slot.end) ||
+								(meeting.start >= slot.start &&
+									slot.end > meeting.start) ||
+								(meeting.end <= slot.end &&
+									slot.start < meeting.end))
+					).length > 0)
 			)
 				isNonWorkingHour = true
 
+			// Check if there are events on the slot
 			if (!isNonWorkingHour)
-				isEventOnTheSlot =
-					this.props.meetings.filter(
-						(meeting) =>
-							(meeting.start >= slot.start &&
-								meeting.end <= slot.end) ||
-							(meeting.start <= slot.start &&
-								meeting.end >= slot.end) ||
-							(meeting.start >= slot.start &&
-								slot.end > meeting.start) ||
-							(meeting.end <= slot.end &&
-								slot.start < meeting.end)
-					).length > 0
+				eventsOnTheSlot = this.props.meetings.filter(
+					(meeting) =>
+						meeting.start >= slot.start && meeting.end <= slot.end
+				).length
 		}
 
 		if (
-			!isEventOnTheSlot &&
-			!isNonWorkingHour &&
-			(this.props.isAdminPanel ||
-				(slot.slots.length === 2 && slot.action !== 'select'))
+			this.props.isAdminPanel ||
+			(eventsOnTheSlot < this.props.one_slot_meetings_count &&
+				!isNonWorkingHour &&
+				slot.start.getHours() !== 0)
 		)
 			this.openModal('slot', slot)
-		else if (this.props.isAdminPanel)
-			NotificationManager.error(
-				'Nie mozna dodać wizyty na zaznaczonym polu'
-			)
 	}
 
 	render() {
@@ -488,6 +484,7 @@ const mapStateToProps = (state) => ({
 	meetings: state.meetings.data,
 	userChoiceList: state.meetings.userChoiceList,
 
+	one_slot_meetings_count: state.data.data.one_slot_meetings_count,
 	end_work_sunday: state.data.data.end_work_sunday,
 	start_work_sunday: state.data.data.start_work_sunday,
 	end_work_saturday: state.data.data.end_work_saturday,
@@ -505,7 +502,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-	getMeetings,
 	addMeeting,
 	removeMeeting,
 }
