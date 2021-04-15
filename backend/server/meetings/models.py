@@ -12,6 +12,7 @@ class Meeting(models.Model):
         ('do_not_work', 'NIE PRACUJE'),
     )
 
+    barber = models.ForeignKey(verbose_name='Fryzjer', to=Account, blank=True, null=True, on_delete=models.CASCADE)
     customer = models.ForeignKey(verbose_name='Konto Klienta', to=Account, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='meetings')
     customer_first_name = models.CharField(verbose_name='Imię Klienta', max_length=20, blank=True)
     type = models.CharField(verbose_name='Typ Wizyty', max_length=11, choices=TYPES)
@@ -22,8 +23,12 @@ class Meeting(models.Model):
         return self.type
 
     def clean(self):
-        if not(self.type == self.TYPES[2][0]) and not(self.customer) and not(self.customer_first_name):
-            raise ValidationError('Klient musi mieć imię')
+        if not(self.type == self.TYPES[2][0]):
+            if not(self.customer) and not(self.customer_first_name):
+                raise ValidationError('Klient musi mieć imię')
+
+            if not(self.barber) or not(self.barber.is_admin):
+                raise ValidationError('Wybrany fryzjer nie jest fryzjerem')
 
         if self.end and self.end <= self.start:
             raise ValidationError('Niepoprawna data wizyty')
