@@ -12,6 +12,10 @@
 	display: flex;
 	align-items: center;
 	gap: 1rem;
+
+	&.edit-mode {
+		margin-bottom: 1rem;
+	}
 }
 
 .unique-text {

@@ -47,6 +47,20 @@
 		}
 	}
 
+	&__success {
+		border-color: $success-color;
+		background-color: $success-color;
+		color: set-text-color($success-color);
+
+		&:hover {
+			$hover-color: darken($success-color, 15%);
+			border-color: $hover-color;
+			border-bottom-color: $success-color;
+			background-color: $hover-color;
+			color: set-text-color($hover-color);
+		}
+	}
+
 	&__danger {
 		border-color: $error-color;
 		background-color: $error-color;

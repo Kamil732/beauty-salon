@@ -52,12 +52,14 @@ $rbc-css-prefix: calendar;
 	&-label {
 		text-align: center;
 		min-width: 100%;
+		padding: 0 5px;
 	}
 
 	&-content {
 		font-size: 0.9em;
 		width: 100%;
 		flex: 0 1;
+		padding: 0 5px;
 	}
 
 	&.selectable {
@@ -114,6 +116,8 @@ $rbc-css-prefix: calendar;
 
 .rbc-current-time-indicator {
 	height: 2px;
+	width: 120%;
+	left: -10%;
 }
 
 @include media-tablet {
