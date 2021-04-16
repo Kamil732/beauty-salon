@@ -7,6 +7,7 @@ from channels.db import database_sync_to_async
 from meetings.models import Meeting
 from meetings.api.serializers import AdminMeetingSerializer
 
+from data.models import Data
 from accounts.models import Account
 
 class MeetingConsumer(AsyncJsonWebsocketConsumer):
@@ -29,28 +30,44 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def delete_meeting(self, id):
-        Meeting.objects.get(id=id).delete()
+        try:
+            Meeting.objects.get(id=id).delete()
+        except:
+            self.close()
 
     @database_sync_to_async
     def create_meeting(self, payload):
         do_not_work = payload.get('do_not_work')
         start = payload['start']
         end = payload['end']
-        customer = Account.objects.get(slug=payload['customer']) if payload['customer'] else None
         customer_first_name = payload['customer_first_name']
-        barber = Account.objects.get(slug=payload['barber']) if payload['barber'] else None
         type = payload['type'] if not(do_not_work) else Meeting.TYPES[2][0]
 
-        meeting = Meeting.objects.create(
-            start=start,
-            end=end,
-            customer=customer,
-            customer_first_name=customer_first_name,
-            barber=barber,
-            type=type
-        )
+        try:
+            customer = Account.objects.get(slug=payload['customer']) if payload['customer'] else None
+            barber = Account.objects.get(slug=payload['barber']) if payload['barber'] else None
+            meeting = Meeting.objects.create(
+                start=start,
+                end=end,
+                customer=customer,
+                customer_first_name=customer_first_name,
+                barber=barber,
+                type=type
+            )
+        except:
+            self.close()
 
         return AdminMeetingSerializer(meeting).data
+
+    @database_sync_to_async
+    def update_data(self, payload):
+        try:
+            data = Data.objects.get(name=payload['name'])
+        except:
+            self.close()
+
+        data.value = payload['value']
+        data.save()
 
     async def receive(self, text_data):
         response = json.loads(text_data)
@@ -61,17 +78,19 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
             await self.delete_meeting(payload)
         elif event == 'ADD_MEETING':
             payload = await self.create_meeting(payload)
+        elif event == 'UPDATE_DATA':
+            await self.update_data(payload)
 
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'send_meeting',
+                'type': 'send_data',
                 'event': event,
                 'payload': payload,
             }
         )
 
-    async def send_meeting(self, event):
+    async def send_data(self, event):
         await self.send(text_data=json.dumps({
             'event': event['event'],
             'payload': event['payload'],
