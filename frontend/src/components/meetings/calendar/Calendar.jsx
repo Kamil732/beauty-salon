@@ -392,7 +392,9 @@ class Calendar extends Component {
 		const { isAdminPanel, loading } = this.props
 		const { windowWidth, selected } = this.state
 
-		const meetings = isAdminPanel ? this.props.meetings : []
+		const meetings = isAdminPanel
+			? this.props.meetings
+			: this.props.meetings.filter((meeting) => meeting.allDay)
 
 		if (loading) return <BrickLoader />
 

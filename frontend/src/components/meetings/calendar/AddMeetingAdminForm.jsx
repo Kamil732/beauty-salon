@@ -212,7 +212,7 @@ class AddMeetingAdminForm extends Component {
 						</Button>
 					</>
 				) : (
-					<Button primary center>
+					<Button success center>
 						Zapisz wizytę
 					</Button>
 				)}

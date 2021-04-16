@@ -7,6 +7,7 @@ function Button({
 	to,
 	primary,
 	secondary,
+	success,
 	danger,
 	loading,
 	small,
@@ -20,11 +21,11 @@ function Button({
 				to={to}
 				className={`btn${primary ? ' btn__primary' : ''}${
 					secondary ? ' btn__secondary' : ''
-				}${danger ? ' btn__danger' : ''}${
-					loading ? ' btn__loading' : ''
-				}${to ? ' btn__link' : ''}${small ? ' btn__small' : ''}${
-					center ? ' center' : ''
-				}`}
+				}${success ? ' btn__success' : ''}${
+					danger ? ' btn__danger' : ''
+				}${loading ? ' btn__loading' : ''}${to ? ' btn__link' : ''}${
+					small ? ' btn__small' : ''
+				}${center ? ' center' : ''}`}
 				disabled={loading}
 				{...props}
 			>
@@ -37,9 +38,11 @@ function Button({
 		<button
 			className={`btn${primary ? ' btn__primary' : ''}${
 				secondary ? ' btn__secondary' : ''
-			}${danger ? ' btn__danger' : ''}${loading ? ' btn__loading' : ''}${
-				to ? ' btn__link' : ''
-			}${small ? ' btn__small' : ''}${center ? ' center' : ''}`}
+			}${success ? ' btn__success' : ''}${danger ? ' btn__danger' : ''}${
+				loading ? ' btn__loading' : ''
+			}${to ? ' btn__link' : ''}${small ? ' btn__small' : ''}${
+				center ? ' center' : ''
+			}`}
 			disabled={loading}
 			{...props}
 		>
@@ -53,6 +56,7 @@ Button.prototype.propTypes = {
 	loadingText: PropTypes.string,
 	primary: PropTypes.bool,
 	secondary: PropTypes.bool,
+	success: PropTypes.bool,
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	center: PropTypes.bool,

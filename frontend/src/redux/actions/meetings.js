@@ -78,6 +78,11 @@ export const connectWebSocket = () => (dispatch) => {
 			dispatch(removeMeeting(data.payload))
 		else if (data.event === 'ADD_MEETING')
 			dispatch(addMeeting(data.payload))
+		else if (data.event === 'UPDATE_DATA')
+			dispatch({
+				type: data.event,
+				payload: data.payload,
+			})
 	}
 
 	ws.onclose = (e) => {
@@ -118,8 +123,6 @@ export const connectWebSocket = () => (dispatch) => {
 }
 
 export const getMeetings = () => async (dispatch) => {
-	await dispatch(connectWebSocket())
-
 	try {
 		const res = await axios.get(
 			`${process.env.REACT_APP_API_URL}/meetings/`
@@ -141,4 +144,6 @@ export const getMeetings = () => async (dispatch) => {
 
 		setTimeout(dispatch(getMeetings()), 2000)
 	}
+
+	await dispatch(connectWebSocket())
 }

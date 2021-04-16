@@ -23,12 +23,12 @@ export default function (state = initialState, action) {
 		case MEETINGS_CONNECT_WS:
 			return {
 				...state,
+				loading: false,
 				ws: action.payload,
 			}
 		case GET_MEETINGS:
 			return {
 				...state,
-				loading: false,
 				data: action.payload,
 			}
 		case ADD_MEETING:

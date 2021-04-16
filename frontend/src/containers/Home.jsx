@@ -15,6 +15,7 @@ import Calendar from '../components/meetings/calendar/Calendar'
 import WorkHours from '../components/meetings/WorkHours'
 import Card from '../layout/cards/Card'
 import Pricing from '../components/meetings/Pricing'
+import EditBox from '../layout/forms/EditBox'
 
 function Home({
 	home_title,
@@ -26,12 +27,17 @@ function Home({
 		<PageHero>
 			<PageHero.Body>
 				<PageHero.Content>
-					{home_title ? (
-						<PageHero.Title>{home_title}</PageHero.Title>
-					) : null}
-					{home_content ? (
-						<PageHero.Text>{home_content}</PageHero.Text>
-					) : null}
+					<EditBox name="home_title" value={home_title} textarea>
+						{home_title ? (
+							<PageHero.Title>{home_title}</PageHero.Title>
+						) : null}
+					</EditBox>
+
+					<EditBox name="home_content" value={home_content} textarea>
+						{home_content ? (
+							<PageHero.Text>{home_content}</PageHero.Text>
+						) : null}
+					</EditBox>
 
 					<ButtonContainer style={{ marginTop: '2rem' }}>
 						<Button primary to="/my-meetings">
