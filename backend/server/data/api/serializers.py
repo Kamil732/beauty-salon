@@ -6,3 +6,4 @@ class DataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Data
         fields = ('name', 'value',)
+        read_only_fields = ('name',)
