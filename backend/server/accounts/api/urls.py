@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register('gallery', views.CustomerImageViewSet)
+router.register('gallery', views.CustomerImageViewSet, basename='gallery')
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -14,7 +14,7 @@ urlpatterns = [
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
     path('current/', views.CurrentAccountAPIView.as_view(), name='current-account'),
     path('choice-list/', include([
-        path('customers/', views.CustomerListAPIView.as_view(), name='customer-list'),
-        path('barbers/', views.BarberListAPIView.as_view(), name='barber-list'),
+        path('customers/', views.CustomerListAPIView.as_view(), name='customer-choice-list'),
+        path('barbers/', views.BarberListAPIView.as_view(), name='barber-choice-list'),
     ])),
 ]

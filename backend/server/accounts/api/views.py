@@ -9,7 +9,7 @@ from django.contrib import auth
 
 from . import serializers
 from . import pagination
-from server.permissions import IsAdminOrReadOnly
+from server.permissions import IsAdminOrReadOnly, IsAdmin
 from accounts.models import CustomerImage, Account
 
 
@@ -49,7 +49,7 @@ class LoginAPIView(APIView):
                 'message': 'Pomyślnie zalogowano',
                 'user': serializers.AccountSerializer(user).data,
             }, status=status.HTTP_200_OK)
-        raise ValidationError({ 'detail': 'Email lub hasło jest niepoprawne' })
+        raise ValidationError({'detail': 'Email lub hasło jest niepoprawne'})
 
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -59,27 +59,30 @@ class LogoutAPIView(APIView):
     def post(self, request, format=None):
         auth.logout(request)
 
-        return Response({ 'message': 'Pomyślnie wylogowano' })
+        return Response({'message': 'Pomyślnie wylogowano'})
+
 
 @method_decorator(csrf_protect, name='list')
 @method_decorator(csrf_protect, name='update')
 @method_decorator(csrf_protect, name='destroy')
 class CustomerImageViewSet(mixins.ListModelMixin,
-                            mixins.UpdateModelMixin,
-                            mixins.DestroyModelMixin,
-                            viewsets.GenericViewSet):
+                           mixins.UpdateModelMixin,
+                           mixins.DestroyModelMixin,
+                           viewsets.GenericViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     queryset = CustomerImage.objects.order_by('-id')
     serializer_class = serializers.CustomerImageSerializer
     pagination_class = pagination.CustomerImagesPagination
 
+
 class CustomerListAPIView(APIView):
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (IsAdmin,)
 
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')
 
-        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=True)[:10].values('slug', 'first_name', 'last_name')
+        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(
+            last_name__istartswith=search_field)).exclude(is_admin=True)[:10].values('slug', 'first_name', 'last_name')
         res = [
             {
                 'label': f"{account['first_name']} {account['last_name']}",
@@ -90,11 +93,13 @@ class CustomerListAPIView(APIView):
 
         return Response(res)
 
+
 class BarberListAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')
 
-        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=False)[:10].values('slug', 'first_name', 'last_name')
+        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(
+            last_name__istartswith=search_field)).exclude(is_admin=False)[:10].values('slug', 'first_name', 'last_name')
         res = [
             {
                 'label': f"{account['first_name']} {account['last_name']}",

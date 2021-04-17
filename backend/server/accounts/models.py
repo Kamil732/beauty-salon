@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 from autoslug import AutoSlugField
 
+
 class AccountManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, phone_number, password=None):
         if not email:
@@ -51,7 +52,7 @@ class Account(AbstractBaseUser):
     phone_number = PhoneNumberField(verbose_name='Numer telefonu')
     fax_number = PhoneNumberField(verbose_name='Zapasowy Numer telefonu', blank=True)
 
-    is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=False)
+    is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=True)
     is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
     is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
     is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
@@ -69,6 +70,7 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+
 
 class CustomerImage(models.Model):
     image = models.ImageField(upload_to='customer_images/%Y/%m/%d/')
