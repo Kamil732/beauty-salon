@@ -4,6 +4,7 @@ import {
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
+	UPDATE_DATA,
 } from './types'
 
 import moment from 'moment'
@@ -11,17 +12,19 @@ import moment from 'moment'
 import { NotificationManager } from 'react-notifications'
 import axios from 'axios'
 
+// Helper function
 const setMeeting = (data) => {
 	data.start = moment.utc(data.start).toDate()
 	data.end = moment.utc(data.end).toDate()
 
 	if (data.customer_first_name) {
-		data.title = `${data.customer_first_name}, fr. ${data.barber_first_name}`
+		data.title = data.customer_first_name
 		data.full_title = `${data.customer_first_name}, fr. ${data.barber_first_name}, ${data.type}`
 	}
 
 	if (data.do_not_work) {
 		data.title = 'NIE PRACUJE'
+		data.full_title = 'NIE PRACUJE'
 
 		if (parseInt(moment(data.end).hours()) === 0) {
 			data.end = moment(data.end).add(23, 'hours')
@@ -74,11 +77,9 @@ export const connectWebSocket = () => (dispatch) => {
 	ws.onmessage = (e) => {
 		const data = JSON.parse(e.data)
 
-		if (data.event === 'DELETE_MEETING')
-			dispatch(removeMeeting(data.payload))
-		else if (data.event === 'ADD_MEETING')
-			dispatch(addMeeting(data.payload))
-		else if (data.event === 'UPDATE_DATA')
+		if (data.event === REMOVE_MEETING) dispatch(removeMeeting(data.payload))
+		else if (data.event === ADD_MEETING) dispatch(addMeeting(data.payload))
+		else if (data.event === UPDATE_DATA)
 			dispatch({
 				type: data.event,
 				payload: data.payload,

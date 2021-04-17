@@ -6,6 +6,7 @@ import FormGroup from '../../../layout/forms/FormGroup'
 import Button from '../../../layout/buttons/Button'
 import axios from 'axios'
 import NotificationManager from 'react-notifications/lib/NotificationManager'
+import CSRFToken from '../../CSRFToken'
 
 class AddMeetingAdminForm extends Component {
 	static propTypes = {
@@ -68,7 +69,7 @@ class AddMeetingAdminForm extends Component {
 			return res.data
 		} catch (err) {
 			NotificationManager.error(
-				'Nie udało się załadować listy fryzjerów',
+				'Nie udało się załadować listy klientów',
 				'Błąd',
 				4000
 			)
@@ -86,6 +87,8 @@ class AddMeetingAdminForm extends Component {
 
 		return (
 			<form onSubmit={this.onSubmit}>
+				<CSRFToken />
+
 				{!this.props.doNotWork ? (
 					<>
 						<FormControl>

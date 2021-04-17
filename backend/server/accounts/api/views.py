@@ -1,7 +1,7 @@
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, generics, status, viewsets
+from rest_framework import permissions, generics, status, viewsets, mixins
 from rest_framework.exceptions import ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
@@ -61,14 +61,20 @@ class LogoutAPIView(APIView):
 
         return Response({ 'message': 'Pomyślnie wylogowano' })
 
-class CustomerImageViewSet(viewsets.ModelViewSet):
+@method_decorator(csrf_protect, name='list')
+@method_decorator(csrf_protect, name='update')
+@method_decorator(csrf_protect, name='destroy')
+class CustomerImageViewSet(mixins.ListModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     queryset = CustomerImage.objects.order_by('-id')
     serializer_class = serializers.CustomerImageSerializer
     pagination_class = pagination.CustomerImagesPagination
 
 class CustomerListAPIView(APIView):
-    # permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')

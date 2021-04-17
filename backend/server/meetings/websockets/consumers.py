@@ -7,7 +7,6 @@ from channels.db import database_sync_to_async
 from meetings.models import Meeting
 from meetings.api.serializers import AdminMeetingSerializer
 
-from data.models import Data
 from accounts.models import Account
 
 class MeetingConsumer(AsyncJsonWebsocketConsumer):
@@ -28,58 +27,10 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
-    @database_sync_to_async
-    def delete_meeting(self, id):
-        try:
-            Meeting.objects.get(id=id).delete()
-        except:
-            self.close()
-
-    @database_sync_to_async
-    def create_meeting(self, payload):
-        do_not_work = payload.get('do_not_work')
-        start = payload['start']
-        end = payload['end']
-        customer_first_name = payload['customer_first_name']
-        type = payload['type'] if not(do_not_work) else Meeting.TYPES[2][0]
-
-        try:
-            customer = Account.objects.get(slug=payload['customer']) if payload['customer'] else None
-            barber = Account.objects.get(slug=payload['barber']) if payload['barber'] else None
-            meeting = Meeting.objects.create(
-                start=start,
-                end=end,
-                customer=customer,
-                customer_first_name=customer_first_name,
-                barber=barber,
-                type=type
-            )
-        except:
-            self.close()
-
-        return AdminMeetingSerializer(meeting).data
-
-    @database_sync_to_async
-    def update_data(self, payload):
-        try:
-            data = Data.objects.get(name=payload['name'])
-        except:
-            self.close()
-
-        data.value = payload['value']
-        data.save()
-
     async def receive(self, text_data):
         response = json.loads(text_data)
         event = response.get('event')
         payload = response.get('payload')
-
-        if event == 'DELETE_MEETING':
-            await self.delete_meeting(payload)
-        elif event == 'ADD_MEETING':
-            payload = await self.create_meeting(payload)
-        elif event == 'UPDATE_DATA':
-            await self.update_data(payload)
 
         await self.channel_layer.group_send(
             self.room_group_name,

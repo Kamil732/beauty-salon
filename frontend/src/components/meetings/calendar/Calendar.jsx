@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import getHeaders from '../../../helpers/getHeaders'
 import { addMeeting, removeMeeting } from '../../../redux/actions/meetings'
 
 import moment from 'moment'
 import 'moment/locale/pl'
 
 import Card from '../../../layout/cards/Card'
-import ButtonContainer from '../../../layout/buttons/ButtonContainer'
-import Button from '../../../layout/buttons/Button'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
 import Modal from '../../../layout/Modal'
 
@@ -22,6 +21,10 @@ import AddMeetingAdminForm from './AddMeetingAdminForm'
 import { connect } from 'react-redux'
 import Legend from './Legend'
 import AddMeetingForm from './AddMeetingForm'
+import axios from 'axios'
+import { NotificationManager } from 'react-notifications'
+import EditMeetingAdminForm from './EditMeetingAdminForm'
+import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -147,21 +150,30 @@ class Calendar extends Component {
 	componentWillUnmount = () =>
 		window.removeEventListener('resize', this.updateWindowDimensions)
 
-	deleteMeeting = () => {
+	deleteMeeting = async () => {
 		const { selected } = this.state
 
-		this.props.ws.send(
-			JSON.stringify({
-				event: 'DELETE_MEETING',
-				payload: selected.id,
-			})
-		)
-		this.setState({ selected: {} })
+		try {
+			await axios.delete(
+				`${process.env.REACT_APP_API_URL}/meetings/${selected.id}/`,
+				getHeaders(true)
+			)
+
+			this.props.ws.send(
+				JSON.stringify({
+					event: REMOVE_MEETING,
+					payload: selected.id,
+				})
+			)
+
+			this.setState({ selected: {} })
+		} catch (err) {
+			NotificationManager.error('Nie udało się usunąć wizyty', 'błąd')
+		}
 	}
 
-	addMeeting = (data) => {
-		const { start } = this.state.selected
-		let { end } = this.state.selected
+	addMeeting = async (data) => {
+		const { start, end } = this.state.selected
 		const {
 			do_not_work,
 			customer,
@@ -170,23 +182,32 @@ class Calendar extends Component {
 			type,
 		} = data
 
-		const payload = {
-			do_not_work,
-			start,
-			end,
-			customer,
-			customer_first_name,
-			barber,
-			type,
-		}
-
-		this.props.ws.send(
-			JSON.stringify({
-				event: 'ADD_MEETING',
-				payload,
+		try {
+			const body = JSON.stringify({
+				start,
+				end,
+				customer,
+				customer_first_name,
+				barber,
+				type: do_not_work ? 'do_not_work' : type,
 			})
-		)
-		this.setState({ selected: {} })
+
+			const res = await axios.post(
+				`${process.env.REACT_APP_API_URL}/meetings/`,
+				body,
+				getHeaders(true)
+			)
+
+			this.props.ws.send(
+				JSON.stringify({
+					event: ADD_MEETING,
+					payload: res.data,
+				})
+			)
+			this.setState({ selected: {} })
+		} catch (err) {
+			NotificationManager.error('Nie udało się zapisać wizyty', 'błąd')
+		}
 	}
 
 	checkWorkingHours = (weekDay) => {
@@ -425,21 +446,10 @@ class Calendar extends Component {
 						</Modal.Header>
 						<Modal.Body>
 							{selected.selected_type === 'event' ? (
-								<ButtonContainer>
-									<Button primary small>
-										Edytuj
-									</Button>
-									<Button
-										danger
-										small
-										onClick={this.deleteMeeting}
-									>
-										Usuń{' '}
-										{selected.do_not_work
-											? 'wolne od pracy'
-											: 'wizytę'}
-									</Button>
-								</ButtonContainer>
+								<EditMeetingAdminForm
+									deleteMeeting={this.deleteMeeting}
+									selected={selected}
+								/>
 							) : isAdminPanel ? (
 								<AddMeetingAdminForm
 									addMeeting={this.addMeeting}
