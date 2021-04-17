@@ -109,11 +109,6 @@ function Home({
 
 				<Calendar />
 			</PageHero.Body>
-			<PageHero.Body vertical>
-				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
-
-				<Calendar isAdminPanel />
-			</PageHero.Body>
 		</PageHero>
 	)
 }

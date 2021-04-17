@@ -10,26 +10,17 @@ import {
 	AUTH_ERROR,
 } from './types'
 
-import Cookies from 'js-cookie'
+import getHeaders from '../../helpers/getHeaders'
 
 import { NotificationManager } from 'react-notifications'
 
 export const loadUser = () => async (dispatch) => {
 	dispatch({ type: AUTH_LOADING })
 
-	const config = {
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			'Accept-Language': 'en',
-			'X-CSRFToken': Cookies.get('csrftoken'),
-		},
-	}
-
 	try {
 		const res = await axios.get(
 			`${process.env.REACT_APP_API_URL}/accounts/current/`,
-			config
+			getHeaders(true)
 		)
 
 		dispatch({
@@ -50,20 +41,11 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 		'g-recaptcha-response': recaptchaToken,
 	})
 
-	const config = {
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			'Accept-Language': 'en',
-			'X-CSRFToken': Cookies.get('csrftoken'),
-		},
-	}
-
 	try {
 		const res = await axios.post(
 			`${process.env.REACT_APP_API_URL}/accounts/login/`,
 			body,
-			config
+			getHeaders(true)
 		)
 
 		dispatch({
@@ -98,20 +80,11 @@ export const signUp = (
 		'g-recaptcha-response': recaptchaToken,
 	})
 
-	const config = {
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			'Accept-Language': 'en',
-			'X-CSRFToken': Cookies.get('csrftoken'),
-		},
-	}
-
 	try {
 		const res = await axios.post(
 			`${process.env.REACT_APP_API_URL}/accounts/signup/`,
 			body,
-			config
+			getHeaders(true)
 		)
 
 		dispatch({
@@ -135,14 +108,6 @@ export const signUp = (
 }
 
 export const logout = () => async (dispatch) => {
-	const config = {
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			'X-CSRFToken': Cookies.get('csrftoken'),
-		},
-	}
-
 	const body = JSON.stringify({
 		withCredentials: true,
 	})
@@ -151,7 +116,7 @@ export const logout = () => async (dispatch) => {
 		const res = await axios.post(
 			`${process.env.REACT_APP_API_URL}/accounts/logout/`,
 			body,
-			config
+			getHeaders(true)
 		)
 
 		dispatch({
