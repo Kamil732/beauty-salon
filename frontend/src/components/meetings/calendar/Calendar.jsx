@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
-import getHeaders from '../../../helpers/getHeaders'
-import { addMeeting, removeMeeting } from '../../../redux/actions/meetings'
+import { connect } from 'react-redux'
 
 import moment from 'moment'
 import 'moment/locale/pl'
+import getHeaders from '../../../helpers/getHeaders'
+import { NotificationManager } from 'react-notifications'
+
+import axios from 'axios'
+import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
+import { loadMeetings, addLoadedDate } from '../../../redux/actions/meetings'
 
 import Card from '../../../layout/cards/Card'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
@@ -18,13 +22,9 @@ import {
 } from 'react-big-calendar'
 import Toolbar from './Toolbar'
 import AddMeetingAdminForm from './AddMeetingAdminForm'
-import { connect } from 'react-redux'
 import Legend from './Legend'
 import AddMeetingForm from './AddMeetingForm'
-import axios from 'axios'
-import { NotificationManager } from 'react-notifications'
 import EditMeetingAdminForm from './EditMeetingAdminForm'
-import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -36,8 +36,9 @@ class Calendar extends Component {
 		ws: PropTypes.object,
 		loading: PropTypes.bool,
 		meetings: PropTypes.array,
-		addMeeting: PropTypes.func.isRequired,
-		removeMeeting: PropTypes.func.isRequired,
+		loadedDates: PropTypes.array,
+		loadMeetings: PropTypes.func.isRequired,
+		addLoadedDate: PropTypes.func.isRequired,
 
 		one_slot_meetings_count: PropTypes.string,
 		end_work_sunday: PropTypes.string,
@@ -121,6 +122,7 @@ class Calendar extends Component {
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
+		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
 		this.slotPropGetter = this.slotPropGetter.bind(this)
 		this.onSelecting = this.onSelecting.bind(this)
@@ -310,6 +312,27 @@ class Calendar extends Component {
 		}
 	}
 
+	onRangeChange = async (dates) => {
+		const from = moment(dates[0]).startOf('week').format('YYYY-MM-DD')
+		const to = moment(dates[dates.length - 1]).format('YYYY-MM-DD')
+
+		if (!this.props.loadedDates.includes(from)) {
+			try {
+				const res = await axios.get(
+					`${process.env.REACT_APP_API_URL}/meetings/?from=${from}&to=${to}`
+				)
+
+				this.props.loadMeetings(res.data)
+				this.props.addLoadedDate(from)
+			} catch (err) {
+				NotificationManager.error(
+					'Nie udało się załadować wizyt',
+					'Błąd'
+				)
+			}
+		}
+	}
+
 	slotPropGetter = (date) => {
 		const { isAdminPanel, one_slot_meetings_count } = this.props
 		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
@@ -473,6 +496,7 @@ class Calendar extends Component {
 					</Card.Body>
 					<Card.Body>
 						<BigCalendar
+							onRangeChange={this.onRangeChange}
 							localizer={localizer}
 							events={meetings}
 							step={30}
@@ -509,6 +533,7 @@ const mapStateToProps = (state) => ({
 	ws: state.meetings.ws,
 	loading: state.meetings.loading,
 	meetings: state.meetings.data,
+	loadedDates: state.meetings.loadedDates,
 
 	one_slot_meetings_count: state.data.data.one_slot_meetings_count,
 	end_work_sunday: state.data.data.end_work_sunday,
@@ -528,8 +553,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-	addMeeting,
-	removeMeeting,
+	loadMeetings,
+	addLoadedDate,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

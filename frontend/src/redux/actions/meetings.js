@@ -5,6 +5,8 @@ import {
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
 	UPDATE_DATA,
+	LOAD_MEETINGS,
+	ADD_LOADED_DATE,
 } from './types'
 
 import moment from 'moment'
@@ -33,6 +35,22 @@ const setMeeting = (data) => {
 	}
 
 	return data
+}
+
+export const addLoadedDate = (date) => (dispatch) => {
+	dispatch({
+		type: ADD_LOADED_DATE,
+		payload: date,
+	})
+}
+
+export const loadMeetings = (data) => (dispatch) => {
+	for (let i = 0; i < data.length; i++) data[i] = setMeeting(data[i])
+
+	dispatch({
+		type: LOAD_MEETINGS,
+		payload: data,
+	})
 }
 
 export const addMeeting = (data) => (dispatch) => {
@@ -123,7 +141,7 @@ export const connectWebSocket = () => (dispatch) => {
 	}
 }
 
-export const getMeetings = () => async (dispatch) => {
+export const getMeetings = () => async (dispatch, getState) => {
 	try {
 		const res = await axios.get(
 			`${process.env.REACT_APP_API_URL}/meetings/`
@@ -136,15 +154,20 @@ export const getMeetings = () => async (dispatch) => {
 			type: GET_MEETINGS,
 			payload: data,
 		})
+
+		const startOfWekk = moment().startOf('week').format('YYYY-MM-DD')
+		if (!getState().meetings.loadedDates.includes(startOfWekk))
+			dispatch({
+				type: ADD_LOADED_DATE,
+				payload: startOfWekk,
+			})
 	} catch (err) {
 		NotificationManager.error(
 			'Nie udało się załadować wizyt, następna próba za 2s',
 			'Błąd',
-			3000
+			1500
 		)
 
 		setTimeout(dispatch(getMeetings()), 2000)
 	}
-
-	await dispatch(connectWebSocket())
 }
