@@ -3,10 +3,11 @@ from django.views.decorators.csrf import csrf_protect
 
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
-from rest_framework import permissions
 
+from server.permissions import IsAdmin
 from data.models import Data
 from . import serializers
+
 
 class DataListAPIView(ListAPIView):
     queryset = Data.objects.all()
@@ -23,9 +24,10 @@ class DataListAPIView(ListAPIView):
 
         return Response(data)
 
+
 @method_decorator(csrf_protect, name='dispatch')
 class UpdateDataAPIView(UpdateAPIView):
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (IsAdmin,)
     serializer_class = serializers.DataSerializer
     queryset = Data.objects.all()
     lookup_field = 'name'
