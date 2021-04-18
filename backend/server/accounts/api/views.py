@@ -63,9 +63,11 @@ class LogoutAPIView(APIView):
 
 
 @method_decorator(csrf_protect, name='list')
+@method_decorator(csrf_protect, name='create')
 @method_decorator(csrf_protect, name='update')
 @method_decorator(csrf_protect, name='destroy')
-class CustomerImageViewSet(mixins.ListModelMixin,
+class CustomerImageViewSet(mixins.CreateModelMixin,
+                           mixins.ListModelMixin,
                            mixins.UpdateModelMixin,
                            mixins.DestroyModelMixin,
                            viewsets.GenericViewSet):
