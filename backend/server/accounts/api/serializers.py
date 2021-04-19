@@ -7,7 +7,7 @@ from accounts.models import Account, CustomerImage
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('id', 'first_name', 'last_name', 'is_admin',)
+        fields = ('id', 'email', 'phone_number', 'fax_number', 'first_name', 'last_name', 'slug', 'is_admin',)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -34,6 +34,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = data['password']
 
         return Account.objects.create_user(email=email, password=password)
+
 
 class CustomerImageSerializer(serializers.ModelSerializer):
     class Meta:

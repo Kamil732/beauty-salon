@@ -84,11 +84,11 @@ class CustomerListAPIView(APIView):
         search_field = request.query_params.get('search', '')
 
         accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(
-            last_name__istartswith=search_field)).exclude(is_admin=True)[:10].values('slug', 'first_name', 'last_name')
+            last_name__istartswith=search_field)).exclude(is_admin=True)[:10]
         res = [
             {
-                'label': f"{account['first_name']} {account['last_name']}",
-                'value': account['slug'],
+                'label': account.get_full_name(),
+                'value': serializers.AccountSerializer(account).data,
             }
             for account in accounts
         ]
