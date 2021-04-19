@@ -19,10 +19,7 @@ const setMeeting = (data) => {
 	data.start = moment.utc(data.start).toDate()
 	data.end = moment.utc(data.end).toDate()
 
-	if (data.customer_first_name) {
-		data.title = data.customer_first_name
-		data.full_title = `${data.customer_first_name}, fr. ${data.barber_first_name}, ${data.type}`
-	}
+	if (data.customer_first_name) data.title = data.customer_first_name
 
 	if (data.do_not_work) {
 		data.title = 'NIE PRACUJE'
@@ -44,13 +41,27 @@ export const addLoadedDate = (date) => (dispatch) => {
 	})
 }
 
-export const loadMeetings = (data) => (dispatch) => {
-	for (let i = 0; i < data.length; i++) data[i] = setMeeting(data[i])
+export const loadMeetings = (from, to) => async (dispatch, getState) => {
+	if (!getState().meetings.loadedDates.includes(from)) {
+		dispatch({ type: MEETINGS_LOADING })
 
-	dispatch({
-		type: LOAD_MEETINGS,
-		payload: data,
-	})
+		try {
+			let res = await axios.get(
+				`${process.env.REACT_APP_API_URL}/meetings/?from=${from}&to=${to}`
+			)
+
+			for (let i = 0; i < res.data.length; i++)
+				res.data[i] = setMeeting(res.data[i])
+
+			dispatch({
+				type: LOAD_MEETINGS,
+				payload: res.data,
+			})
+			dispatch(addLoadedDate(from))
+		} catch (err) {
+			NotificationManager.error('Nie udało się załadować wizyt', 'Błąd')
+		}
+	}
 }
 
 export const addMeeting = (data) => (dispatch) => {

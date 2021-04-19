@@ -43,6 +43,7 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				data: [...state.data, ...action.payload],
+				loading: false,
 			}
 		case ADD_MEETING:
 			return { ...state, data: [...state.data, action.payload] }

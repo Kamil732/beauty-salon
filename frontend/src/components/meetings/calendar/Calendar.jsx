@@ -180,6 +180,9 @@ class Calendar extends Component {
 			do_not_work,
 			customer,
 			customer_first_name,
+			customer_last_name,
+			customer_phone_number,
+			customer_fax_number,
 			barber,
 			type,
 		} = data
@@ -190,6 +193,9 @@ class Calendar extends Component {
 				end,
 				customer,
 				customer_first_name,
+				customer_last_name,
+				customer_phone_number,
+				customer_fax_number,
 				barber,
 				type: do_not_work ? 'do_not_work' : type,
 			})
@@ -316,21 +322,7 @@ class Calendar extends Component {
 		const from = moment(dates[0]).startOf('week').format('YYYY-MM-DD')
 		const to = moment(dates[dates.length - 1]).format('YYYY-MM-DD')
 
-		if (!this.props.loadedDates.includes(from)) {
-			try {
-				const res = await axios.get(
-					`${process.env.REACT_APP_API_URL}/meetings/?from=${from}&to=${to}`
-				)
-
-				this.props.loadMeetings(res.data)
-				this.props.addLoadedDate(from)
-			} catch (err) {
-				NotificationManager.error(
-					'Nie udało się załadować wizyt',
-					'Błąd'
-				)
-			}
-		}
+		this.props.loadMeetings(from, to)
 	}
 
 	slotPropGetter = (date) => {
@@ -440,8 +432,6 @@ class Calendar extends Component {
 			? this.props.meetings
 			: this.props.meetings.filter((meeting) => meeting.allDay)
 
-		if (loading) return <BrickLoader />
-
 		return (
 			<>
 				{Object.keys(selected).length ? (
@@ -495,32 +485,39 @@ class Calendar extends Component {
 						<Legend />
 					</Card.Body>
 					<Card.Body>
-						<BigCalendar
-							onRangeChange={this.onRangeChange}
-							localizer={localizer}
-							events={meetings}
-							step={30}
-							timeslots={1}
-							views={
-								windowWidth >= 768 ? [Views.WEEK] : [Views.DAY]
-							}
-							view={windowWidth >= 768 ? Views.WEEK : Views.DAY}
-							min={this.minDate}
-							max={this.maxDate}
-							dayLayoutAlgorithm="no-overlap"
-							longPressThreshold={10}
-							slotPropGetter={this.slotPropGetter}
-							eventPropGetter={this.eventPropGetter}
-							dayPropGetter={this.dayPropGetter}
-							selectable={true}
-							selected={selected}
-							onSelecting={this.onSelecting}
-							onSelectSlot={this.onSelectSlot}
-							onSelectEvent={this.onSelectEvent}
-							components={{
-								toolbar: Toolbar,
-							}}
-						/>
+						<div style={{ display: loading ? 'none' : 'block' }}>
+							<BigCalendar
+								onRangeChange={this.onRangeChange}
+								localizer={localizer}
+								events={meetings}
+								step={30}
+								timeslots={1}
+								views={
+									windowWidth >= 768
+										? [Views.WEEK]
+										: [Views.DAY]
+								}
+								view={
+									windowWidth >= 768 ? Views.WEEK : Views.DAY
+								}
+								min={this.minDate}
+								max={this.maxDate}
+								dayLayoutAlgorithm="no-overlap"
+								longPressThreshold={10}
+								slotPropGetter={this.slotPropGetter}
+								eventPropGetter={this.eventPropGetter}
+								dayPropGetter={this.dayPropGetter}
+								selectable={true}
+								selected={selected}
+								onSelecting={this.onSelecting}
+								onSelectSlot={this.onSelectSlot}
+								onSelectEvent={this.onSelectEvent}
+								components={{
+									toolbar: Toolbar,
+								}}
+							/>
+						</div>
+						{loading && <BrickLoader />}
 					</Card.Body>
 				</Card>
 			</>

@@ -147,7 +147,7 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 					<input
 						tabIndex={-1}
 						autoComplete="off"
-						style={{ opacity: 0, height: 0 }}
+						style={{ height: 0, width: 0, opacity: 0 }}
 						value={value}
 						required
 					/>
@@ -172,7 +172,7 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 				<input
 					tabIndex={-1}
 					autoComplete="off"
-					style={{ opacity: 0, height: 0 }}
+					style={{ height: 0, width: 0, opacity: 0 }}
 					value={value}
 					required
 				/>

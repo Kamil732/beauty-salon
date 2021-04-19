@@ -21,6 +21,9 @@ class AddMeetingAdminForm extends Component {
 			do_not_work: props.doNotWork,
 			customer: '',
 			customer_first_name: '',
+			customer_last_name: '',
+			customer_phone_number: '',
+			customer_fax_number: '',
 			barber: '',
 			type: '',
 		}
@@ -33,6 +36,21 @@ class AddMeetingAdminForm extends Component {
 
 	onSubmit = (e) => {
 		e.preventDefault()
+
+		const phoneRegexValidation = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
+
+		if (
+			!this.state.do_not_work &&
+			(!this.state.customer_phone_number.match(phoneRegexValidation) ||
+				(this.state.customer_fax_number &&
+					!this.state.customer_fax_number.match(
+						phoneRegexValidation
+					)))
+		) {
+			NotificationManager.error('Numer telefonu jest niepoprawyny')
+
+			return
+		}
 
 		this.props.addMeeting(this.state)
 	}
@@ -81,6 +99,9 @@ class AddMeetingAdminForm extends Component {
 			do_not_work,
 			customer,
 			customer_first_name,
+			customer_last_name,
+			customer_phone_number,
+			customer_fax_number,
 			barber,
 			type,
 		} = this.state
@@ -118,62 +139,22 @@ class AddMeetingAdminForm extends Component {
 										id="customer"
 										name="customer"
 										value={customer}
-										onChange={(label, value) =>
+										onChange={(_, value) =>
 											this.setState({
-												customer: value,
-												customer_first_name: label.split(
-													' '
-												)[0],
+												customer: value.slug || '',
+												customer_first_name:
+													value.first_name || '',
+												customer_last_name:
+													value.last_name || '',
+												customer_phone_number:
+													value.phone_number || '',
+												customer_fax_number:
+													value.fax_number || '',
 											})
 										}
 										searchAsync
 										defaultOptions={this.props.customerList}
 										choices={this.loadCustomers}
-									/>
-								</FormControl>
-
-								<FormControl>
-									<FormControl.Label
-										htmlFor="customer_first_name"
-										inputValue={customer_first_name}
-									>
-										Imię klienta
-									</FormControl.Label>
-									<FormControl.Input
-										required={!do_not_work}
-										type="text"
-										id="customer_first_name"
-										name="customer_first_name"
-										onChange={(e) => {
-											if (!customer) this.onChange(e)
-										}}
-										value={customer_first_name}
-										minLength="3"
-										maxLength="20"
-									/>
-								</FormControl>
-							</FormGroup>
-
-							<FormGroup>
-								<FormControl>
-									<FormControl.Label
-										htmlFor="type"
-										inputValue={type}
-									>
-										Typ Wizyty
-									</FormControl.Label>
-									<FormControl.ChoiceField
-										required={!do_not_work}
-										id="type"
-										name="type"
-										onChange={(_, value) =>
-											this.setState({ type: value })
-										}
-										value={type}
-										choices={[
-											{ value: 'hair', label: 'Włosy' },
-											{ value: 'beard', label: 'Broda' },
-										]}
 									/>
 								</FormControl>
 
@@ -200,6 +181,115 @@ class AddMeetingAdminForm extends Component {
 									/>
 								</FormControl>
 							</FormGroup>
+
+							<FormGroup>
+								<FormControl>
+									<FormControl.Label
+										htmlFor="customer_first_name"
+										inputValue={customer_first_name}
+									>
+										Imię klienta
+									</FormControl.Label>
+									<FormControl.Input
+										required={!do_not_work}
+										type="text"
+										id="customer_first_name"
+										name="customer_first_name"
+										onChange={(e) => {
+											if (!customer) this.onChange(e)
+										}}
+										value={customer_first_name}
+										minLength="3"
+										maxLength="20"
+									/>
+								</FormControl>
+
+								<FormControl>
+									<FormControl.Label
+										htmlFor="customer_last_name"
+										inputValue={customer_last_name}
+									>
+										Nazwisko klienta
+									</FormControl.Label>
+									<FormControl.Input
+										required={!do_not_work}
+										type="text"
+										id="customer_last_name"
+										name="customer_last_name"
+										onChange={(e) => {
+											if (!customer) this.onChange(e)
+										}}
+										value={customer_last_name}
+										minLength="3"
+										maxLength="20"
+									/>
+								</FormControl>
+							</FormGroup>
+
+							<FormGroup>
+								<FormControl>
+									<FormControl.Label
+										htmlFor="customer_phone_number"
+										inputValue={customer_phone_number}
+									>
+										Numer telefonu klienta
+									</FormControl.Label>
+									<FormControl.Input
+										required={!do_not_work}
+										type="text"
+										id="customer_phone_number"
+										name="customer_phone_number"
+										onChange={(e) => {
+											if (!customer) this.onChange(e)
+										}}
+										value={customer_phone_number}
+										minLength="9"
+										maxLength="12"
+									/>
+								</FormControl>
+
+								<FormControl>
+									<FormControl.Label
+										htmlFor="customer_fax_number"
+										inputValue={customer_fax_number}
+									>
+										Numer telefonu klienta nr. 2
+									</FormControl.Label>
+									<FormControl.Input
+										type="text"
+										id="customer_fax_number"
+										name="customer_fax_number"
+										onChange={(e) => {
+											if (!customer) this.onChange(e)
+										}}
+										value={customer_fax_number}
+										minLength="9"
+										maxLength="12"
+									/>
+								</FormControl>
+							</FormGroup>
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor="type"
+									inputValue={type}
+								>
+									Typ Wizyty
+								</FormControl.Label>
+								<FormControl.ChoiceField
+									required={!do_not_work}
+									id="type"
+									name="type"
+									onChange={(_, value) =>
+										this.setState({ type: value })
+									}
+									value={type}
+									choices={[
+										{ value: 'hair', label: 'Włosy' },
+										{ value: 'beard', label: 'Broda' },
+									]}
+								/>
+							</FormControl>
 						</div>
 					</>
 				) : null}
