@@ -23,6 +23,10 @@ class App extends Component {
 		store.dispatch(connectWebSocket())
 	}
 
+	componentDidCatch() {
+		window.location.reload()
+	}
+
 	render() {
 		return (
 			<Provider store={store}>
