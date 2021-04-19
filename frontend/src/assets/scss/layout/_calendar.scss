@@ -8,6 +8,8 @@ $event-color: set-text-color($event-bg);
 $event-border-radius: 8px;
 $event-padding: 0;
 
+$doNotWork-bg-color: rgba($error-color, 0.8);
+
 $rbc-css-prefix: calendar;
 
 @import '../../../../node_modules/react-big-calendar/lib/sass/styles.scss';
@@ -72,25 +74,23 @@ $rbc-css-prefix: calendar;
 	}
 }
 
-.rbc-event-allday {
-	$bg-color: rgba($error-color, 0.8);
-	background-color: $bg-color;
-	color: set-text-color($bg-color);
-
-	&.rbc-selected {
-		cursor: default;
-		background-color: darken($bg-color, 15%);
-		color: set-text-color(darken($bg-color, 15%));
-	}
+.doNotWork {
+	background-color: $doNotWork-bg-color;
+	color: set-text-color($doNotWork-bg-color);
 
 	&.selectable {
 		cursor: pointer;
 
 		&:hover {
-			background-color: darken($bg-color, 15%);
-			color: set-text-color(darken($bg-color, 15%));
+			background-color: darken($doNotWork-bg-color, 15%);
+			color: set-text-color(darken($doNotWork-bg-color, 15%));
 		}
 	}
+}
+
+.rbc-event-allday {
+	background-color: $doNotWork-bg-color;
+	color: set-text-color($doNotWork-bg-color);
 }
 
 .rbc-time-slot {

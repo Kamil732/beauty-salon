@@ -361,9 +361,13 @@ class Calendar extends Component {
 		}
 	}
 
-	eventPropGetter = () => ({
-		className: this.props.isAdminPanel ? 'selectable' : '',
-	})
+	eventPropGetter = (event) => {
+		return {
+			className: `${event.do_not_work ? 'doNotWork' : ''} ${
+				this.props.isAdminPanel ? 'selectable' : ''
+			}`,
+		}
+	}
 
 	onSelecting = () => (this.props.isAdminPanel ? true : false)
 
