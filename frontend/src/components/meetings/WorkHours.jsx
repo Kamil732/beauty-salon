@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import EditBox from '../../layout/forms/EditBox'
 
 function WorkHours({
+	isAdmin,
 	start_work_monday,
 	end_work_monday,
 	start_work_tuesday,
@@ -31,14 +32,14 @@ function WorkHours({
 			<tbody>
 				<tr>
 					<th scope="row">Poniedziałek</th>
-					{start_work_monday ? (
+					{isAdmin || (start_work_monday && end_work_monday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_monday"
 									value={start_work_monday}
 								>
-									{start_work_monday}
+									{start_work_monday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -46,7 +47,7 @@ function WorkHours({
 									name="end_work_monday"
 									value={end_work_monday}
 								>
-									{end_work_monday}
+									{end_work_monday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -61,14 +62,14 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Wtorek</th>
-					{start_work_tuesday ? (
+					{isAdmin || (start_work_tuesday && end_work_tuesday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_tuesday"
 									value={start_work_tuesday}
 								>
-									{start_work_tuesday}
+									{start_work_tuesday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -76,7 +77,7 @@ function WorkHours({
 									name="end_work_tuesday"
 									value={end_work_tuesday}
 								>
-									{end_work_tuesday}
+									{end_work_tuesday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -91,14 +92,14 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Środa</th>
-					{start_work_wednesday ? (
+					{isAdmin || (start_work_wednesday && end_work_wednesday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_wednesday"
 									value={start_work_wednesday}
 								>
-									{start_work_wednesday}
+									{start_work_wednesday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -106,7 +107,7 @@ function WorkHours({
 									name="end_work_wednesday"
 									value={end_work_wednesday}
 								>
-									{end_work_wednesday}
+									{end_work_wednesday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -121,14 +122,14 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Czwartek</th>
-					{start_work_thursday ? (
+					{isAdmin || (start_work_thursday && end_work_thursday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_thursday"
 									value={start_work_thursday}
 								>
-									{start_work_thursday}
+									{start_work_thursday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -136,7 +137,7 @@ function WorkHours({
 									name="end_work_thursday"
 									value={end_work_thursday}
 								>
-									{end_work_thursday}
+									{end_work_thursday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -151,14 +152,14 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Piątek</th>
-					{start_work_friday ? (
+					{isAdmin || (start_work_friday && end_work_friday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_friday"
 									value={start_work_friday}
 								>
-									{start_work_friday}
+									{start_work_friday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -166,7 +167,7 @@ function WorkHours({
 									name="end_work_friday"
 									value={end_work_friday}
 								>
-									{end_work_friday}
+									{end_work_friday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -181,14 +182,14 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Sobota</th>
-					{start_work_saturday ? (
+					{isAdmin || (start_work_saturday && end_work_saturday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_saturday"
 									value={start_work_saturday}
 								>
-									{start_work_saturday}
+									{start_work_saturday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -196,7 +197,7 @@ function WorkHours({
 									name="end_work_saturday"
 									value={end_work_saturday}
 								>
-									{end_work_saturday}
+									{end_work_saturday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -211,14 +212,14 @@ function WorkHours({
 				</tr>
 				<tr>
 					<th scope="row">Niedziela</th>
-					{start_work_sunday ? (
+					{isAdmin || (start_work_sunday && end_work_sunday) ? (
 						<>
 							<td>
 								<EditBox
 									name="start_work_sunday"
 									value={start_work_sunday}
 								>
-									{start_work_sunday}
+									{start_work_sunday || '--:--'}
 								</EditBox>
 							</td>
 							<td>
@@ -226,7 +227,7 @@ function WorkHours({
 									name="end_work_sunday"
 									value={end_work_sunday}
 								>
-									{end_work_sunday}
+									{end_work_sunday || '--:--'}
 								</EditBox>
 							</td>
 						</>
@@ -245,6 +246,7 @@ function WorkHours({
 }
 
 WorkHours.prototype.propTypes = {
+	isAdmin: PropTypes.bool,
 	end_work_sunday: PropTypes.string,
 	start_work_sunday: PropTypes.string,
 	end_work_saturday: PropTypes.string,
@@ -262,6 +264,7 @@ WorkHours.prototype.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
+	isAdmin: state.auth.data.is_admin,
 	end_work_sunday: state.data.data.end_work_sunday,
 	start_work_sunday: state.data.data.start_work_sunday,
 	end_work_saturday: state.data.data.end_work_saturday,
