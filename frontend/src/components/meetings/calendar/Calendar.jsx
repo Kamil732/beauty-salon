@@ -60,29 +60,76 @@ class Calendar extends Component {
 	constructor(props) {
 		super(props)
 
+		const calendarDates = this.getCalendarDates()
+		this.state = {
+			ws: null,
+			windowWidth: window.innerWidth,
+			minDate: calendarDates.minDate,
+			maxDate: calendarDates.maxDate,
+			selected: {},
+		}
+
+		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
+		this.getCalendarDates = this.getCalendarDates.bind(this)
+		this.onRangeChange = this.onRangeChange.bind(this)
+		this.eventPropGetter = this.eventPropGetter.bind(this)
+		this.slotPropGetter = this.slotPropGetter.bind(this)
+		this.onSelecting = this.onSelecting.bind(this)
+		this.onSelectEvent = this.onSelectEvent.bind(this)
+		this.onSelectSlot = this.onSelectSlot.bind(this)
+		this.openModal = this.openModal.bind(this)
+		this.deleteMeeting = this.deleteMeeting.bind(this)
+		this.addMeeting = this.addMeeting.bind(this)
+	}
+
+	getCalendarDates = () => {
 		const today = new Date()
 		const defaultStart = '8:00'
 		const defaultEnd = '17:00'
 
 		let workHours = [
-			props.end_work_sunday ? props.end_work_sunday : defaultEnd,
-			props.start_work_sunday ? props.start_work_sunday : defaultStart,
-			props.end_work_saturday ? props.end_work_saturday : defaultEnd,
-			props.start_work_saturday
-				? props.start_work_saturday
-				: defaultStart,
-			props.end_work_friday ? props.end_work_friday : defaultEnd,
-			props.start_work_friday ? props.start_work_friday : defaultEnd,
-			props.end_work_thursday ? props.end_work_thursday : defaultStart,
-			props.start_work_thursday ? props.start_work_thursday : defaultEnd,
-			props.end_work_wednesday ? props.end_work_wednesday : defaultStart,
-			props.start_work_wednesday
-				? props.start_work_wednesday
+			this.props.end_work_sunday
+				? this.props.end_work_sunday
 				: defaultEnd,
-			props.end_work_tuesday ? props.end_work_tuesday : defaultStart,
-			props.start_work_tuesday ? props.start_work_tuesday : defaultEnd,
-			props.end_work_monday ? props.end_work_monday : defaultStart,
-			props.start_work_monday ? props.start_work_monday : defaultEnd,
+			this.props.start_work_sunday
+				? this.props.start_work_sunday
+				: defaultStart,
+			this.props.end_work_saturday
+				? this.props.end_work_saturday
+				: defaultEnd,
+			this.props.start_work_saturday
+				? this.props.start_work_saturday
+				: defaultStart,
+			this.props.end_work_friday
+				? this.props.end_work_friday
+				: defaultEnd,
+			this.props.start_work_friday
+				? this.props.start_work_friday
+				: defaultEnd,
+			this.props.end_work_thursday
+				? this.props.end_work_thursday
+				: defaultStart,
+			this.props.start_work_thursday
+				? this.props.start_work_thursday
+				: defaultEnd,
+			this.props.end_work_wednesday
+				? this.props.end_work_wednesday
+				: defaultStart,
+			this.props.start_work_wednesday
+				? this.props.start_work_wednesday
+				: defaultEnd,
+			this.props.end_work_tuesday
+				? this.props.end_work_tuesday
+				: defaultStart,
+			this.props.start_work_tuesday
+				? this.props.start_work_tuesday
+				: defaultEnd,
+			this.props.end_work_monday
+				? this.props.end_work_monday
+				: defaultStart,
+			this.props.start_work_monday
+				? this.props.start_work_monday
+				: defaultEnd,
 		]
 
 		workHours = workHours.map((workHour) =>
@@ -97,53 +144,36 @@ class Calendar extends Component {
 			)
 		)
 
-		this.minDate = new Date(
-			today.getFullYear(),
-			today.getMonth(),
-			today.getDate(),
-			moment.min(workHours).hours(),
-			moment.min(workHours).minutes() - 30
-		)
+		return {
+			minDate: new Date(
+				today.getFullYear(),
+				today.getMonth(),
+				today.getDate(),
+				moment.min(workHours).hours(),
+				moment.min(workHours).minutes() - 30
+			),
 
-		this.maxDate = new Date(
-			today.getFullYear(),
-			today.getMonth(),
-			today.getDate(),
-			moment.max(workHours).hours(),
-			moment.max(workHours).minutes()
-		)
-
-		this.timeout = 250
-
-		this.state = {
-			ws: null,
-			windowWidth: window.innerWidth,
-			selected: {},
+			maxDate: new Date(
+				today.getFullYear(),
+				today.getMonth(),
+				today.getDate(),
+				moment.max(workHours).hours(),
+				moment.max(workHours).minutes()
+			),
 		}
-
-		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
-		this.onRangeChange = this.onRangeChange.bind(this)
-		this.eventPropGetter = this.eventPropGetter.bind(this)
-		this.slotPropGetter = this.slotPropGetter.bind(this)
-		this.onSelecting = this.onSelecting.bind(this)
-		this.onSelectEvent = this.onSelectEvent.bind(this)
-		this.onSelectSlot = this.onSelectSlot.bind(this)
-		this.openModal = this.openModal.bind(this)
-		this.deleteMeeting = this.deleteMeeting.bind(this)
-		this.addMeeting = this.addMeeting.bind(this)
 	}
 
 	updateWindowDimensions = () =>
 		this.setState({ windowWidth: window.innerWidth })
 
 	openModal = (type, selected) => {
-		// if (this.props.isAuthenticated)
-		this.setState({
-			selected: {
-				selected_type: type,
-				...selected,
-			},
-		})
+		if (this.props.isAuthenticated)
+			this.setState({
+				selected: {
+					selected_type: type,
+					...selected,
+				},
+			})
 	}
 
 	componentDidMount = () =>
@@ -151,6 +181,33 @@ class Calendar extends Component {
 
 	componentWillUnmount = () =>
 		window.removeEventListener('resize', this.updateWindowDimensions)
+
+	componentDidUpdate(prevProps, _) {
+		if (
+			this.props.end_work_sunday !== prevProps.end_work_sunday ||
+			this.props.start_work_sunday !== prevProps.start_work_sunday ||
+			this.props.end_work_saturday !== prevProps.end_work_saturday ||
+			this.props.start_work_saturday !== prevProps.start_work_saturday ||
+			this.props.end_work_friday !== prevProps.end_work_friday ||
+			this.props.start_work_friday !== prevProps.start_work_friday ||
+			this.props.end_work_thursday !== prevProps.end_work_thursday ||
+			this.props.start_work_thursday !== prevProps.start_work_thursday ||
+			this.props.end_work_wednesday !== prevProps.end_work_wednesday ||
+			this.props.start_work_wednesday !==
+				prevProps.start_work_wednesday ||
+			this.props.end_work_tuesday !== prevProps.end_work_tuesday ||
+			this.props.start_work_tuesday !== prevProps.start_work_tuesday ||
+			this.props.end_work_monday !== prevProps.end_work_monday ||
+			this.props.start_work_monday !== prevProps.start_work_monday
+		) {
+			const calednarDates = this.getCalendarDates()
+
+			this.setState({
+				minDate: calednarDates.minDate,
+				maxDate: calednarDates.maxDate,
+			})
+		}
+	}
 
 	deleteMeeting = async () => {
 		const { selected } = this.state
@@ -430,7 +487,7 @@ class Calendar extends Component {
 
 	render() {
 		const { isAdminPanel, loading } = this.props
-		const { windowWidth, selected } = this.state
+		const { windowWidth, selected, minDate, maxDate } = this.state
 
 		const meetings = isAdminPanel
 			? this.props.meetings
@@ -504,8 +561,8 @@ class Calendar extends Component {
 								view={
 									windowWidth >= 768 ? Views.WEEK : Views.DAY
 								}
-								min={this.minDate}
-								max={this.maxDate}
+								min={minDate}
+								max={maxDate}
 								dayLayoutAlgorithm="no-overlap"
 								longPressThreshold={10}
 								slotPropGetter={this.slotPropGetter}
