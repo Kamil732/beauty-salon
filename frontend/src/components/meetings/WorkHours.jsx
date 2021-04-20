@@ -31,141 +31,213 @@ function WorkHours({
 			<tbody>
 				<tr>
 					<th scope="row">Poniedziałek</th>
-					<td>
+					{start_work_monday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_monday"
+									value={start_work_monday}
+								>
+									{start_work_monday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_monday"
+									value={end_work_monday}
+								>
+									{end_work_monday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_monday"
 							value={start_work_monday}
 						>
-							{(start_work_monday && start_work_monday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox name="end_work_monday" value={end_work_monday}>
-							{(end_work_monday && end_work_monday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 				<tr>
 					<th scope="row">Wtorek</th>
-					<td>
+					{start_work_tuesday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_tuesday"
+									value={start_work_tuesday}
+								>
+									{start_work_tuesday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_tuesday"
+									value={end_work_tuesday}
+								>
+									{end_work_tuesday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_tuesday"
 							value={start_work_tuesday}
 						>
-							{(start_work_tuesday && start_work_tuesday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox
-							name="end_work_tuesday"
-							value={end_work_tuesday}
-						>
-							{(end_work_tuesday && end_work_tuesday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 				<tr>
 					<th scope="row">Środa</th>
-					<td>
+					{start_work_wednesday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_wednesday"
+									value={start_work_wednesday}
+								>
+									{start_work_wednesday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_wednesday"
+									value={end_work_wednesday}
+								>
+									{end_work_wednesday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_wednesday"
 							value={start_work_wednesday}
 						>
-							{(start_work_wednesday && start_work_wednesday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox
-							name="end_work_wednesday"
-							value={end_work_wednesday}
-						>
-							{(end_work_wednesday && end_work_wednesday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 				<tr>
 					<th scope="row">Czwartek</th>
-					<td>
+					{start_work_thursday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_thursday"
+									value={start_work_thursday}
+								>
+									{start_work_thursday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_thursday"
+									value={end_work_thursday}
+								>
+									{end_work_thursday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_thursday"
 							value={start_work_thursday}
 						>
-							{(start_work_thursday && start_work_thursday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox
-							name="end_work_thursday"
-							value={end_work_thursday}
-						>
-							{(end_work_thursday && end_work_thursday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 				<tr>
 					<th scope="row">Piątek</th>
-					<td>
+					{start_work_friday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_friday"
+									value={start_work_friday}
+								>
+									{start_work_friday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_friday"
+									value={end_work_friday}
+								>
+									{end_work_friday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_friday"
 							value={start_work_friday}
 						>
-							{(start_work_friday && start_work_friday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox name="end_work_friday" value={end_work_friday}>
-							{(end_work_friday && end_work_friday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 				<tr>
 					<th scope="row">Sobota</th>
-					<td>
+					{start_work_saturday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_saturday"
+									value={start_work_saturday}
+								>
+									{start_work_saturday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_saturday"
+									value={end_work_saturday}
+								>
+									{end_work_saturday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_saturday"
 							value={start_work_saturday}
 						>
-							{(start_work_saturday && start_work_saturday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox
-							name="end_work_saturday"
-							value={end_work_saturday}
-						>
-							{(end_work_saturday && end_work_saturday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 				<tr>
 					<th scope="row">Niedziela</th>
-					<td>
+					{start_work_sunday ? (
+						<>
+							<td>
+								<EditBox
+									name="start_work_sunday"
+									value={start_work_sunday}
+								>
+									{start_work_sunday}
+								</EditBox>
+							</td>
+							<td>
+								<EditBox
+									name="end_work_sunday"
+									value={end_work_sunday}
+								>
+									{end_work_sunday}
+								</EditBox>
+							</td>
+						</>
+					) : (
 						<EditBox
 							name="start_work_sunday"
 							value={start_work_sunday}
 						>
-							{(start_work_sunday && start_work_sunday) ||
-								'ZAMKNIĘTE'}
+							<td colSpan="2">NIE PRACUJE</td>
 						</EditBox>
-					</td>
-					<td>
-						<EditBox name="end_work_sunday" value={end_work_sunday}>
-							{(end_work_sunday && end_work_sunday) ||
-								'ZAMKNIĘTE'}
-						</EditBox>
-					</td>
+					)}
 				</tr>
 			</tbody>
 		</table>

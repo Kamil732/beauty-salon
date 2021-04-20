@@ -84,81 +84,85 @@ class Calendar extends Component {
 
 	getCalendarDates = () => {
 		const today = new Date()
-		const defaultStart = '8:00'
-		const defaultEnd = '17:00'
 
 		let workHours = [
-			this.props.end_work_sunday
-				? this.props.end_work_sunday
-				: defaultEnd,
-			this.props.start_work_sunday
-				? this.props.start_work_sunday
-				: defaultStart,
-			this.props.end_work_saturday
-				? this.props.end_work_saturday
-				: defaultEnd,
-			this.props.start_work_saturday
-				? this.props.start_work_saturday
-				: defaultStart,
-			this.props.end_work_friday
-				? this.props.end_work_friday
-				: defaultEnd,
-			this.props.start_work_friday
-				? this.props.start_work_friday
-				: defaultEnd,
-			this.props.end_work_thursday
-				? this.props.end_work_thursday
-				: defaultStart,
-			this.props.start_work_thursday
-				? this.props.start_work_thursday
-				: defaultEnd,
-			this.props.end_work_wednesday
-				? this.props.end_work_wednesday
-				: defaultStart,
-			this.props.start_work_wednesday
-				? this.props.start_work_wednesday
-				: defaultEnd,
-			this.props.end_work_tuesday
-				? this.props.end_work_tuesday
-				: defaultStart,
-			this.props.start_work_tuesday
-				? this.props.start_work_tuesday
-				: defaultEnd,
-			this.props.end_work_monday
-				? this.props.end_work_monday
-				: defaultStart,
-			this.props.start_work_monday
-				? this.props.start_work_monday
-				: defaultEnd,
-		]
+			{
+				end: this.props?.end_work_sunday || null,
+				start: this.props?.start_work_sunday || null,
+			},
+			{
+				end: this.props?.end_work_saturday || null,
+				start: this.props?.start_work_saturday || null,
+			},
+			{
+				end: this.props?.end_work_friday || null,
+				start: this.props?.start_work_friday || null,
+			},
+			{
+				end: this.props?.end_work_thursday || null,
+				start: this.props?.start_work_thursday || null,
+			},
+			{
+				end: this.props?.end_work_wednesday || null,
+				start: this.props?.start_work_wednesday || null,
+			},
+			{
+				end: this.props?.end_work_tuesday || null,
+				start: this.props?.start_work_tuesday || null,
+			},
+			{
+				end: this.props?.end_work_monday || null,
+				start: this.props?.start_work_monday || null,
+			},
+		].filter((workHour) => workHour.start !== null && workHour.end !== null)
 
-		workHours = workHours.map((workHour) =>
-			moment(
+		if (workHours.length === 0)
+			workHours = [
+				{
+					start: '8:00',
+					end: '17:00',
+				},
+			]
+
+		workHours = workHours.map((workHour) => ({
+			start: moment(
 				new Date(
 					today.getFullYear(),
 					today.getMonth(),
 					today.getDate(),
-					workHour.split(':')[0],
-					workHour.split(':')[1]
+					workHour.start.split(':')[0],
+					workHour.start.split(':')[1]
 				)
-			)
-		)
+			),
+			end: moment(
+				new Date(
+					today.getFullYear(),
+					today.getMonth(),
+					today.getDate(),
+					workHour.end.split(':')[0],
+					workHour.end.split(':')[1]
+				)
+			),
+		}))
+
+		const minDate = moment.min(workHours.map((workHour) => workHour.start))
+		const maxDate = moment.max(workHours.map((workHour) => workHour.end))
 
 		return {
 			minDate: new Date(
 				today.getFullYear(),
 				today.getMonth(),
 				today.getDate(),
-				moment.min(workHours).hours(),
-				moment.min(workHours).minutes() - 30
+				minDate.hours(),
+				minDate.minutes() - 30
 			),
 
 			maxDate: new Date(
 				today.getFullYear(),
 				today.getMonth(),
 				today.getDate(),
-				moment.max(workHours).hours(),
-				moment.max(workHours).minutes()
+				maxDate.hours(),
+				maxDate.minutes()
 			),
 		}
 	}
