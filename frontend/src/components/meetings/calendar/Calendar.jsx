@@ -40,7 +40,7 @@ class Calendar extends Component {
 		loadMeetings: PropTypes.func.isRequired,
 		addLoadedDate: PropTypes.func.isRequired,
 
-		one_slot_meetings_count: PropTypes.string,
+		one_slot_max_meetings: PropTypes.string,
 		end_work_sunday: PropTypes.string,
 		start_work_sunday: PropTypes.string,
 		end_work_saturday: PropTypes.string,
@@ -326,7 +326,7 @@ class Calendar extends Component {
 	}
 
 	slotPropGetter = (date) => {
-		const { isAdminPanel, one_slot_meetings_count } = this.props
+		const { isAdminPanel, one_slot_max_meetings } = this.props
 		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
 		let isDisabled = workingHours.isNonWorkingHour
 
@@ -338,7 +338,7 @@ class Calendar extends Component {
 						!meeting.do_not_work &&
 						meeting.start <= date &&
 						meeting.end > date
-				).length >= one_slot_meetings_count) ||
+				).length >= one_slot_max_meetings) ||
 			this.props.meetings.filter(
 				(meeting) =>
 					meeting.do_not_work &&
@@ -421,7 +421,7 @@ class Calendar extends Component {
 		}
 
 		if (
-			eventsOnTheSlot < this.props.one_slot_meetings_count &&
+			eventsOnTheSlot < this.props.one_slot_max_meetings &&
 			!isNonWorkingHour &&
 			start !== 0
 		)
@@ -434,7 +434,7 @@ class Calendar extends Component {
 
 		const meetings = isAdminPanel
 			? this.props.meetings
-			: this.props.meetings.filter((meeting) => meeting.allDay)
+			: this.props.meetings.filter((meeting) => meeting.do_not_work)
 
 		return (
 			<>
@@ -536,7 +536,7 @@ const mapStateToProps = (state) => ({
 	meetings: state.meetings.data,
 	loadedDates: state.meetings.loadedDates,
 
-	one_slot_meetings_count: state.data.data.one_slot_meetings_count,
+	one_slot_max_meetings: state.data.data.one_slot_max_meetings,
 	end_work_sunday: state.data.data.end_work_sunday,
 	start_work_sunday: state.data.data.start_work_sunday,
 	end_work_saturday: state.data.data.end_work_saturday,

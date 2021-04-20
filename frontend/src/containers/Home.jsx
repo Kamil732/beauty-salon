@@ -27,17 +27,21 @@ function Home({
 		<PageHero>
 			<PageHero.Body>
 				<PageHero.Content>
-					<EditBox name="home_title" value={home_title} textarea>
-						{home_title ? (
-							<PageHero.Title>{home_title}</PageHero.Title>
-						) : null}
-					</EditBox>
+					<PageHero.Title>
+						<EditBox name="home_title" value={home_title} textarea>
+							{home_title}
+						</EditBox>
+					</PageHero.Title>
 
-					<EditBox name="home_content" value={home_content} textarea>
-						{home_content ? (
-							<PageHero.Text>{home_content}</PageHero.Text>
-						) : null}
-					</EditBox>
+					<PageHero.Text>
+						<EditBox
+							name="home_content"
+							value={home_content}
+							textarea
+						>
+							{home_content}
+						</EditBox>
+					</PageHero.Text>
 
 					<ButtonContainer style={{ marginTop: '2rem' }}>
 						<Button primary to="/my-meetings">

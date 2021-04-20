@@ -79,7 +79,7 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 			) : (
 				<>
 					{children}
-					<Button small secondary onClick={() => setIsEditMode(true)}>
+					<Button extraSmall onClick={() => setIsEditMode(true)}>
 						Edytuj
 					</Button>
 				</>

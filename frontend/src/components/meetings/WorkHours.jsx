@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import EditBox from '../../layout/forms/EditBox'
 
 function WorkHours({
 	start_work_monday,
@@ -31,74 +32,139 @@ function WorkHours({
 				<tr>
 					<th scope="row">Poniedziałek</th>
 					<td>
-						{(start_work_monday && start_work_monday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_monday"
+							value={start_work_monday}
+						>
+							{(start_work_monday && start_work_monday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_monday && end_work_monday) || 'ZAMKNIĘTE'}
+						<EditBox name="end_work_monday" value={end_work_monday}>
+							{(end_work_monday && end_work_monday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">Wtorek</th>
 					<td>
-						{(start_work_tuesday && start_work_tuesday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_tuesday"
+							value={start_work_tuesday}
+						>
+							{(start_work_tuesday && start_work_tuesday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_tuesday && end_work_tuesday) || 'ZAMKNIĘTE'}
+						<EditBox
+							name="end_work_tuesday"
+							value={end_work_tuesday}
+						>
+							{(end_work_tuesday && end_work_tuesday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">Środa</th>
 					<td>
-						{(start_work_wednesday && start_work_wednesday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_wednesday"
+							value={start_work_wednesday}
+						>
+							{(start_work_wednesday && start_work_wednesday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_wednesday && end_work_wednesday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="end_work_wednesday"
+							value={end_work_wednesday}
+						>
+							{(end_work_wednesday && end_work_wednesday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">Czwartek</th>
 					<td>
-						{(start_work_thursday && start_work_thursday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_thursday"
+							value={start_work_thursday}
+						>
+							{(start_work_thursday && start_work_thursday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_thursday && end_work_thursday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="end_work_thursday"
+							value={end_work_thursday}
+						>
+							{(end_work_thursday && end_work_thursday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">Piątek</th>
 					<td>
-						{(start_work_friday && start_work_friday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_friday"
+							value={start_work_friday}
+						>
+							{(start_work_friday && start_work_friday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_friday && end_work_friday) || 'ZAMKNIĘTE'}
+						<EditBox name="end_work_friday" value={end_work_friday}>
+							{(end_work_friday && end_work_friday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">Sobota</th>
 					<td>
-						{(start_work_saturday && start_work_saturday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_saturday"
+							value={start_work_saturday}
+						>
+							{(start_work_saturday && start_work_saturday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_saturday && end_work_saturday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="end_work_saturday"
+							value={end_work_saturday}
+						>
+							{(end_work_saturday && end_work_saturday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row">Niedziela</th>
 					<td>
-						{(start_work_sunday && start_work_sunday) ||
-							'ZAMKNIĘTE'}
+						<EditBox
+							name="start_work_sunday"
+							value={start_work_sunday}
+						>
+							{(start_work_sunday && start_work_sunday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 					<td>
-						{(end_work_sunday && end_work_sunday) || 'ZAMKNIĘTE'}
+						<EditBox name="end_work_sunday" value={end_work_sunday}>
+							{(end_work_sunday && end_work_sunday) ||
+								'ZAMKNIĘTE'}
+						</EditBox>
 					</td>
 				</tr>
 			</tbody>

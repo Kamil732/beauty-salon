@@ -10,6 +10,7 @@ import PageHero from '../layout/PageHero'
 import ImageList from '../components/ImageList'
 import Button from '../layout/buttons/Button'
 import { connect } from 'react-redux'
+import EditBox from '../layout/forms/EditBox'
 
 class Gallery extends Component {
 	static propTypes = {
@@ -67,17 +68,26 @@ class Gallery extends Component {
 			<PageHero>
 				<PageHero.Body>
 					<PageHero.Img src={GalleryIllustration} />
-					{gallery_title || gallery_content ? (
-						<PageHero.Content>
-							{gallery_title ? (
-								<PageHero.Title>{gallery_title}</PageHero.Title>
-							) : null}
-
-							{gallery_content ? (
-								<PageHero.Text>{gallery_content}</PageHero.Text>
-							) : null}
-						</PageHero.Content>
-					) : null}
+					<PageHero.Content>
+						<PageHero.Title>
+							<EditBox
+								name="gallery_title"
+								value={gallery_title}
+								textarea
+							>
+								{gallery_title}
+							</EditBox>
+						</PageHero.Title>
+						<PageHero.Text>
+							<EditBox
+								name="gallery_content"
+								value={gallery_content}
+								textarea
+							>
+								{gallery_content}
+							</EditBox>
+						</PageHero.Text>
+					</PageHero.Content>
 				</PageHero.Body>
 				<PageHero.Body vertical>
 					<PageHero.Title

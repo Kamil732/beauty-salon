@@ -7,6 +7,7 @@ import { IoLocationSharp } from 'react-icons/io5'
 import ContactIllustration from '../assets/images/contact-illustration.svg'
 
 import PageHero from '../layout/PageHero'
+import EditBox from '../layout/forms/EditBox'
 
 class Contact extends Component {
 	static propTypes = {
@@ -34,55 +35,68 @@ class Contact extends Component {
 				<PageHero.Body>
 					<PageHero.Img src={ContactIllustration} />
 
-					{contact_title ||
-					contact_content ||
-					contact_content_second ||
-					phone_number ? (
-						<PageHero.Content>
-							{contact_title ? (
-								<PageHero.Title>{contact_title}</PageHero.Title>
-							) : null}
-							{contact_content ? (
-								<PageHero.Text>{contact_content}</PageHero.Text>
-							) : null}
-
-							{phone_number ? (
-								<a
-									href={`tel:+48-${phone_number}`}
-									className="unique-text icon-container"
-								>
-									<FaPhoneAlt className="icon-container__icon" />
-									+48 {phone_number}
-								</a>
-							) : null}
-							{contact_content_second ? (
-								<PageHero.Text>
-									{contact_content_second}
-								</PageHero.Text>
-							) : null}
-						</PageHero.Content>
-					) : null}
-				</PageHero.Body>
-				{location ? (
-					<PageHero.Body>
-						<PageHero.Content>
-							<PageHero.Title>
-								<div className="icon-container">
-									<IoLocationSharp className="icon-container__icon" />
-									Lokalizacja
-								</div>
-							</PageHero.Title>
-							<PageHero.Text>
-								Nasz salon fryzjerski znajdziesz pod adresem:
-							</PageHero.Text>
-							<span
-								className="unique-text"
-								style={{ width: '100%' }}
+					<PageHero.Content>
+						<PageHero.Title>
+							<EditBox
+								name="contact_title"
+								value={contact_title}
+								textarea
 							>
+								{contact_title}
+							</EditBox>
+						</PageHero.Title>
+
+						<PageHero.Text>
+							<EditBox
+								name="contact_content"
+								value={contact_content}
+								textarea
+							>
+								{contact_content}
+							</EditBox>
+						</PageHero.Text>
+
+						<EditBox name="phone_number" value={phone_number}>
+							<a
+								href={`tel:+48-${phone_number}`}
+								className="unique-text icon-container"
+							>
+								<FaPhoneAlt className="icon-container__icon" />
+								+48 {phone_number}
+							</a>
+						</EditBox>
+
+						<PageHero.Text>
+							<EditBox
+								name="contact_content_second"
+								value={contact_content_second}
+								textarea
+							>
+								{contact_content_second}
+							</EditBox>
+						</PageHero.Text>
+					</PageHero.Content>
+				</PageHero.Body>
+
+				<PageHero.Body>
+					<PageHero.Content>
+						<PageHero.Title>
+							<div className="icon-container">
+								<IoLocationSharp className="icon-container__icon" />
+								Lokalizacja
+							</div>
+						</PageHero.Title>
+						<PageHero.Text>
+							Nasz salon fryzjerski znajdziesz pod adresem:
+						</PageHero.Text>
+						<span className="unique-text" style={{ width: '100%' }}>
+							<EditBox name="location" value={location}>
 								{location}
-							</span>
-						</PageHero.Content>
-						<div style={{ textAlign: 'center' }}>
+							</EditBox>
+						</span>
+					</PageHero.Content>
+					<div style={{ textAlign: 'center' }}>
+						<EditBox name="google_maps_url" value={google_maps_url}>
 							<iframe
 								title="map"
 								src={google_maps_url}
@@ -90,9 +104,9 @@ class Contact extends Component {
 								allowfullscreen=""
 								loading="lazy"
 							></iframe>
-						</div>
-					</PageHero.Body>
-				) : null}
+						</EditBox>
+					</div>
+				</PageHero.Body>
 			</PageHero>
 		)
 	}
