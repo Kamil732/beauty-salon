@@ -5,6 +5,7 @@ from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 
 from server.permissions import IsAdmin
+from accounts.models import Account
 from data.models import Data
 from . import serializers
 
@@ -21,6 +22,8 @@ class DataListAPIView(ListAPIView):
 
         for serialized_data in serializer.data:
             data[serialized_data['name']] = serialized_data['value']
+
+        data['one_slot_max_meetings'] = Account.objects.filter(is_admin=True).count()
 
         return Response(data)
 
