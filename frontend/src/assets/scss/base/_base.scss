@@ -29,10 +29,6 @@ body {
 a {
 	text-decoration: none;
 	color: $active-element;
-
-	&.slide-floor {
-		@include sliding-floor;
-	}
 }
 
 .global-message {

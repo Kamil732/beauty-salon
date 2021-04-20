@@ -22,6 +22,14 @@
 		padding: 0.5rem 1rem;
 	}
 
+	&__extraSmall {
+		color: $active-element;
+		padding: 0 !important;
+		padding-left: 0.5rem;
+		border: none;
+		background-color: transparent;
+	}
+
 	&__primary {
 		border-color: $primary-color;
 		background-color: $primary-color;

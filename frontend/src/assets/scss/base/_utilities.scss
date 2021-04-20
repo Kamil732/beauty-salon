@@ -18,6 +18,10 @@
 	}
 }
 
+.slide-floor {
+	@include sliding-floor;
+}
+
 .unique-text {
 	display: block;
 	width: fit-content;
