@@ -8,4 +8,4 @@ class MeetingMixin(object):
     def get_serializer_class(self):
         if self.request.user.is_authenticated and self.request.user.is_admin:
             return serializers.AdminMeetingSerializer
-        return serializers.MeetingSerializer
+        return serializers.CustomerMeetingSerializer

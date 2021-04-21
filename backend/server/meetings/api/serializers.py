@@ -20,9 +20,11 @@ class MeetingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if not(data['type'] == Meeting.TYPES[2][0]):
             if len(data['customer_first_name']) < 3:
-                raise serializers.ValidationError('Pole `Imię klienta` musi mieć conajmniej 3 znaki')
+                raise serializers.ValidationError('Imię musi mieć conajmniej 3 znaki')
             if len(data['customer_last_name']) < 3:
-                raise serializers.ValidationError('Pole `Nazwisko klienta` musi mieć conajmniej 3 znaki')
+                raise serializers.ValidationError('Nazwisko musi mieć conajmniej 3 znaki')
+            if not(data['customer_phone_number']):
+                raise serializers.ValidationError('Numer telefonu jest wymagany')
 
         if (data['end'] < data['start']):
             raise serializers.ValidationError('Nie poprawna data wizyty')
@@ -46,6 +48,10 @@ class MeetingSerializer(serializers.ModelSerializer):
             'customer_fax_number',
         )
         read_only_fields = ('id', 'do_not_work', 'barber_first_name',)
+
+
+class CustomerMeetingSerializer(MeetingSerializer):
+    class Meta(MeetingSerializer.Meta):
         extra_kwargs = {
             'customer_first_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_last_name': {'write_only': True, 'required': False, 'allow_blank': True},

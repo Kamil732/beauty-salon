@@ -101,7 +101,8 @@ class BarberListAPIView(APIView):
         search_field = request.query_params.get('search', '')
 
         accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(
-            last_name__istartswith=search_field)).exclude(is_admin=False)[:10].values('slug', 'first_name', 'last_name')
+            last_name__istartswith=search_field)).exclude(is_admin=False).values('slug', 'first_name', 'last_name')
+
         res = [
             {
                 'label': f"{account['first_name']} {account['last_name']}",
