@@ -73,9 +73,14 @@ function Home({
 			<PageHero.Body>
 				<PageHero.Content>
 					<PageHero.Title>Cennik</PageHero.Title>
-					<PageHero.Text>
-						<Pricing />
-					</PageHero.Text>
+
+					<Card>
+						<Card.Body>
+							<div style={{ overflow: 'auto' }}>
+								<Pricing />
+							</div>
+						</Card.Body>
+					</Card>
 				</PageHero.Content>
 
 				<PageHero.Img src={PaymentIllustration} />
