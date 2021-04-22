@@ -51,6 +51,7 @@ class Account(AbstractBaseUser):
     last_name = models.CharField(verbose_name='Nazwisko', max_length=20)
     phone_number = PhoneNumberField(verbose_name='Numer telefonu')
     fax_number = PhoneNumberField(verbose_name='Zapasowy Numer telefonu', blank=True)
+    trusted_customer = models.BooleanField(default=False)
 
     is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=True)
     is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)

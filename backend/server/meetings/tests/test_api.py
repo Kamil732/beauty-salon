@@ -27,8 +27,9 @@ class TestMeetings(APITestCase):
             phone_number=self.phone_number
         )
 
+        self.email2 = self.faker.email()
         self.account2 = Account.objects.create_user(
-            email=self.faker.email(),
+            email=self.email2,
             password=self.password,
             first_name=self.faker.first_name(),
             last_name=self.faker.last_name(),
@@ -74,13 +75,13 @@ class TestMeetings(APITestCase):
         res = self.client.get(self.meeting_list_url, {
             'from': monday,
             'to': monday + datetime.timedelta(days=7),
-        })
+        }, indent=4, sort_keys=True, default=str)
 
         self.assertEqual(res.status_code, 200)
 
     def test_create_meeting_not_logged(self):
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -92,7 +93,7 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         self.assertEqual(res.status_code, 403)
@@ -102,12 +103,12 @@ class TestMeetings(APITestCase):
         data = json.dumps({
             'email': self.email,
             'password': self.password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -119,22 +120,30 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 201)
+        self.assertIsNotNone(res.data.get('id'))
+        self.assertIsNotNone(res.data.get('do_not_work'))
+        self.assertEqual(res.data['barber_first_name'], self.admin.first_name)
+        self.assertEqual(res.data['customer_last_name'], self.account.last_name)
+        self.assertEqual(res.data['customer_first_name'], self.account.first_name)
+        self.assertEqual(res.data['customer_phone_number'], self.phone_number)
+        self.assertEqual(res.data['customer_fax_number'], self.phone_number)
+        self.assertEqual(res.data['type'], 'Włosy' if type == 'hair' else 'Broda')
 
     def test_create_meeting(self):
         # Login
         data = json.dumps({
             'email': self.admin_email,
             'password': self.admin_password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -146,7 +155,7 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         self.assertEqual(res.status_code, 201)
@@ -164,12 +173,12 @@ class TestMeetings(APITestCase):
         data = json.dumps({
             'email': self.admin_email,
             'password': self.admin_password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -181,13 +190,13 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         # Logout
         data = json.dumps({
             'withCredentials': True,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.logout_url, data=data, content_type='application/json')
 
         # Update data
@@ -202,22 +211,22 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.put(self.meeting_detail_url(res.data['id']), data=data, content_type='application/json')
 
         self.assertEqual(res.status_code, 403)
 
-    def test_update_meeting_not_admin(self):
+    def test_update_meeting_not_owner(self):
         # Login
         data = json.dumps({
-            'email': self.admin_email,
-            'password': self.admin_password,
-        })
+            'email': self.email,
+            'password': self.password,
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -229,20 +238,20 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         # Logout
         data = json.dumps({
             'withCredentials': True,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.logout_url, data=data, content_type='application/json')
 
         # Login
         data = json.dumps({
-            'email': self.email,
+            'email': self.email2,
             'password': self.password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Update data
@@ -257,7 +266,7 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.put(self.meeting_detail_url(res.data['id']), data=data, content_type='application/json')
 
         self.assertEqual(res.status_code, 403)
@@ -265,14 +274,14 @@ class TestMeetings(APITestCase):
     def test_update_meeting(self):
         # Login
         data = json.dumps({
-            'email': self.admin_email,
-            'password': self.admin_password,
-        })
+            'email': self.email,
+            'password': self.password,
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -284,7 +293,7 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         # Update data
@@ -299,7 +308,7 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.put(self.meeting_detail_url(res.data['id']), data=data, content_type='application/json')
 
         self.assertEqual(res.status_code, 200)
@@ -315,12 +324,12 @@ class TestMeetings(APITestCase):
         data = json.dumps({
             'email': self.admin_email,
             'password': self.admin_password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -332,13 +341,13 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         # Logout
         data = json.dumps({
             'withCredentials': True,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.logout_url, data=data, content_type='application/json')
 
         # Delete data
@@ -346,17 +355,17 @@ class TestMeetings(APITestCase):
 
         self.assertEqual(res.status_code, 403)
 
-    def test_delete_meeting_not_admin(self):
+    def test_delete_meeting_not_owner(self):
         # Login
         data = json.dumps({
-            'email': self.admin_email,
-            'password': self.admin_password,
-        })
+            'email': self.email,
+            'password': self.password,
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -368,20 +377,20 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         # Logout
         data = json.dumps({
             'withCredentials': True,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.logout_url, data=data, content_type='application/json')
 
         # Login
         data = json.dumps({
-            'email': self.email,
+            'email': self.email2,
             'password': self.password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Delete data
@@ -394,12 +403,12 @@ class TestMeetings(APITestCase):
         data = json.dumps({
             'email': self.admin_email,
             'password': self.admin_password,
-        })
+        }, indent=4, sort_keys=True, default=str)
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = "2021-04-22T07:30:00.000Z"
-        start = "2021-04-22T07:00:00.000Z"
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,
@@ -411,7 +420,7 @@ class TestMeetings(APITestCase):
             'end': end,
             'start': start,
             'type': type,
-        })
+        }, indent=4, sort_keys=True, default=str)
         res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
 
         # Delete data
