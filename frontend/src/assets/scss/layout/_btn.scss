@@ -4,6 +4,30 @@
 	align-items: center;
 }
 
+.btn-group-container {
+	display: flex;
+	align-items: center;
+
+	button {
+		border-radius: 0;
+
+		&:first-of-type {
+			border-radius: 4px 0 0 4px;
+		}
+
+		&:last-of-type {
+			border-radius: 0 4px 4px 0;
+		}
+	}
+
+	.btn__radio:checked + .btn__radio__label {
+		cursor: default;
+		background-color: $primary-color;
+		color: set-text-color($primary-color);
+		box-shadow: none;
+	}
+}
+
 .btn {
 	display: flex;
 	align-items: center;
