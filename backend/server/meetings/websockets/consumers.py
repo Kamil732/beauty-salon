@@ -36,23 +36,28 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
+    @database_sync_to_async
+    def check_is_owner(id):
+        return Meeting.objects.get(id=id).customer == self.user
+
     async def receive(self, text_data):
         response = json.loads(text_data)
         event = response.get('event')
         payload = response.get('payload')
 
         # Only admin can delete or add meeting
-        if (not(self.user.is_authenticated) or not(self.user.is_admin)) and (event == 'REMOVE_MEETING' or event == 'ADD_MEETING' or event == 'UPDATE_DATA'):
-            return
+        if self.user.is_authenticated and (event == 'REMOVE_MEETING' or event == 'ADD_MEETING' or event == 'UPDATE_DATA'):
+            if event == 'REMOVE_MEETING' and not(self.check_is_owner(payload)):
+                return
 
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'send_data',
-                'event': event,
-                'payload': payload,
-            }
-        )
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'send_data',
+                    'event': event,
+                    'payload': payload,
+                }
+            )
 
     async def send_data(self, event):
         await self.send(text_data=json.dumps({
