@@ -16,10 +16,7 @@ class MyMeetings extends Component {
 		return (
 			<PageHero>
 				<PageHero.Body>
-					<CardContainer>
-						<Calendar />
-						<WorkHours />
-					</CardContainer>
+					<Calendar />
 				</PageHero.Body>
 			</PageHero>
 		)

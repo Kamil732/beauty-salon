@@ -296,12 +296,41 @@ class AddMeetingAdminForm extends Component {
 
 				{do_not_work ? (
 					<>
-						<p>
-							Czy chcesz zapisać ten okres czasu jako nie
-							pracujący?
-						</p>
+						<FormControl>
+							<FormControl.Label
+								htmlFor="barber"
+								inputValue={barber}
+							>
+								Urlop dla
+							</FormControl.Label>
+
+							<FormControl.ChoiceField
+								required={do_not_work}
+								id="barber"
+								name="barber"
+								value={barber}
+								onChange={(_, value) =>
+									this.setState({
+										barber: value,
+									})
+								}
+								searchAsync
+								choices={(value) => {
+									let data = this.loadBarbers(value)
+									try {
+										data.unshift({
+											label: 'Każdego',
+											value: '',
+										})
+									} catch (err) {}
+
+									return data
+								}}
+							/>
+						</FormControl>
+
 						<Button danger center>
-							Tak
+							Zapisz urlop
 						</Button>
 					</>
 				) : (

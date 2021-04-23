@@ -6,7 +6,13 @@ import { Views } from 'react-big-calendar'
 import ButtonContainer from '../../../layout/buttons/ButtonContainer'
 import Button from '../../../layout/buttons/Button'
 
-const Toolbar = (toolbar) => {
+function Toolbar(toolbar) {
+	const goToDayView = () => toolbar.onView('day')
+
+	const goToWeekView = () => toolbar.onView('week')
+
+	const goToMonthView = () => toolbar.onView('month')
+
 	const goToBack = () => toolbar.onNavigate('PREV')
 
 	const goToNext = () => toolbar.onNavigate('NEXT')
@@ -42,6 +48,25 @@ const Toolbar = (toolbar) => {
 			</ButtonContainer>
 
 			<label className="label-date">{label()}</label>
+
+			<ButtonContainer.Group>
+				{toolbar.view !== Views.MONTH && (
+					<Button primary small onClick={goToMonthView}>
+						Miesiąc
+					</Button>
+				)}
+				{toolbar.view !== Views.WEEK && (
+					<Button primary small onClick={goToWeekView}>
+						Tydzień
+					</Button>
+				)}
+
+				{toolbar.view !== Views.DAY && (
+					<Button primary small onClick={goToDayView}>
+						Dzień
+					</Button>
+				)}
+			</ButtonContainer.Group>
 		</div>
 	)
 }

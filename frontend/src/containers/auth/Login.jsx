@@ -104,6 +104,7 @@ class Login extends Component {
 
 									<Button
 										primary
+										center
 										loading={loading}
 										loadingText="Logowanie"
 									>

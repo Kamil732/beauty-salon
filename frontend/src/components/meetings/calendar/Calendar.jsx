@@ -40,7 +40,7 @@ class Calendar extends Component {
 		loadMeetings: PropTypes.func.isRequired,
 		addLoadedDate: PropTypes.func.isRequired,
 
-		one_slot_max_meetings: PropTypes.string,
+		one_slot_max_meetings: PropTypes.number.isRequired,
 		end_work_sunday: PropTypes.string,
 		start_work_sunday: PropTypes.string,
 		end_work_saturday: PropTypes.string,
@@ -63,13 +63,11 @@ class Calendar extends Component {
 		const calendarDates = this.getCalendarDates()
 		this.state = {
 			ws: null,
-			windowWidth: window.innerWidth,
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
 		}
 
-		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
 		this.getCalendarDates = this.getCalendarDates.bind(this)
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
@@ -166,9 +164,6 @@ class Calendar extends Component {
 			),
 		}
 	}
-
-	updateWindowDimensions = () =>
-		this.setState({ windowWidth: window.innerWidth })
 
 	openModal = (type, selected) => {
 		this.setState({
@@ -506,7 +501,7 @@ class Calendar extends Component {
 			user_phone_number,
 			isAuthenticated,
 		} = this.props
-		const { windowWidth, selected, minDate, maxDate } = this.state
+		const { selected, minDate, maxDate } = this.state
 
 		const meetings = isAdminPanel
 			? this.props.meetings
@@ -584,13 +579,11 @@ class Calendar extends Component {
 								events={meetings}
 								step={30}
 								timeslots={1}
-								views={
-									windowWidth >= 768
-										? [Views.WEEK]
-										: [Views.DAY]
-								}
-								view={
-									windowWidth >= 768 ? Views.WEEK : Views.DAY
+								views={[Views.MONTH, Views.WEEK, Views.DAY]}
+								defaultView={
+									window.innerWidth >= 768
+										? Views.WEEK
+										: Views.DAY
 								}
 								min={minDate}
 								max={maxDate}
