@@ -64,11 +64,23 @@ export const loadMeetings = (from, to) => async (dispatch, getState) => {
 	}
 }
 
-export const addMeeting = (data) => (dispatch) => {
-	dispatch({
-		type: ADD_MEETING,
-		payload: setMeeting(data),
-	})
+export const addMeeting = (id) => async (dispatch) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/meetings/${id}/`
+		)
+
+		dispatch({
+			type: ADD_MEETING,
+			payload: setMeeting(res.data),
+		})
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało sie zaktualizować kalendarzu. Kolejna próba za 3s'
+		)
+
+		setTimeout(() => dispatch(addMeeting(id)), 3000)
+	}
 }
 
 export const removeMeeting = (id) => (dispatch) => {

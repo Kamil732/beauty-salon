@@ -171,13 +171,12 @@ class Calendar extends Component {
 		this.setState({ windowWidth: window.innerWidth })
 
 	openModal = (type, selected) => {
-		if (this.props.isAuthenticated)
-			this.setState({
-				selected: {
-					selected_type: type,
-					...selected,
-				},
-			})
+		this.setState({
+			selected: {
+				selected_type: type,
+				...selected,
+			},
+		})
 	}
 
 	componentDidMount = () =>
@@ -270,7 +269,7 @@ class Calendar extends Component {
 			this.props.ws.send(
 				JSON.stringify({
 					event: ADD_MEETING,
-					payload: res.data,
+					payload: res.data.id,
 				})
 			)
 			this.setState({ selected: {} })
@@ -490,12 +489,22 @@ class Calendar extends Component {
 	}
 
 	render() {
-		const { isAdminPanel, loading } = this.props
+		const {
+			isAdminPanel,
+			loading,
+			user_phone_number,
+			isAuthenticated,
+		} = this.props
 		const { windowWidth, selected, minDate, maxDate } = this.state
 
 		const meetings = isAdminPanel
 			? this.props.meetings
-			: this.props.meetings.filter((meeting) => meeting.do_not_work)
+			: this.props.meetings.filter(
+					(meeting) =>
+						meeting.do_not_work ||
+						(meeting.customer_phone_number === user_phone_number &&
+							isAuthenticated)
+			  )
 
 		return (
 			<>
@@ -592,6 +601,7 @@ class Calendar extends Component {
 
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
+	user_phone_number: state.auth.data.phone_number,
 	ws: state.meetings.ws,
 	loading: state.meetings.loading,
 	meetings: state.meetings.data,
