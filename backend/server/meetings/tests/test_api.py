@@ -125,13 +125,6 @@ class TestMeetings(APITestCase):
 
         self.assertEqual(res.status_code, 201)
         self.assertIsNotNone(res.data.get('id'))
-        self.assertIsNotNone(res.data.get('do_not_work'))
-        self.assertEqual(res.data['barber_first_name'], self.admin.first_name)
-        self.assertEqual(res.data['customer_last_name'], self.account.last_name)
-        self.assertEqual(res.data['customer_first_name'], self.account.first_name)
-        self.assertEqual(res.data['customer_phone_number'], self.phone_number)
-        self.assertEqual(res.data['customer_fax_number'], self.phone_number)
-        self.assertEqual(res.data['type'], 'Włosy' if type == 'hair' else 'Broda')
 
     def test_create_meeting(self):
         # Login
@@ -167,6 +160,95 @@ class TestMeetings(APITestCase):
         self.assertEqual(res.data['customer_phone_number'], self.phone_number)
         self.assertEqual(res.data['customer_fax_number'], self.phone_number)
         self.assertEqual(res.data['type'], 'Włosy' if type == 'hair' else 'Broda')
+
+    def test_get_meeting(self):
+        # Login
+        data = json.dumps({
+            'email': self.email,
+            'password': self.password,
+        }, indent=4, sort_keys=True, default=str)
+        self.client.post(self.login_url, data=data, content_type='application/json')
+
+        # Create meeting
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
+        type = random.choice(['hair', 'beard'])
+        data = json.dumps({
+            'barber': self.admin.slug,
+            'customer': self.account.slug,
+            'customer_fax_number': self.phone_number,
+            'customer_first_name': self.account.first_name,
+            'customer_last_name': self.account.last_name,
+            'customer_phone_number': self.phone_number,
+            'end': end,
+            'start': start,
+            'type': type,
+        }, indent=4, sort_keys=True, default=str)
+        res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
+
+        # Get meeting
+        res = self.client.get(self.meeting_detail_url(res.data['id']))
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIsNotNone(res.data.get('id'))
+        self.assertIsNotNone(res.data.get('do_not_work'))
+        self.assertEqual(res.data['barber_first_name'], self.admin.first_name)
+        self.assertEqual(res.data['customer_last_name'], self.account.last_name)
+        self.assertEqual(res.data['customer_first_name'], self.account.first_name)
+        self.assertEqual(res.data['customer_phone_number'], self.phone_number)
+        self.assertEqual(res.data['customer_fax_number'], self.phone_number)
+        self.assertEqual(res.data['type'], 'Włosy' if type == 'hair' else 'Broda')
+
+    def test_get_meeting_not_owner(self):
+        # Login
+        data = json.dumps({
+            'email': self.email,
+            'password': self.password,
+        }, indent=4, sort_keys=True, default=str)
+        self.client.post(self.login_url, data=data, content_type='application/json')
+
+        # Create meeting
+        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
+        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
+        type = random.choice(['hair', 'beard'])
+        data = json.dumps({
+            'barber': self.admin.slug,
+            'customer': self.account.slug,
+            'customer_fax_number': self.phone_number,
+            'customer_first_name': self.account.first_name,
+            'customer_last_name': self.account.last_name,
+            'customer_phone_number': self.phone_number,
+            'end': end,
+            'start': start,
+            'type': type,
+        }, indent=4, sort_keys=True, default=str)
+        res = self.client.post(self.meeting_list_url, data=data, content_type='application/json')
+
+        # Logout
+        data = json.dumps({
+            'withCredentials': True,
+        }, indent=4, sort_keys=True, default=str)
+        self.client.post(self.logout_url, data=data, content_type='application/json')
+
+        # Login
+        data = json.dumps({
+            'email': self.email2,
+            'password': self.password,
+        }, indent=4, sort_keys=True, default=str)
+        self.client.post(self.login_url, data=data, content_type='application/json')
+
+        # Get meeting
+        res = self.client.get(self.meeting_detail_url(res.data['id']))
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIsNotNone(res.data.get('id'))
+        self.assertIsNotNone(res.data.get('do_not_work'))
+        self.assertEqual(res.data['barber_first_name'], self.admin.first_name)
+        self.assertIsNone(res.data.get('customer_last_name'))
+        self.assertIsNone(res.data.get('customer_first_name'))
+        self.assertIsNone(res.data.get('customer_phone_number'))
+        self.assertIsNone(res.data.get('customer_fax_number'))
+        self.assertIsNone(res.data.get('type'))
 
     def test_update_meeting_not_logged(self):
         # Login

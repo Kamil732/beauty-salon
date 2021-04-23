@@ -43,8 +43,9 @@ class MeetingListAPIView(generics.ListCreateAPIView):
         return Meeting.objects.filter(start__gte=from_, start__lte=to)
 
 
-@method_decorator(csrf_protect, name='dispatch')
-class MeetingDetailAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
+@method_decorator(csrf_protect, name='update')
+@method_decorator(csrf_protect, name='destroy')
+class MeetingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrIsAdminOrReadOnly,)
     queryset = Meeting.objects.all()
     lookup_field = 'id'
@@ -54,10 +55,3 @@ class MeetingDetailAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
         if self.request.user.is_authenticated and (self.request.user.is_admin or self.get_object().customer == self.request.user):
             return serializers.AdminMeetingSerializer
         return serializers.CustomerMeetingSerializer
-
-    # def get_object(self):
-    #     meeting = super(MeetingDetailAPIView, self).get_object()
-
-    #     self.check_object_permissions(self.request, meeting)
-
-    #     return meeting
