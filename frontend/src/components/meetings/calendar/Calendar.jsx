@@ -424,7 +424,13 @@ class Calendar extends Component {
 	eventPropGetter = (event) => {
 		return {
 			className: `${event.do_not_work ? 'doNotWork' : ''} ${
-				this.props.isAdminPanel ? 'selectable' : ''
+				this.props.isAdminPanel ||
+				(this.props.isAuthenticated &&
+					event.customer_phone_number ===
+						this.props.user_phone_number &&
+					!event.do_not_work)
+					? 'selectable'
+					: ''
 			}`,
 		}
 	}
@@ -432,15 +438,16 @@ class Calendar extends Component {
 	onSelecting = () => (this.props.isAdminPanel ? true : false)
 
 	onSelectEvent = (event) => {
-		if (this.props.isAdminPanel) this.openModal('event', event)
+		if (
+			this.props.isAdminPanel ||
+			(this.props.isAuthenticated &&
+				event.customer_phone_number === this.props.user_phone_number &&
+				!event.do_not_work)
+		)
+			this.openModal('event', event)
 	}
 
 	onSelectSlot = (slot) => {
-		if (this.props.isAdminPanel) {
-			this.openModal('slot', slot)
-			return
-		}
-
 		const workingHours = this.checkWorkingHours(
 			moment(slot.start).format('dddd')
 		)
@@ -480,12 +487,16 @@ class Calendar extends Component {
 				).length
 		}
 
-		if (
-			eventsOnTheSlot < this.props.one_slot_max_meetings &&
-			!isNonWorkingHour &&
-			start !== 0
-		)
-			this.openModal('slot', slot)
+		if (this.props.isAdminPanel) {
+			if (!isNonWorkingHour) this.openModal('slot', slot)
+		} else {
+			if (
+				eventsOnTheSlot < this.props.one_slot_max_meetings &&
+				!isNonWorkingHour &&
+				start !== 0
+			)
+				this.openModal('slot', slot)
+		}
 	}
 
 	render() {
@@ -544,7 +555,14 @@ class Calendar extends Component {
 										selected.slots.length > 2 ||
 										selected.start.getHours() * 60 +
 											selected.start.getMinutes() ===
-											0
+											0 ||
+										this.props.meetings.filter(
+											(meeting) =>
+												meeting.start >=
+													selected.start &&
+												meeting.end <= selected.end
+										).length >=
+											this.props.one_slot_max_meetings
 									}
 								/>
 							) : (
