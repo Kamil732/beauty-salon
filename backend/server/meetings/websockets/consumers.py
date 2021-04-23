@@ -38,16 +38,19 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def check_is_owner(id):
-        return Meeting.objects.get(id=id).customer == self.user
+        try:
+            return Meeting.objects.get(id=id).customer == self.user
+        except:
+            return False
 
     async def receive(self, text_data):
         response = json.loads(text_data)
         event = response.get('event')
         payload = response.get('payload')
 
-        # Only admin can delete or add meeting
+        # Check permissions
         if self.user.is_authenticated and (event == 'REMOVE_MEETING' or event == 'ADD_MEETING' or event == 'UPDATE_DATA'):
-            if event == 'REMOVE_MEETING' and not(self.check_is_owner(payload)):
+            if (not(self.user.is_admin) and event == 'UPDATE_DATA') or (event == 'REMOVE_MEETING' and not(self.check_is_owner(payload))):
                 return
 
             await self.channel_layer.group_send(
