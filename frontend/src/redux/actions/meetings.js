@@ -136,14 +136,6 @@ export const connectWebSocket = () => (dispatch) => {
 			)} second.`,
 			e.reason
 		)
-		NotificationManager.error(
-			`Nie można połączyć się z kalendarzem. Następna próba nastąpi za: ${Math.min(
-				10000 / 1000,
-				(timeout + timeout) / 1000
-			)} sekund`,
-			'Błąd',
-			5000
-		)
 
 		timeout += timeout //increment retry interval
 		connectInterval = setTimeout(
@@ -186,11 +178,11 @@ export const getMeetings = () => async (dispatch, getState) => {
 			})
 	} catch (err) {
 		NotificationManager.error(
-			'Nie udało się załadować wizyt, następna próba za 2s',
+			'Nie udało się załadować wizyt, następna próba za 3s',
 			'Błąd',
 			1500
 		)
 
-		setTimeout(dispatch(getMeetings()), 2000)
+		setTimeout(dispatch(getMeetings()), 3000)
 	}
 }

@@ -6,6 +6,7 @@ import {
 	MEETINGS_CONNECT_WS,
 	LOAD_MEETINGS,
 	ADD_LOADED_DATE,
+	CLEAR_MEETINGS,
 } from '../actions/types'
 
 const initialState = {
@@ -29,10 +30,17 @@ export default function (state = initialState, action) {
 				loading: false,
 				ws: action.payload,
 			}
+		case CLEAR_MEETINGS:
+			return {
+				...state,
+				loadedDates: initialState.loadedDates,
+				meetings: initialState.meetings,
+			}
 		case ADD_LOADED_DATE:
 			return {
 				...state,
 				loadedDates: [...state.loadedDates, action.payload],
+				loading: false,
 			}
 		case GET_MEETINGS:
 			return {

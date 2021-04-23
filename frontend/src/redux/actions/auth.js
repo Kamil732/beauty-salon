@@ -8,11 +8,14 @@ import {
 	AUTH_LOADING,
 	AUTH_SUCCESS,
 	AUTH_ERROR,
+	CLEAR_MEETINGS,
+	MEETINGS_LOADING,
 } from './types'
 
 import getHeaders from '../../helpers/getHeaders'
 
 import { NotificationManager } from 'react-notifications'
+import { getMeetings } from './meetings'
 
 export const loadUser = () => async (dispatch) => {
 	dispatch({ type: AUTH_LOADING })
@@ -52,8 +55,11 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 			type: LOGIN_SUCCESS,
 			payload: res.data.user,
 		})
+		NotificationManager.success(res.data.message, 'Zalogowano')
 
-		NotificationManager.success(res.data.message, 'Sukces', 3000)
+		dispatch({ type: MEETINGS_LOADING })
+		dispatch({ type: CLEAR_MEETINGS })
+		dispatch(getMeetings())
 	} catch (err) {
 		if (err.response)
 			for (const msg in err.response.data)
@@ -122,8 +128,11 @@ export const logout = () => async (dispatch) => {
 		dispatch({
 			type: LOGOUT,
 		})
+		NotificationManager.success(res.data.message, 'Wylogowano')
 
-		NotificationManager.success(res.data.message, 'Sukces', 3000)
+		dispatch({ type: MEETINGS_LOADING })
+		dispatch({ type: CLEAR_MEETINGS })
+		dispatch(getMeetings())
 	} catch (err) {
 		if (err.response)
 			for (const msg in err.response.data)

@@ -13,6 +13,7 @@ export const REGISTER_FAIL = 'REGISTER_FAIL'
 export const LOGOUT = 'LOGOUT'
 
 // Meetings
+export const CLEAR_MEETINGS = 'CLEAR_MEETINGS'
 export const ADD_LOADED_DATE = 'ADD_LOADED_DATE'
 export const LOAD_BARBERS = 'LOAD_BARBERS'
 export const LOAD_CUSTOMERS = 'LOAD_CUSTOMERS'
