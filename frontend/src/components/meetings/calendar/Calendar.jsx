@@ -9,7 +9,7 @@ import { NotificationManager } from 'react-notifications'
 
 import axios from 'axios'
 import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
-import { loadMeetings, addLoadedDate } from '../../../redux/actions/meetings'
+import { loadMeetings } from '../../../redux/actions/meetings'
 
 import Card from '../../../layout/cards/Card'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
@@ -38,7 +38,6 @@ class Calendar extends Component {
 		meetings: PropTypes.array,
 		loadedDates: PropTypes.array,
 		loadMeetings: PropTypes.func.isRequired,
-		addLoadedDate: PropTypes.func.isRequired,
 
 		one_slot_max_meetings: PropTypes.number.isRequired,
 		end_work_sunday: PropTypes.string,
@@ -63,11 +62,14 @@ class Calendar extends Component {
 		const calendarDates = this.getCalendarDates()
 		this.state = {
 			ws: null,
+			windowWidth: window.innerWidth,
+			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
 		}
 
+		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
 		this.getCalendarDates = this.getCalendarDates.bind(this)
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
@@ -79,6 +81,9 @@ class Calendar extends Component {
 		this.deleteMeeting = this.deleteMeeting.bind(this)
 		this.addMeeting = this.addMeeting.bind(this)
 	}
+
+	updateWindowDimensions = () =>
+		this.setState({ windowWidth: window.innerWidth })
 
 	getCalendarDates = () => {
 		const today = new Date()
@@ -264,7 +269,11 @@ class Calendar extends Component {
 			this.props.ws.send(
 				JSON.stringify({
 					event: ADD_MEETING,
-					payload: res.data.id,
+					payload: {
+						id: res.data.id,
+						from: res.data.start,
+						to: res.data.end,
+					},
 				})
 			)
 			this.setState({ selected: {} })
@@ -374,8 +383,21 @@ class Calendar extends Component {
 	}
 
 	onRangeChange = async (dates) => {
-		const from = moment(dates[0]).startOf('week').format('YYYY-MM-DD')
-		const to = moment(dates[dates.length - 1]).format('YYYY-MM-DD')
+		const from =
+			this.state.view === Views.MONTH
+				? moment(dates.start).format('YYYY-MM-DD')
+				: moment(dates[dates.length - 1])
+						.startOf('month')
+						.startOf('week')
+						.format('YYYY-MM-DD')
+
+		const to =
+			this.state.view === Views.MONTH
+				? moment(dates.end).format('YYYY-MM-DD')
+				: moment(dates[dates.length - 1])
+						.endOf('month')
+						.endOf('week')
+						.format('YYYY-MM-DD')
 
 		this.props.loadMeetings(from, to)
 	}
@@ -501,16 +523,21 @@ class Calendar extends Component {
 			user_phone_number,
 			isAuthenticated,
 		} = this.props
-		const { selected, minDate, maxDate } = this.state
+		const { windowWidth, view, selected, minDate, maxDate } = this.state
+		let meetings = []
 
-		const meetings = isAdminPanel
-			? this.props.meetings
-			: this.props.meetings.filter(
-					(meeting) =>
-						meeting.do_not_work ||
-						(meeting.customer_phone_number === user_phone_number &&
-							isAuthenticated)
-			  )
+		if (view === Views.MONTH)
+			meetings = this.props.meetings.filter((meeting) => meeting.allDay)
+		else
+			meetings = isAdminPanel
+				? this.props.meetings
+				: this.props.meetings.filter(
+						(meeting) =>
+							meeting.do_not_work ||
+							(meeting.customer_phone_number ===
+								user_phone_number &&
+								isAuthenticated)
+				  )
 
 		return (
 			<>
@@ -580,15 +607,10 @@ class Calendar extends Component {
 								step={30}
 								timeslots={1}
 								views={[Views.MONTH, Views.WEEK, Views.DAY]}
-								defaultView={
-									window.innerWidth >= 768
-										? Views.WEEK
-										: Views.DAY
-								}
+								defaultView={view}
 								min={minDate}
 								max={maxDate}
 								dayLayoutAlgorithm="no-overlap"
-								longPressThreshold={10}
 								slotPropGetter={this.slotPropGetter}
 								eventPropGetter={this.eventPropGetter}
 								dayPropGetter={this.dayPropGetter}
@@ -598,7 +620,18 @@ class Calendar extends Component {
 								onSelectSlot={this.onSelectSlot}
 								onSelectEvent={this.onSelectEvent}
 								components={{
-									toolbar: Toolbar,
+									toolbar: Toolbar({
+										windowWidth: windowWidth,
+										setView: (state) =>
+											this.setState({ view: state }),
+									}),
+								}}
+								messages={{
+									month: 'Miesiąc',
+									week: 'Tydzień',
+									day: 'Dzień',
+									date: 'Data',
+									event: 'Spotkanie',
 								}}
 							/>
 						</div>
@@ -637,7 +670,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
 	loadMeetings,
-	addLoadedDate,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

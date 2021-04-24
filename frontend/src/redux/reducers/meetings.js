@@ -1,12 +1,11 @@
 import {
-	GET_MEETINGS,
 	ADD_MEETING,
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
 	LOAD_MEETINGS,
-	ADD_LOADED_DATE,
 	CLEAR_MEETINGS,
+	ADD_LOADED_DATES,
 } from '../actions/types'
 
 const initialState = {
@@ -27,8 +26,9 @@ export default function (state = initialState, action) {
 		case MEETINGS_CONNECT_WS:
 			return {
 				...state,
-				loading: false,
 				ws: action.payload,
+				loading:
+					state.loadedDates.length > 0 ? false : initialState.loading,
 			}
 		case CLEAR_MEETINGS:
 			return {
@@ -36,22 +36,16 @@ export default function (state = initialState, action) {
 				loadedDates: initialState.loadedDates,
 				meetings: initialState.meetings,
 			}
-		case ADD_LOADED_DATE:
+		case ADD_LOADED_DATES:
 			return {
 				...state,
-				loadedDates: [...state.loadedDates, action.payload],
-				loading: false,
-			}
-		case GET_MEETINGS:
-			return {
-				...state,
-				data: action.payload,
+				loadedDates: [...state.loadedDates, ...action.payload],
+				loading: state.ws ? false : initialState.loading,
 			}
 		case LOAD_MEETINGS:
 			return {
 				...state,
 				data: [...state.data, ...action.payload],
-				loading: false,
 			}
 		case ADD_MEETING:
 			return { ...state, data: [...state.data, action.payload] }

@@ -1,12 +1,11 @@
 import {
-	GET_MEETINGS,
 	ADD_MEETING,
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
 	UPDATE_DATA,
 	LOAD_MEETINGS,
-	ADD_LOADED_DATE,
+	ADD_LOADED_DATES,
 } from './types'
 
 import moment from 'moment'
@@ -34,20 +33,44 @@ const setMeeting = (data) => {
 	return data
 }
 
-export const addLoadedDate = (date) => (dispatch) => {
+const getDates = (from, to, loadedDates) => {
+	let dates = []
+	let currentDate = moment(from).toDate()
+
+	while (
+		currentDate.getTime() !== moment(to).add(1, 'day').toDate().getTime()
+	) {
+		const formatedDate = moment(currentDate).format('YYYY-MM-DD')
+
+		if (!loadedDates.includes(formatedDate)) dates.push(formatedDate)
+
+		currentDate = moment(currentDate).add(1, 'day').toDate()
+	}
+
+	return dates
+}
+
+export const addLoadedDates = (dates) => (dispatch) => {
 	dispatch({
-		type: ADD_LOADED_DATE,
-		payload: date,
+		type: ADD_LOADED_DATES,
+		payload: dates,
 	})
 }
 
-export const loadMeetings = (from, to) => async (dispatch, getState) => {
-	if (!getState().meetings.loadedDates.includes(from)) {
+export const loadMeetings = (
+	from = moment().startOf('month').startOf('week').format('YYYY-MM-DD'),
+	to = moment().endOf('month').endOf('week').format('YYYY-MM-DD')
+) => async (dispatch, getState) => {
+	const dates = getDates(from, to, getState().meetings.loadedDates)
+
+	if (dates.length > 0) {
 		dispatch({ type: MEETINGS_LOADING })
 
 		try {
 			let res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/meetings/?from=${from}&to=${to}`
+				`${process.env.REACT_APP_API_URL}/meetings/?from=${
+					dates[0]
+				}&to=${dates[dates.length - 1]}`
 			)
 
 			for (let i = 0; i < res.data.length; i++)
@@ -57,29 +80,31 @@ export const loadMeetings = (from, to) => async (dispatch, getState) => {
 				type: LOAD_MEETINGS,
 				payload: res.data,
 			})
-			dispatch(addLoadedDate(from))
+			dispatch(addLoadedDates(dates))
 		} catch (err) {
 			NotificationManager.error('Nie udało się załadować wizyt', 'Błąd')
 		}
 	}
 }
 
-export const addMeeting = (id) => async (dispatch) => {
-	try {
-		const res = await axios.get(
-			`${process.env.REACT_APP_API_URL}/meetings/${id}/`
-		)
+export const addMeeting = (data) => async (dispatch, getState) => {
+	const dates = getDates(data.from, data.to, getState().meetings.loadedDates)
 
-		dispatch({
-			type: ADD_MEETING,
-			payload: setMeeting(res.data),
-		})
-	} catch (err) {
-		NotificationManager.error(
-			'Nie udało sie zaktualizować kalendarzu. Kolejna próba za 3s'
-		)
+	console.log(dates)
 
-		setTimeout(() => dispatch(addMeeting(id)), 3000)
+	if (dates.length === 0) {
+		try {
+			const res = await axios.get(
+				`${process.env.REACT_APP_API_URL}/meetings/${data.id}/`
+			)
+
+			dispatch({
+				type: ADD_MEETING,
+				payload: setMeeting(res.data),
+			})
+		} catch (err) {
+			NotificationManager.error('Nie udało sie zaktualizować kalendarza')
+		}
 	}
 }
 
@@ -153,36 +178,5 @@ export const connectWebSocket = () => (dispatch) => {
 		)
 
 		ws.close()
-	}
-}
-
-export const getMeetings = () => async (dispatch, getState) => {
-	try {
-		const res = await axios.get(
-			`${process.env.REACT_APP_API_URL}/meetings/`
-		)
-		let data = res.data
-
-		for (let i = 0; i < data.length; i++) data[i] = setMeeting(data[i])
-
-		dispatch({
-			type: GET_MEETINGS,
-			payload: data,
-		})
-
-		const startOfWekk = moment().startOf('week').format('YYYY-MM-DD')
-		if (!getState().meetings.loadedDates.includes(startOfWekk))
-			dispatch({
-				type: ADD_LOADED_DATE,
-				payload: startOfWekk,
-			})
-	} catch (err) {
-		NotificationManager.error(
-			'Nie udało się załadować wizyt, następna próba za 3s',
-			'Błąd',
-			1500
-		)
-
-		setTimeout(dispatch(getMeetings()), 3000)
 	}
 }

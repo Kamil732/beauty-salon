@@ -6,27 +6,31 @@ import { Views } from 'react-big-calendar'
 import ButtonContainer from '../../../layout/buttons/ButtonContainer'
 import Button from '../../../layout/buttons/Button'
 
-function Toolbar(toolbar) {
-	const goToDayView = () => toolbar.onView('day')
+const Toolbar = ({ windowWidth, setView }) => ({
+	view,
+	views,
+	onView,
+	onNavigate,
+	date,
+	localizer,
+}) => {
+	const goToView = (view) => {
+		onView(view)
+		setView(view)
+	}
 
-	const goToWeekView = () => toolbar.onView('week')
+	const goToBack = () => onNavigate('PREV')
 
-	const goToMonthView = () => toolbar.onView('month')
+	const goToNext = () => onNavigate('NEXT')
 
-	const goToBack = () => toolbar.onNavigate('PREV')
-
-	const goToNext = () => toolbar.onNavigate('NEXT')
-
-	const goToCurrent = () => toolbar.onNavigate('TODAY')
+	const goToCurrent = () => onNavigate('TODAY')
 
 	const label = () => {
-		const date = moment(toolbar.date)
+		date = moment(date)
 
 		return (
 			<span>
-				{toolbar.view === Views.DAY ? (
-					<span>{date.format('DD')}</span>
-				) : null}
+				{view === Views.DAY && <span>{date.format('DD')}</span>}
 				<b> {date.format('MMMM')}</b>
 				<span> {date.format('YYYY')}</span>
 			</span>
@@ -49,24 +53,23 @@ function Toolbar(toolbar) {
 
 			<label className="label-date">{label()}</label>
 
-			<ButtonContainer.Group>
-				{toolbar.view !== Views.MONTH && (
-					<Button primary small onClick={goToMonthView}>
-						Miesiąc
-					</Button>
-				)}
-				{toolbar.view !== Views.WEEK && (
-					<Button primary small onClick={goToWeekView}>
-						Tydzień
-					</Button>
-				)}
-
-				{toolbar.view !== Views.DAY && (
-					<Button primary small onClick={goToDayView}>
-						Dzień
-					</Button>
-				)}
-			</ButtonContainer.Group>
+			{windowWidth >= 768 && views.length > 1 && (
+				<ButtonContainer.Group>
+					{views.map((v, index) => (
+						<React.Fragment key={index}>
+							{view !== v && (
+								<Button
+									primary
+									small
+									onClick={() => goToView(v)}
+								>
+									{localizer.messages[v]}
+								</Button>
+							)}
+						</React.Fragment>
+					))}
+				</ButtonContainer.Group>
+			)}
 		</div>
 	)
 }

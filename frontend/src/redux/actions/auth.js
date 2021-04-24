@@ -15,7 +15,7 @@ import {
 import getHeaders from '../../helpers/getHeaders'
 
 import { NotificationManager } from 'react-notifications'
-import { getMeetings } from './meetings'
+import { loadMeetings } from './meetings'
 
 export const loadUser = () => async (dispatch) => {
 	dispatch({ type: AUTH_LOADING })
@@ -59,7 +59,7 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 
 		dispatch({ type: MEETINGS_LOADING })
 		dispatch({ type: CLEAR_MEETINGS })
-		dispatch(getMeetings())
+		dispatch(loadMeetings())
 	} catch (err) {
 		if (err.response)
 			for (const msg in err.response.data)
@@ -132,7 +132,7 @@ export const logout = () => async (dispatch) => {
 
 		dispatch({ type: MEETINGS_LOADING })
 		dispatch({ type: CLEAR_MEETINGS })
-		dispatch(getMeetings())
+		dispatch(loadMeetings())
 	} catch (err) {
 		if (err.response)
 			for (const msg in err.response.data)
