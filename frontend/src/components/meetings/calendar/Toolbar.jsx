@@ -6,7 +6,9 @@ import { Views } from 'react-big-calendar'
 import ButtonContainer from '../../../layout/buttons/ButtonContainer'
 import Button from '../../../layout/buttons/Button'
 
-const Toolbar = ({ windowWidth, setView }) => ({
+const Toolbar = ({
+	windowWidth,
+	setView,
 	view,
 	views,
 	onView,
@@ -18,6 +20,8 @@ const Toolbar = ({ windowWidth, setView }) => ({
 		onView(view)
 		setView(view)
 	}
+
+	if (windowWidth < 768 && view !== Views.DAY) goToView(Views.DAY)
 
 	const goToBack = () => onNavigate('PREV')
 
