@@ -21,6 +21,7 @@ import {
 	Views,
 } from 'react-big-calendar'
 import Toolbar from './Toolbar'
+import TouchCellWrapper from './TouchCellWrapper'
 import AddMeetingAdminForm from './AddMeetingAdminForm'
 import Legend from './Legend'
 import AddMeetingForm from './AddMeetingForm'
@@ -433,7 +434,7 @@ class Calendar extends Component {
 		return {
 			className: isDisabled ? 'disabled' : '',
 			style: {
-				minHeight: isAdminPanel ? '80px' : 'auto',
+				minHeight: isAdminPanel ? '110px' : 'auto',
 			},
 		}
 	}
@@ -620,11 +621,21 @@ class Calendar extends Component {
 								onSelectSlot={this.onSelectSlot}
 								onSelectEvent={this.onSelectEvent}
 								components={{
-									toolbar: Toolbar({
-										windowWidth: windowWidth,
-										setView: (state) =>
-											this.setState({ view: state }),
-									}),
+									toolbar: (props) => (
+										<Toolbar
+											windowWidth={windowWidth}
+											setView={(state) =>
+												this.setState({ view: state })
+											}
+											{...props}
+										/>
+									),
+									timeSlotWrapper: (props) => (
+										<TouchCellWrapper
+											{...props}
+											onSelectSlot={this.onSelectSlot}
+										/>
+									),
 								}}
 								messages={{
 									month: 'Miesiąc',
