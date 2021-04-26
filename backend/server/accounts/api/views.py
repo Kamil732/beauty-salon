@@ -1,11 +1,14 @@
 from django.db.models import Q
+from django.db.models import Value as V
+from django.db.models.functions import Concat
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.utils.decorators import method_decorator
+from django.contrib import auth
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, generics, status, viewsets, mixins
 from rest_framework.exceptions import ValidationError
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
-from django.utils.decorators import method_decorator
-from django.contrib import auth
 
 from . import serializers
 from . import pagination
@@ -83,8 +86,9 @@ class CustomerListAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')
 
-        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(
-            last_name__istartswith=search_field)).exclude(is_admin=True)[:10]
+        accounts = Account.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
+            first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=True)[:10]
+
         res = [
             {
                 'label': account.get_full_name(),
@@ -100,8 +104,8 @@ class BarberListAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')
 
-        accounts = Account.objects.filter(Q(first_name__istartswith=search_field) | Q(
-            last_name__istartswith=search_field)).exclude(is_admin=False).values('slug', 'first_name', 'last_name')
+        accounts = Account.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
+            first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=False).values('slug', 'first_name', 'last_name')
 
         res = [
             {
