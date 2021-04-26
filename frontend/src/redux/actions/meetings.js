@@ -37,9 +37,7 @@ const getDates = (from, to, loadedDates) => {
 	let dates = []
 	let currentDate = moment(from).toDate()
 
-	while (
-		currentDate.getTime() !== moment(to).add(1, 'day').toDate().getTime()
-	) {
+	while (currentDate.getTime() <= moment(to).toDate().getTime()) {
 		const formatedDate = moment(currentDate).format('YYYY-MM-DD')
 
 		if (!loadedDates.includes(formatedDate)) dates.push(formatedDate)
@@ -89,8 +87,6 @@ export const loadMeetings = (
 
 export const addMeeting = (data) => async (dispatch, getState) => {
 	const dates = getDates(data.from, data.to, getState().meetings.loadedDates)
-
-	console.log(dates)
 
 	if (dates.length === 0) {
 		try {
