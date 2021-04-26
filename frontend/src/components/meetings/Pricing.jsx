@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import EditBox from '../../layout/forms/EditBox'
+
 class Pricing extends Component {
 	static propTypes = {
 		hair_price: PropTypes.string.isRequired,
@@ -16,11 +18,19 @@ class Pricing extends Component {
 				<tbody>
 					<tr>
 						<th>Włosy</th>
-						<td>{hair_price} zł</td>
+						<td>
+							<EditBox name="hair_price" value={hair_price}>
+								{hair_price} zł
+							</EditBox>
+						</td>
 					</tr>
 					<tr>
 						<th>Broda</th>
-						<td>{beard_price} zł</td>
+						<td>
+							<EditBox name="beard_price" value={beard_price}>
+								{beard_price} zł
+							</EditBox>
+						</td>
 					</tr>
 				</tbody>
 			</table>

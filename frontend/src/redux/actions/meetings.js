@@ -64,11 +64,18 @@ export const loadMeetings = (
 	if (dates.length > 0) {
 		dispatch({ type: MEETINGS_LOADING })
 
+		const config = {
+			headers: {
+				'Accept-Encoding': 'gzip',
+			},
+		}
+
 		try {
 			let res = await axios.get(
 				`${process.env.REACT_APP_API_URL}/meetings/?from=${
 					dates[0]
-				}&to=${dates[dates.length - 1]}`
+				}&to=${dates[dates.length - 1]}`,
+				config
 			)
 
 			for (let i = 0; i < res.data.length; i++)

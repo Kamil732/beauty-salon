@@ -9,7 +9,7 @@ import { NotificationManager } from 'react-notifications'
 
 import axios from 'axios'
 import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
-import { loadMeetings } from '../../../redux/actions/meetings'
+import { loadMeetings, connectWebSocket } from '../../../redux/actions/meetings'
 
 import Card from '../../../layout/cards/Card'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
@@ -39,6 +39,7 @@ class Calendar extends Component {
 		meetings: PropTypes.array,
 		loadedDates: PropTypes.array,
 		loadMeetings: PropTypes.func.isRequired,
+		connectWebSocket: PropTypes.func.isRequired,
 
 		one_slot_max_meetings: PropTypes.number.isRequired,
 		end_work_sunday: PropTypes.string,
@@ -60,11 +61,21 @@ class Calendar extends Component {
 	constructor(props) {
 		super(props)
 
+		const today = new Date()
 		const calendarDates = this.getCalendarDates()
+
 		this.state = {
 			ws: null,
 			windowWidth: window.innerWidth,
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
+			currentDate: new Date(
+				today.getFullYear(),
+				today.getMonth,
+				today.getDate(),
+				0,
+				0,
+				0
+			),
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
@@ -180,8 +191,12 @@ class Calendar extends Component {
 		})
 	}
 
-	componentDidMount = () =>
+	componentDidMount = () => {
 		window.addEventListener('resize', this.updateWindowDimensions)
+
+		if (!this.props.ws) this.props.connectWebSocket()
+		if (this.props.loadedDates.length === 0) this.props.loadMeetings()
+	}
 
 	componentWillUnmount = () =>
 		window.removeEventListener('resize', this.updateWindowDimensions)
@@ -387,18 +402,12 @@ class Calendar extends Component {
 		const from =
 			this.state.view === Views.MONTH
 				? moment(dates.start).format('YYYY-MM-DD')
-				: moment(dates[dates.length - 1])
-						.startOf('month')
-						.startOf('week')
-						.format('YYYY-MM-DD')
+				: moment(dates[0]).format('YYYY-MM-DD')
 
 		const to =
 			this.state.view === Views.MONTH
 				? moment(dates.end).format('YYYY-MM-DD')
-				: moment(dates[dates.length - 1])
-						.endOf('month')
-						.endOf('week')
-						.format('YYYY-MM-DD')
+				: moment(dates[dates.length - 1]).format('YYYY-MM-DD')
 
 		this.props.loadMeetings(from, to)
 	}
@@ -602,6 +611,20 @@ class Calendar extends Component {
 					<Card.Body>
 						<div style={{ display: loading ? 'none' : 'block' }}>
 							<BigCalendar
+								onNavigate={(date) =>
+									this.setState({ currentDate: date })
+								}
+								onView={(view) => {
+									if (view === Views.MONTH)
+										this.onRangeChange([
+											moment(this.state.currentDate)
+												.startOf('month')
+												.startOf('week'),
+											moment(this.state.currentDate)
+												.endOf('month')
+												.endOf('week'),
+										])
+								}}
 								onRangeChange={this.onRangeChange}
 								localizer={localizer}
 								events={meetings}
@@ -681,6 +704,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
 	loadMeetings,
+	connectWebSocket,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)
