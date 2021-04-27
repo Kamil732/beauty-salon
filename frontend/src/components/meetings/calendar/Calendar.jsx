@@ -70,7 +70,7 @@ class Calendar extends Component {
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
 			currentDate: new Date(
 				today.getFullYear(),
-				today.getMonth,
+				today.getMonth(),
 				today.getDate(),
 				0,
 				0,
@@ -533,21 +533,69 @@ class Calendar extends Component {
 			user_phone_number,
 			isAuthenticated,
 		} = this.props
-		const { windowWidth, view, selected, minDate, maxDate } = this.state
+		const {
+			windowWidth,
+			view,
+			selected,
+			minDate,
+			maxDate,
+			currentDate,
+		} = this.state
+
+		const startOfMonth = moment(currentDate)
+			.startOf('month')
+			.startOf('week')
+		const endOfMonth = moment(currentDate).endOf('month').endOf('week')
+		const startOfWeek = moment(currentDate).startOf('week')
+		const endOfWeek = moment(currentDate).endOf('week')
+
 		let meetings = []
 
 		if (view === Views.MONTH)
-			meetings = this.props.meetings.filter((meeting) => meeting.allDay)
+			meetings = this.props.meetings.filter(
+				(meeting) =>
+					meeting.allDay &&
+					((meeting.start >= startOfMonth &&
+						meeting.end <= endOfMonth) ||
+						(meeting.start <= startOfMonth &&
+							meeting.end >= endOfMonth) ||
+						(meeting.start >= startOfMonth &&
+							endOfMonth > meeting.start) ||
+						(meeting.end <= endOfMonth &&
+							startOfMonth < meeting.end))
+			)
 		else
 			meetings = isAdminPanel
-				? this.props.meetings
+				? this.props.meetings.filter(
+						(meeting) =>
+							(meeting.start >= startOfWeek &&
+								meeting.end <= endOfWeek) ||
+							(meeting.start <= startOfWeek &&
+								meeting.end >= endOfWeek) ||
+							(meeting.start >= startOfWeek &&
+								endOfWeek > meeting.start) ||
+							(meeting.end <= endOfWeek &&
+								startOfWeek < meeting.end)
+				  )
 				: this.props.meetings.filter(
 						(meeting) =>
-							meeting.do_not_work ||
-							(meeting.customer_phone_number ===
-								user_phone_number &&
-								isAuthenticated)
+							(meeting.do_not_work ||
+								(meeting.customer_phone_number ===
+									user_phone_number &&
+									isAuthenticated)) &&
+							((meeting.start >= startOfWeek &&
+								meeting.end <= endOfWeek) ||
+								(meeting.start <= startOfWeek &&
+									meeting.end >= endOfWeek) ||
+								(meeting.start >= startOfWeek &&
+									endOfWeek > meeting.start) ||
+								(meeting.end <= endOfWeek &&
+									startOfWeek < meeting.end))
 				  )
+
+		console.log('==========')
+		console.log(meetings.length)
+		console.log('==========')
 
 		return (
 			<>
@@ -617,12 +665,8 @@ class Calendar extends Component {
 								onView={(view) => {
 									if (view === Views.MONTH)
 										this.onRangeChange([
-											moment(this.state.currentDate)
-												.startOf('month')
-												.startOf('week'),
-											moment(this.state.currentDate)
-												.endOf('month')
-												.endOf('week'),
+											startOfMonth,
+											endOfMonth,
 										])
 								}}
 								onRangeChange={this.onRangeChange}
