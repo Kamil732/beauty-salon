@@ -11,38 +11,44 @@ function ImageList({ loading, images }) {
 	}, [zoom])
 
 	if (images.length > 0) {
-		images = images.map((image) => (
-			<>
-				<figure
-					className={`gallery__img-container${
-						zoom === image.id ? ' zoom' : ''
-					}`}
-				>
-					{zoom === image.id ? (
-						<span
-							className="btn-close rt-corner"
-							onClick={() => setZoom(null)}
-						></span>
-					) : null}
+		images = images.map((image) => {
+			if (zoom === image.id)
+				return (
+					<>
+						<figure className="gallery__img-container zoom">
+							<span
+								className="btn-close rt-corner"
+								onClick={() => setZoom(null)}
+							></span>
 
-					<img
-						src={image.image}
-						alt={image.title}
-						className={`gallery__img${
-							zoom === image.id ? ' zoom' : ''
-						}`}
-						onClick={() => setZoom(image.id)}
-					/>
+							<img
+								src={image.image}
+								alt={image.title}
+								className="gallery__img zoom"
+								onClick={() => setZoom(image.id)}
+								data-aos="zoom-in"
+							/>
 
-					{zoom === image.id ? (
-						<p className="gallery__img__title">{image.title}</p>
-					) : null}
-				</figure>
-				{zoom === image.id ? (
-					<figure className="gallery__img-container"></figure>
-				) : null}
-			</>
-		))
+							<p className="gallery__img__title">{image.title}</p>
+						</figure>
+						<figure className="gallery__img-container"></figure>
+					</>
+				)
+
+			return (
+				<>
+					<figure className="gallery__img-container">
+						<img
+							src={image.image}
+							alt={image.title}
+							className="gallery__img"
+							onClick={() => setZoom(image.id)}
+							data-aos="zoom-out"
+						/>
+					</figure>
+				</>
+			)
+		})
 
 		return (
 			<>

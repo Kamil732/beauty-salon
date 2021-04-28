@@ -66,7 +66,7 @@ class Gallery extends Component {
 
 		return (
 			<PageHero>
-				<PageHero.Body>
+				<PageHero.Body data-aos="flip-up">
 					<PageHero.Img src={GalleryIllustration} />
 					<PageHero.Content>
 						<PageHero.Title>

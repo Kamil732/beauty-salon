@@ -35,8 +35,13 @@ $rbc-css-prefix: calendar;
 .rbc-calendar {
 	margin: 0 auto;
 	max-width: 100%;
+	overflow-x: auto;
 
-	height: 90vh;
+	height: 100vh;
+}
+
+.rbc-time-view {
+	overflow-x: auto;
 }
 
 .toolbar-container {
@@ -58,18 +63,22 @@ $rbc-css-prefix: calendar;
 	flex-direction: column;
 	z-index: 2;
 	margin-right: 0;
+	padding: 0.5rem;
 
 	&-label {
+		padding: 0 !important;
+		margin: 5px 0 5px;
 		text-align: center;
 		min-width: 100%;
-		padding: 0 5px;
+		white-space: pre-line;
 	}
 
 	&-content {
+		margin: 5px 0 5px;
 		font-size: 0.9em;
 		width: 100%;
 		flex: 0 1;
-		padding: 0 5px;
+		white-space: pre-line;
 	}
 
 	&.selectable {
@@ -119,11 +128,15 @@ $rbc-css-prefix: calendar;
 
 .rbc-current-time-indicator {
 	height: 2px;
-	width: 120%;
-	left: -10%;
+	box-shadow: 0 0 2px green;
 }
 
 @include media-tablet {
+	.rbc-time-view,
+	.rbc-time-header {
+		min-width: 1000px;
+	}
+
 	.toolbar-container {
 		flex-direction: row;
 		gap: 2rem;

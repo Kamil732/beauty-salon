@@ -25,7 +25,7 @@ function Home({
 }) {
 	return (
 		<PageHero>
-			<PageHero.Body>
+			<PageHero.Body data-aos="zoom-in">
 				<PageHero.Content>
 					<PageHero.Title>
 						<EditBox name="home_title" value={home_title} textarea>
@@ -57,8 +57,8 @@ function Home({
 			</PageHero.Body>
 
 			<PageHero.Body>
-				<PageHero.Img src={TimeIllustration} />
-				<PageHero.Content>
+				<PageHero.Img src={TimeIllustration} data-aos="fade-right" />
+				<PageHero.Content data-aos="fade-left">
 					<PageHero.Title>Godziny Pracy</PageHero.Title>
 					<Card>
 						<Card.Body>
@@ -70,7 +70,7 @@ function Home({
 				</PageHero.Content>
 			</PageHero.Body>
 
-			<PageHero.Body>
+			<PageHero.Body data-aos="zoom-out-up">
 				<PageHero.Content>
 					<PageHero.Title>Cennik</PageHero.Title>
 
@@ -89,21 +89,24 @@ function Home({
 			{phone_number ? (
 				<PageHero.Body>
 					<PageHero.Content>
-						<PageHero.Title>Jak umówić wizytę?</PageHero.Title>
+						<div data-aos="fade-up">
+							<PageHero.Title>Jak umówić wizytę?</PageHero.Title>
 
-						<PageHero.Text>
-							Jeśli chcesz umówić wizytę, skonataktuj się ze mną:
-						</PageHero.Text>
-
-						<a
-							href={`tel:+48-${phone_number}`}
-							className="unique-text icon-container"
-						>
-							<FaPhoneAlt className="icon-container__icon" />
-							+48 {phone_number}
-						</a>
-						{contact_content_second ? (
 							<PageHero.Text>
+								Jeśli chcesz umówić wizytę, skonataktuj się ze
+								mną:
+							</PageHero.Text>
+
+							<a
+								href={`tel:+48-${phone_number}`}
+								className="unique-text icon-container"
+							>
+								<FaPhoneAlt className="icon-container__icon" />
+								+48 {phone_number}
+							</a>
+						</div>
+						{contact_content_second ? (
+							<PageHero.Text data-aos="flip-up">
 								{contact_content_second}
 							</PageHero.Text>
 						) : null}
@@ -113,7 +116,7 @@ function Home({
 				</PageHero.Body>
 			) : null}
 
-			<PageHero.Body vertical>
+			<PageHero.Body vertical data-aos="zoom-out-up">
 				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
 				<Calendar />

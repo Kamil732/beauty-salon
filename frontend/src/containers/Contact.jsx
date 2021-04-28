@@ -32,7 +32,7 @@ class Contact extends Component {
 
 		return (
 			<PageHero>
-				<PageHero.Body>
+				<PageHero.Body data-aos="zoom-in-down">
 					<PageHero.Img src={ContactIllustration} />
 
 					<PageHero.Content>
@@ -79,7 +79,7 @@ class Contact extends Component {
 				</PageHero.Body>
 
 				<PageHero.Body>
-					<PageHero.Content>
+					<PageHero.Content data-aos="fade-right">
 						<PageHero.Title>
 							<div className="icon-container">
 								<IoLocationSharp className="icon-container__icon" />
@@ -95,7 +95,7 @@ class Contact extends Component {
 							</EditBox>
 						</span>
 					</PageHero.Content>
-					<div style={{ textAlign: 'center' }}>
+					<div style={{ textAlign: 'center' }} data-aos="fade-left">
 						<EditBox name="google_maps_url" value={google_maps_url}>
 							<iframe
 								title="map"

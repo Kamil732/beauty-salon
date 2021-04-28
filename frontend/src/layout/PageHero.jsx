@@ -34,7 +34,7 @@ function Content({ children, ...props }) {
 
 function Img({ src, alt, ...props }) {
 	return (
-		<div className="page-hero__img-container">
+		<div className="page-hero__img-container" {...props}>
 			<img src={src} alt={alt ? alt : ''} className="page-hero__img" />
 			{props.children}
 		</div>

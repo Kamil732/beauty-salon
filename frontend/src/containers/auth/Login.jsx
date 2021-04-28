@@ -49,7 +49,7 @@ class Login extends Component {
 
 		return (
 			<PageHero>
-				<PageHero.Body>
+				<PageHero.Body data-aos="fade-up">
 					<PageHero.Img src={AuthIllustration}>
 						<p className="text-broken">
 							Nie masz jeszcze konta? Kliknij{' '}

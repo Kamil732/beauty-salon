@@ -12,7 +12,7 @@ class Panel extends Component {
 	render() {
 		return (
 			<PageHero>
-				<PageHero.Body>
+				<PageHero.Body data-aos="zoom-out-up">
 					<Calendar isAdminPanel />
 				</PageHero.Body>
 			</PageHero>

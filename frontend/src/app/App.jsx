@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
-import '../assets/css/main.css'
 import 'react-notifications/lib/notifications.css'
+import 'aos/dist/aos.css'
+import '../assets/css/main.css'
 
 import { BrowserRouter as Router } from 'react-router-dom'
 
+import AOS from 'aos'
 import Header from '../containers/Header'
 import Footer from '../containers/Footer'
 import Routes from './Routes'
@@ -18,6 +20,11 @@ class App extends Component {
 	componentDidMount() {
 		store.dispatch(getData())
 		store.dispatch(loadUser())
+
+		AOS.init({
+			duration: 500,
+			once: true,
+		})
 	}
 
 	// componentDidCatch() {

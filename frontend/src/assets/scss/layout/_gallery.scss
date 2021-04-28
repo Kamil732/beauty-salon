@@ -12,10 +12,10 @@
 		border-radius: 10px;
 		box-shadow: 0 0 5px grey;
 		background-color: $surface-color;
-		transition: transform 0.1s ease-in, box-shadow 0.1s ease-in;
 
 		&:hover {
-			transform: translateY(-0.5rem) scale(1.03);
+			transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+			transform: translateY(-0.5rem) scale(1.03) !important;
 			box-shadow: 0 0 8px 2px grey;
 		}
 	}
@@ -45,7 +45,7 @@
 				margin: 4rem auto;
 
 				&:hover {
-					transform: none;
+					transform: none !important;
 					box-shadow: 0 0 5px grey;
 				}
 

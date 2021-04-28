@@ -61,21 +61,16 @@ class Calendar extends Component {
 	constructor(props) {
 		super(props)
 
-		const today = new Date()
 		const calendarDates = this.getCalendarDates()
 
 		this.state = {
 			ws: null,
 			windowWidth: window.innerWidth,
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
-			currentDate: new Date(
-				today.getFullYear(),
-				today.getMonth(),
-				today.getDate(),
-				0,
-				0,
-				0
-			),
+			startOfMonth: null,
+			endOfMonth: null,
+			startOfWeek: null,
+			endOfWeek: null,
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
@@ -539,15 +534,11 @@ class Calendar extends Component {
 			selected,
 			minDate,
 			maxDate,
-			currentDate,
+			startOfMonth,
+			endOfMonth,
+			startOfWeek,
+			endOfWeek,
 		} = this.state
-
-		const startOfMonth = moment(currentDate)
-			.startOf('month')
-			.startOf('week')
-		const endOfMonth = moment(currentDate).endOf('month').endOf('week')
-		const startOfWeek = moment(currentDate).startOf('week')
-		const endOfWeek = moment(currentDate).endOf('week')
 
 		let meetings = []
 
@@ -592,10 +583,6 @@ class Calendar extends Component {
 								(meeting.end <= endOfWeek &&
 									startOfWeek < meeting.end))
 				  )
-
-		console.log('==========')
-		console.log(meetings.length)
-		console.log('==========')
 
 		return (
 			<>
@@ -660,7 +647,18 @@ class Calendar extends Component {
 						<div style={{ display: loading ? 'none' : 'block' }}>
 							<BigCalendar
 								onNavigate={(date) =>
-									this.setState({ currentDate: date })
+									this.setState({
+										startOfMonth: moment(date)
+											.startOf('month')
+											.startOf('week'),
+										endOfMonth: moment(date)
+											.endOf('month')
+											.endOf('week'),
+										startOfWeek: moment(date).startOf(
+											'week'
+										),
+										endOfWeek: moment(date).endOf('week'),
+									})
 								}
 								onView={(view) => {
 									if (view === Views.MONTH)

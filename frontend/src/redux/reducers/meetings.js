@@ -34,7 +34,7 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				loadedDates: initialState.loadedDates,
-				meetings: initialState.meetings,
+				data: initialState.data,
 			}
 		case ADD_LOADED_DATES:
 			return {
