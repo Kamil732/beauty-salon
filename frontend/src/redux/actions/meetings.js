@@ -3,7 +3,7 @@ import {
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
-	UPDATE_DATA,
+	UPDATE_OR_CREATE_DATA,
 	LOAD_MEETINGS,
 	ADD_LOADED_DATES,
 } from './types'
@@ -148,7 +148,7 @@ export const connectWebSocket = () => (dispatch) => {
 
 		if (data.event === REMOVE_MEETING) dispatch(removeMeeting(data.payload))
 		else if (data.event === ADD_MEETING) dispatch(addMeeting(data.payload))
-		else if (data.event === UPDATE_DATA)
+		else if (data.event === UPDATE_OR_CREATE_DATA)
 			dispatch({
 				type: data.event,
 				payload: data.payload,

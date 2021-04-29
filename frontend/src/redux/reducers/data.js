@@ -1,4 +1,4 @@
-import { GET_DATA, UPDATE_DATA } from '../actions/types'
+import { GET_DATA, UPDATE_OR_CREATE_DATA } from '../actions/types'
 
 const initialState = {
 	loading: true,
@@ -16,7 +16,7 @@ export default function (state = initialState, action) {
 					...action.payload,
 				},
 			}
-		case UPDATE_DATA:
+		case UPDATE_OR_CREATE_DATA:
 			return {
 				...state,
 				data: {

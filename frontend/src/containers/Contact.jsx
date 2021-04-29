@@ -11,7 +11,7 @@ import EditBox from '../layout/forms/EditBox'
 
 class Contact extends Component {
 	static propTypes = {
-		isAuthenticated: PropTypes.bool,
+		isAdmin: PropTypes.bool,
 		contact_title: PropTypes.string,
 		contact_content: PropTypes.string,
 		contact_content_second: PropTypes.string,
@@ -22,6 +22,7 @@ class Contact extends Component {
 
 	render() {
 		const {
+			isAdmin,
 			contact_title,
 			contact_content,
 			contact_content_second,
@@ -38,41 +39,58 @@ class Contact extends Component {
 					<PageHero.Content>
 						<PageHero.Title>
 							<EditBox
-								name="contact_title"
+								name={process.env.REACT_APP_CONTACT_TITLE}
 								value={contact_title}
 								textarea
 							>
-								{contact_title}
+								{isAdmin && !contact_title
+									? 'BRAK TREŚCI'
+									: contact_title}
 							</EditBox>
 						</PageHero.Title>
 
 						<PageHero.Text>
 							<EditBox
-								name="contact_content"
+								name={process.env.REACT_APP_CONTACT_CONTENT}
 								value={contact_content}
 								textarea
 							>
-								{contact_content}
+								{isAdmin && !contact_content
+									? 'BRAK TREŚCI'
+									: contact_content}
 							</EditBox>
 						</PageHero.Text>
 
-						<EditBox name="phone_number" value={phone_number}>
-							<a
-								href={`tel:+48-${phone_number}`}
-								className="unique-text icon-container"
-							>
-								<FaPhoneAlt className="icon-container__icon" />
-								+48 {phone_number}
-							</a>
+						<EditBox
+							name={process.env.REACT_APP_PHONE_NUMBER}
+							value={phone_number}
+						>
+							{phone_number ? (
+								<a
+									href={`tel:+48-${phone_number}`}
+									className="unique-text icon-container"
+								>
+									<FaPhoneAlt className="icon-container__icon" />
+									+48 {phone_number}
+								</a>
+							) : isAdmin ? (
+								<div className="unique-text icon-container">
+									BRAK NUMERU TELEFONU
+								</div>
+							) : null}
 						</EditBox>
 
 						<PageHero.Text>
 							<EditBox
-								name="contact_content_second"
+								name={
+									process.env.REACT_APP_CONTACT_CONTENT_SECOND
+								}
 								value={contact_content_second}
 								textarea
 							>
-								{contact_content_second}
+								{isAdmin && !contact_content_second
+									? 'BRAK TREŚCI'
+									: contact_content_second}
 							</EditBox>
 						</PageHero.Text>
 					</PageHero.Content>
@@ -90,13 +108,19 @@ class Contact extends Component {
 							Nasz salon fryzjerski znajdziesz pod adresem:
 						</PageHero.Text>
 						<span className="unique-text" style={{ width: '100%' }}>
-							<EditBox name="location" value={location}>
+							<EditBox
+								name={process.env.REACT_APP_LOCATION}
+								value={location}
+							>
 								{location}
 							</EditBox>
 						</span>
 					</PageHero.Content>
 					<div style={{ textAlign: 'center' }} data-aos="fade-left">
-						<EditBox name="google_maps_url" value={google_maps_url}>
+						<EditBox
+							name={process.env.REACT_APP_GOOGLE_MAPS_URL}
+							value={google_maps_url}
+						>
 							<iframe
 								title="map"
 								src={google_maps_url}
@@ -113,13 +137,18 @@ class Contact extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	isAuthenticated: state.auth.isAuthenticated,
-	contact_title: state.data.data.contact_title,
-	contact_content: state.data.data.contact_content,
-	contact_content_second: state.data.data.contact_content_second,
-	phone_number: state.data.data.phone_number,
-	location: state.data.data.location,
-	google_maps_url: state.data.data.google_maps_url,
+	isAdmin: state.auth.data.is_admin,
+
+	contact_title: state.data.data[process.env.REACT_APP_CONTACT_TITLE] || '',
+	contact_content:
+		state.data.data[process.env.REACT_APP_CONTACT_CONTENT] || '',
+	contact_content_second:
+		state.data.data[process.env.REACT_APP_CONTACT_CONTENT_SECOND] || '',
+	phone_number: state.data.data[process.env.REACT_APP_PHONE_NUMBER] || '',
+	location:
+		state.data.data[process.env.REACT_APP_LOCATION] || 'BRAK LOKALIZACJI',
+	google_maps_url:
+		state.data.data[process.env.REACT_APP_GOOGLE_MAPS_URL] || '',
 })
 
 export default connect(mapStateToProps, null)(Contact)

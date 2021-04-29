@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import getHeaders from '../../helpers/getHeaders'
-import { UPDATE_DATA } from '../../redux/actions/types'
+import { UPDATE_OR_CREATE_DATA } from '../../redux/actions/types'
 
 import { NotificationManager } from 'react-notifications'
 import Button from '../buttons/Button'
@@ -26,24 +26,27 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 		e.preventDefault()
 
 		try {
-			const body = JSON.stringify({ value: newValue })
+			const body = JSON.stringify({
+				name,
+				value: newValue,
+			})
 
 			await axios.put(
-				`${process.env.REACT_APP_API_URL}/data/update/${name}/`,
+				`${process.env.REACT_APP_API_URL}/data/${name}/`,
 				body,
 				getHeaders(true)
 			)
 
+			setIsEditMode(false)
 			ws.send(
 				JSON.stringify({
-					event: UPDATE_DATA,
+					event: UPDATE_OR_CREATE_DATA,
 					payload: {
 						name,
 						value: newValue,
 					},
 				})
 			)
-			setIsEditMode(false)
 		} catch (err) {
 			NotificationManager.error('Nie udało się zapisać zmian', 'błąd')
 		}

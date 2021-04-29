@@ -76,7 +76,7 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	message: state.data.data.message,
+	message: state.data.data[process.env.MESSAGE],
 })
 
 export default connect(mapStateToProps, null)(Header)

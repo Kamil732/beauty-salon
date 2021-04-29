@@ -14,6 +14,7 @@ import EditBox from '../layout/forms/EditBox'
 
 class Gallery extends Component {
 	static propTypes = {
+		isAdmin: PropTypes.bool,
 		gallery_title: PropTypes.string,
 		gallery_content: PropTypes.string,
 	}
@@ -61,7 +62,7 @@ class Gallery extends Component {
 	}
 
 	render() {
-		const { gallery_title, gallery_content } = this.props
+		const { isAdmin, gallery_title, gallery_content } = this.props
 		const { loading, data } = this.state
 
 		return (
@@ -71,20 +72,24 @@ class Gallery extends Component {
 					<PageHero.Content>
 						<PageHero.Title>
 							<EditBox
-								name="gallery_title"
+								name={process.env.REACT_APP_GALLERY_TITLE}
 								value={gallery_title}
 								textarea
 							>
-								{gallery_title}
+								{isAdmin && !gallery_title
+									? 'BRAK TREŚCI'
+									: gallery_title}
 							</EditBox>
 						</PageHero.Title>
 						<PageHero.Text>
 							<EditBox
-								name="gallery_content"
+								name={process.env.REACT_APP_GALLERY_CONTENT}
 								value={gallery_content}
 								textarea
 							>
-								{gallery_content}
+								{isAdmin && !gallery_content
+									? 'BRAK TREŚCI'
+									: gallery_content}
 							</EditBox>
 						</PageHero.Text>
 					</PageHero.Content>
@@ -122,8 +127,10 @@ class Gallery extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	gallery_title: state.data.data.gallery_title,
-	gallery_content: state.data.data.gallery_content,
+	isAdmin: state.auth.data.is_admin,
+	gallery_title: state.data.data[process.env.REACT_APP_GALLERY_TITLE] || '',
+	gallery_content:
+		state.data.data[process.env.REACT_APP_GALLERY_CONTENT] || '',
 })
 
 export default connect(mapStateToProps, null)(Gallery)

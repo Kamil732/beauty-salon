@@ -53,10 +53,10 @@ class Login extends Component {
 					<PageHero.Img src={AuthIllustration}>
 						<p className="text-broken">
 							Nie masz jeszcze konta? Kliknij{' '}
-							<Link to="/contact" className="slide-floor">
+							<Link to="/register" className="slide-floor">
 								tutaj
 							</Link>{' '}
-							by się skontaktować w sprawie z kontem
+							by je utworzyć
 						</p>
 					</PageHero.Img>
 
