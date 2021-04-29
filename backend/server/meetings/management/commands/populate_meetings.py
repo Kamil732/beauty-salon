@@ -27,7 +27,6 @@ class Command(BaseCommand):
 
         barber1 = Account.objects.get(is_admin=True, email='kamilkamil554@wp.pl')
         barber2 = Account.objects.get(is_admin=True, email='fryzjer@fryzjer.pl')
-        barber3 = Account.objects.get(is_admin=True, email='fryzjer2@fryzjer2.pl')
 
         while current_date <= end_date:
             work_hours = get_working_hours(current_date.weekday(), False)
@@ -55,14 +54,6 @@ class Command(BaseCommand):
                         trusted_customer=faker.boolean()
                     )
 
-                    customer3, _ = Account.objects.get_or_create(
-                        email=faker.unique.email(),
-                        first_name=faker.first_name(),
-                        last_name=faker.last_name(),
-                        phone_number='+48500484315',
-                        trusted_customer=faker.boolean()
-                    )
-
                     Meeting.objects.create(
                         barber=barber1,
                         customer=customer1,
@@ -79,16 +70,6 @@ class Command(BaseCommand):
                         customer_first_name=customer2.first_name,
                         customer_last_name=customer2.last_name,
                         customer_phone_number=customer2.phone_number,
-                        type=random.choice(['hair', 'beard']),
-                        start=current_time
-                    )
-
-                    Meeting.objects.create(
-                        barber=barber3,
-                        customer=customer3,
-                        customer_first_name=customer3.first_name,
-                        customer_last_name=customer3.last_name,
-                        customer_phone_number=customer3.phone_number,
                         type=random.choice(['hair', 'beard']),
                         start=current_time
                     )
