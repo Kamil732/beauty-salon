@@ -9,14 +9,6 @@ from meetings.api.serializers import AdminMeetingSerializer
 
 from accounts.models import Account
 
-#### Send to all chats ####
-# this.props.ws.send(
-#     JSON.stringify({
-#         event: REMOVE_MEETING,
-#         payload: selected.id,
-#     })
-# )
-
 
 class MeetingConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
@@ -49,8 +41,8 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
         payload = response.get('payload')
 
         # Check permissions
-        if self.user.is_authenticated and (event == 'REMOVE_MEETING' or event == 'ADD_MEETING' or event == 'UPDATE_DATA'):
-            if (not(self.user.is_admin) and event == 'UPDATE_DATA') or (event == 'REMOVE_MEETING' and not(self.check_is_owner(payload))):
+        if self.user.is_authenticated and (event == 'REMOVE_MEETING' or event == 'ADD_MEETING' or event == 'UPDATE_OR_CREATE_DATA'):
+            if (not(self.user.is_admin) and event == 'UPDATE_OR_CREATE_DATA') or (event == 'REMOVE_MEETING' and not(self.check_is_owner(payload))):
                 return
 
             await self.channel_layer.group_send(

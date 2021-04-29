@@ -1,4 +1,6 @@
 import datetime
+
+from django.core.cache import cache
 from django.db.models import Q
 
 from data.models import Data
@@ -8,9 +10,16 @@ def get_working_hours(week_day, translated_time=True):
     is_non_working_hour = False
     start = end = 0
 
-    days = {}
-    for date in Data.objects.filter(Q(name__startswith='start_work') | Q(name__startswith='end_work')):
-        days[date.name] = date.value
+    cache_key = 'days_working_hours'
+    days = cache.get(cache_key)
+
+    if not(days):
+        days = {}
+
+        for date in Data.objects.filter(Q(name__startswith='start_work') | Q(name__startswith='end_work')):
+            days[date.name] = date.value
+
+        cache.set(cache_key, days, 4 * 60 * 60)  # cache for 4 hours
 
     if (week_day == 0):
         if not(days['start_work_monday']):

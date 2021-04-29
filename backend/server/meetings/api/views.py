@@ -1,9 +1,11 @@
+import datetime
+
+from django.core.cache.backends import locmem
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-import datetime
 
-from rest_framework import viewsets, generics, permissions
+from rest_framework import viewsets, generics, permissions, status
 from rest_framework.response import Response
 
 from server.permissions import IsOwnerOrIsAdminOrReadOnly
@@ -22,6 +24,7 @@ class MeetingListAPIView(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+
         data = []
 
         for meeting in queryset:
