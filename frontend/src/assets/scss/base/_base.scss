@@ -32,8 +32,8 @@ a {
 }
 
 .global-message {
-	background-color: $surface-color;
-	color: set-text-color($surface-color);
+	background-color: $info-color;
+	color: set-text-color($info-color);
 	margin: 0 1.5rem;
 	padding: 1rem;
 	border-radius: 12px;
