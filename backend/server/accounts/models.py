@@ -57,7 +57,7 @@ class Account(AbstractBaseUser):
     is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
     is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
     is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
-    slug = AutoSlugField(populate_from='first_name')
+    slug = AutoSlugField(populate_from='first_name', unique=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']
