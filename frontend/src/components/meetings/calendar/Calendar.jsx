@@ -67,10 +67,11 @@ class Calendar extends Component {
 			ws: null,
 			windowWidth: window.innerWidth,
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
-			startOfMonth: null,
-			endOfMonth: null,
-			startOfWeek: null,
-			endOfWeek: null,
+			startOfMonth: moment().startOf('month').startOf('week'),
+			endOfMonth: moment().endOf('month').endOf('week'),
+			startOfWeek: moment().startOf('week'),
+			endOfWeek: moment().endOf('week'),
+			visibleMeetings: props.meetings,
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
@@ -196,7 +197,7 @@ class Calendar extends Component {
 	componentWillUnmount = () =>
 		window.removeEventListener('resize', this.updateWindowDimensions)
 
-	componentDidUpdate(prevProps, _) {
+	componentDidUpdate(prevProps, prevState) {
 		if (
 			this.props.end_work_sunday !== prevProps.end_work_sunday ||
 			this.props.start_work_sunday !== prevProps.start_work_sunday ||
@@ -220,6 +221,32 @@ class Calendar extends Component {
 				minDate: calednarDates.minDate,
 				maxDate: calednarDates.maxDate,
 			})
+		}
+
+		if (
+			prevProps.meetings !== this.props.meetings ||
+			prevState.startOfWeek !== this.state.startOfWeek ||
+			prevState.endOfWeek !== this.state.endOfWeek ||
+			prevState.startOfMonth !== this.state.startOfMonth ||
+			prevState.endOfMonth !== this.state.endOfMonth
+		) {
+			let visibleMeetings = []
+
+			for (let i = 0; i < this.props.meetings.length; i++) {
+				if (
+					(this.props.meetings[i].start >= this.state.startOfWeek &&
+						this.props.meetings[i].end <= this.state.endOfWeek) ||
+					(this.props.meetings[i].start <= this.state.startOfWeek &&
+						this.props.meetings[i].end >= this.state.endOfWeek) ||
+					(this.props.meetings[i].start >= this.state.startOfWeek &&
+						this.state.endOfWeek > this.props.meetings[i].start) ||
+					(this.props.meetings[i].end <= this.state.endOfWeek &&
+						this.state.startOfWeek < this.props.meetings[i].end)
+				)
+					visibleMeetings.push(this.props.meetings[i])
+			}
+
+			this.setState({ visibleMeetings })
 		}
 	}
 
@@ -408,28 +435,40 @@ class Calendar extends Component {
 	}
 
 	slotPropGetter = (date) => {
+		const { visibleMeetings } = this.state
 		const { isAdminPanel, one_slot_max_meetings } = this.props
 		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
 		let isDisabled = workingHours.isNonWorkingHour
 
 		// Check if on the slot can be added meeting for non admin
-		if (
-			(!isAdminPanel &&
-				this.props.meetings.filter(
-					(meeting) =>
-						!meeting.do_not_work &&
-						meeting.start <= date &&
-						meeting.end > date
-				).length >= one_slot_max_meetings) ||
-			this.props.meetings.filter(
-				(meeting) =>
-					meeting.do_not_work &&
-					meeting.start <= date &&
-					meeting.end > date
-			).length > 0
-		)
-			isDisabled = true
-		else if (!isDisabled) {
+		let notWorkingHours = []
+		let eventsOnSlot = []
+
+		for (let i = 0; i < visibleMeetings.length; i++) {
+			if (
+				visibleMeetings[i].do_not_work &&
+				visibleMeetings[i].start <= date &&
+				visibleMeetings[i].end > date
+			)
+				notWorkingHours.push(visibleMeetings[i])
+			else if (
+				!isAdminPanel &&
+				!visibleMeetings[i].do_not_work &&
+				visibleMeetings[i].start <= date &&
+				visibleMeetings[i].end > date
+			)
+				eventsOnSlot.push(visibleMeetings[i])
+
+			if (
+				notWorkingHours.length > 0 ||
+				eventsOnSlot.length >= one_slot_max_meetings
+			) {
+				isDisabled = true
+				break
+			}
+		}
+
+		if (!isDisabled) {
 			date = date.getHours() * 60 + date.getMinutes()
 			isDisabled =
 				date < workingHours.start || date > workingHours.end - 30
@@ -486,7 +525,7 @@ class Calendar extends Component {
 				start < workingHours.start ||
 				start > workingHours.end - 30 ||
 				// Check if there is any do_not_work type of meeting
-				this.props.meetings.filter(
+				this.state.visibleMeetings.filter(
 					(meeting) =>
 						meeting.do_not_work &&
 						((meeting.start >= slot.start &&
@@ -503,7 +542,7 @@ class Calendar extends Component {
 
 			// Check if there are events on the slot
 			if (!isNonWorkingHour)
-				eventsOnTheSlot = this.props.meetings.filter(
+				eventsOnTheSlot = this.state.visibleMeetings.filter(
 					(meeting) =>
 						meeting.start >= slot.start && meeting.end <= slot.end
 				).length
@@ -538,12 +577,13 @@ class Calendar extends Component {
 			endOfMonth,
 			startOfWeek,
 			endOfWeek,
+			visibleMeetings,
 		} = this.state
 
 		let meetings = []
 
-		if (view === Views.MONTH)
-			meetings = this.props.meetings.filter(
+		if (this.state.view === Views.MONTH)
+			meetings = visibleMeetings.filter(
 				(meeting) =>
 					meeting.allDay &&
 					((meeting.start >= startOfMonth &&
@@ -556,8 +596,8 @@ class Calendar extends Component {
 							startOfMonth < meeting.end))
 			)
 		else
-			meetings = isAdminPanel
-				? this.props.meetings.filter(
+			meetings = this.props.isAdminPanel
+				? visibleMeetings.filter(
 						(meeting) =>
 							(meeting.start >= startOfWeek &&
 								meeting.end <= endOfWeek) ||
@@ -568,7 +608,7 @@ class Calendar extends Component {
 							(meeting.end <= endOfWeek &&
 								startOfWeek < meeting.end)
 				  )
-				: this.props.meetings.filter(
+				: visibleMeetings.filter(
 						(meeting) =>
 							(meeting.do_not_work ||
 								(meeting.customer_phone_number ===
@@ -623,7 +663,7 @@ class Calendar extends Component {
 										selected.start.getHours() * 60 +
 											selected.start.getMinutes() ===
 											0 ||
-										this.props.meetings.filter(
+										visibleMeetings.filter(
 											(meeting) =>
 												meeting.start >=
 													selected.start &&

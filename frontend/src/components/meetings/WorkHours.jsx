@@ -20,8 +20,6 @@ function WorkHours({
 	start_work_sunday,
 	end_work_sunday,
 }) {
-	console.log(start_work_friday)
-
 	return (
 		<table className="table">
 			<thead>
