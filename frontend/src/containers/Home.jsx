@@ -128,7 +128,7 @@ function Home({
 				</PageHero.Body>
 			) : null}
 
-			<PageHero.Body vertical data-aos="zoom-out-up">
+			<PageHero.Body vertical>
 				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
 				<Calendar />

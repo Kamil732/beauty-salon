@@ -424,12 +424,14 @@ class Calendar extends Component {
 		const from =
 			this.state.view === Views.MONTH
 				? moment(dates.start).format('YYYY-MM-DD')
-				: moment(dates[0]).format('YYYY-MM-DD')
+				: moment(dates[0]).startOf('week').format('YYYY-MM-DD')
 
 		const to =
 			this.state.view === Views.MONTH
 				? moment(dates.end).format('YYYY-MM-DD')
-				: moment(dates[dates.length - 1]).format('YYYY-MM-DD')
+				: moment(dates[dates.length - 1])
+						.endOf('week')
+						.format('YYYY-MM-DD')
 
 		this.props.loadMeetings(from, to)
 	}
@@ -679,7 +681,7 @@ class Calendar extends Component {
 					</Modal>
 				) : null}
 
-				<Card>
+				<Card data-aos="zoom-out-up">
 					<Card.Body>
 						<Legend />
 					</Card.Body>

@@ -2,11 +2,13 @@
 	position: fixed;
 	top: 50%;
 	left: 50%;
+	transform: translate(-50%, -50%);
 	min-width: 90%;
-	right: auto;
+	max-height: 90vh;
 	background-color: $surface-color;
 	border-radius: 8px;
 	display: none;
+	overflow: auto;
 
 	& > &__header {
 		border-radius: 8px 8px 0 0;

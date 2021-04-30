@@ -15,7 +15,7 @@ class MyMeetings extends Component {
 	render() {
 		return (
 			<PageHero>
-				<PageHero.Body data-aos="zoom-out-up">
+				<PageHero.Body>
 					<Calendar />
 				</PageHero.Body>
 			</PageHero>

@@ -232,7 +232,7 @@ class AddMeetingAdminForm extends Component {
 										htmlFor="customer_phone_number"
 										inputValue={customer_phone_number}
 									>
-										Numer telefonu klienta
+										Nr. tel. klienta
 									</FormControl.Label>
 									<FormControl.Input
 										required={!do_not_work}
@@ -253,7 +253,7 @@ class AddMeetingAdminForm extends Component {
 										htmlFor="customer_fax_number"
 										inputValue={customer_fax_number}
 									>
-										Numer telefonu klienta nr. 2
+										Zapasowy nr. tel. klienta
 									</FormControl.Label>
 									<FormControl.Input
 										type="text"
