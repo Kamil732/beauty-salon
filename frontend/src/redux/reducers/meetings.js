@@ -9,7 +9,7 @@ import {
 } from '../actions/types'
 
 const initialState = {
-	loading: true,
+	loading: false,
 	data: [],
 	loadedDates: [],
 	ws: null,
@@ -27,8 +27,7 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				ws: action.payload,
-				loading:
-					state.loadedDates.length > 0 ? false : initialState.loading,
+				loading: state.loadedDates.length > 0 ? false : true,
 			}
 		case CLEAR_MEETINGS:
 			return {
@@ -40,7 +39,7 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				loadedDates: [...state.loadedDates, ...action.payload],
-				loading: state.ws ? false : initialState.loading,
+				loading: state.ws ? false : true,
 			}
 		case LOAD_MEETINGS:
 			return {

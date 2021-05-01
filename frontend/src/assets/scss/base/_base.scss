@@ -41,6 +41,13 @@ a {
 	text-align: center;
 }
 
+.edit-box {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 1rem;
+}
+
 .icon-container {
 	display: flex;
 	align-items: center;
@@ -167,6 +174,10 @@ a {
 }
 
 @include media-tablet {
+	.edit-box {
+		flex-direction: row;
+	}
+
 	.header {
 		margin-bottom: 0;
 		& > .nav > .nav__link {

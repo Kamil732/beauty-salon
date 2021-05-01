@@ -5,7 +5,7 @@ const getCsrfToken = (csrf = false) => {
 		headers: {
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
-			'Accept-Language': 'en',
+			'Accept-Language': 'pl',
 		},
 	}
 

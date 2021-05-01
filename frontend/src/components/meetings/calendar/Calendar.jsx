@@ -190,8 +190,10 @@ class Calendar extends Component {
 	componentDidMount = () => {
 		window.addEventListener('resize', this.updateWindowDimensions)
 
-		if (!this.props.ws) this.props.connectWebSocket()
-		if (this.props.loadedDates.length === 0) this.props.loadMeetings()
+		if (!this.props.loading) {
+			if (!this.props.ws) this.props.connectWebSocket()
+			if (this.props.loadedDates.length === 0) this.props.loadMeetings()
+		}
 	}
 
 	componentWillUnmount = () =>
@@ -564,8 +566,8 @@ class Calendar extends Component {
 
 	render() {
 		const {
-			isAdminPanel,
 			loading,
+			isAdminPanel,
 			user_phone_number,
 			isAuthenticated,
 		} = this.props
@@ -629,10 +631,7 @@ class Calendar extends Component {
 		return (
 			<>
 				{Object.keys(selected).length ? (
-					<Modal
-						isOpen={Object.keys(selected).length > 0}
-						closeModal={() => this.setState({ selected: {} })}
-					>
+					<Modal closeModal={() => this.setState({ selected: {} })}>
 						<Modal.Header>
 							{selected.do_not_work ? (
 								<>
@@ -743,6 +742,8 @@ class Calendar extends Component {
 											onSelectSlot={this.onSelectSlot}
 										/>
 									),
+									// timeGutterHeader: () => <div>xd</div>,
+									header: () => <div>xd</div>,
 								}}
 								messages={{
 									month: 'Miesiąc',
@@ -779,23 +780,23 @@ const mapStateToProps = (state) => ({
 	start_work_saturday:
 		state.data.data[process.env.REACT_APP_START_WORK_SATURDAY] || '',
 	end_work_friday:
-		state.data.data[process.env.REACT_APP_end_WORK_FRIDAY] || '',
+		state.data.data[process.env.REACT_APP_END_WORK_FRIDAY] || '',
 	start_work_friday:
 		state.data.data[process.env.REACT_APP_START_WORK_FRIDAY] || '',
 	end_work_thursday:
-		state.data.data[process.env.REACT_APP_end_WORK_THURSDAY] || '',
+		state.data.data[process.env.REACT_APP_END_WORK_THURSDAY] || '',
 	start_work_thursday:
 		state.data.data[process.env.REACT_APP_START_WORK_THURSDAY] || '',
 	end_work_wednesday:
-		state.data.data[process.env.REACT_APP_end_WORK_WEDNESDAY] || '',
+		state.data.data[process.env.REACT_APP_END_WORK_WEDNESDAY] || '',
 	start_work_wednesday:
 		state.data.data[process.env.REACT_APP_START_WORK_WEDNESDAY] || '',
 	end_work_tuesday:
-		state.data.data[process.env.REACT_APP_end_WORK_TUESDAY] || '',
+		state.data.data[process.env.REACT_APP_END_WORK_TUESDAY] || '',
 	start_work_tuesday:
 		state.data.data[process.env.REACT_APP_START_WORK_TUESDAY] || '',
 	end_work_monday:
-		state.data.data[process.env.REACT_APP_end_WORK_MONDAY] || '',
+		state.data.data[process.env.REACT_APP_END_WORK_MONDAY] || '',
 	start_work_monday:
 		state.data.data[process.env.REACT_APP_START_WORK_MONDAY] || '',
 })

@@ -1,11 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-function Modal({ children, isOpen, closeModal, ...props }) {
+function Modal({ children, closeModal, ...props }) {
+	useEffect(() => {
+		const body = document.querySelector('body')
+		body.style.overflowY = 'hidden'
+
+		return () => (body.style.overflowY = 'auto')
+	}, [])
+
 	return (
 		<>
-			{isOpen && <div className="dark-bg" onClick={closeModal}></div>}
-			<div className={`modal${isOpen ? ' show' : ''}`} {...props}>
+			<div className="dark-bg" onClick={closeModal}></div>
+			<div className="modal show" {...props}>
 				<span
 					className="btn-close rt-corner"
 					onClick={closeModal}
@@ -25,7 +32,6 @@ function Body(props) {
 }
 
 Modal.prototype.propTypes = {
-	isOpen: PropTypes.bool,
 	closeModal: PropTypes.func.isRequired,
 }
 

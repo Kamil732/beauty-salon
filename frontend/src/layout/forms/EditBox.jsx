@@ -53,7 +53,7 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 	}
 
 	return (
-		<div className={`edit-box${isEditMode ? ' edit-mode' : ''}`} {...props}>
+		<div className="edit-box" {...props}>
 			{isEditMode ? (
 				<form onSubmit={save}>
 					<CSRFToken />
