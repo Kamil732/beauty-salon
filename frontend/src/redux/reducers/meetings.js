@@ -6,12 +6,14 @@ import {
 	LOAD_MEETINGS,
 	CLEAR_MEETINGS,
 	ADD_LOADED_DATES,
+	CHANGE_VISIBLE_MEETINGS,
 } from '../actions/types'
 
 const initialState = {
 	loading: false,
 	data: [],
 	loadedDates: [],
+	visibleData: [],
 	ws: null,
 }
 
@@ -34,6 +36,11 @@ export default function (state = initialState, action) {
 				...state,
 				loadedDates: initialState.loadedDates,
 				data: initialState.data,
+			}
+		case CHANGE_VISIBLE_MEETINGS:
+			return {
+				...state,
+				visibleData: action.payload,
 			}
 		case ADD_LOADED_DATES:
 			return {

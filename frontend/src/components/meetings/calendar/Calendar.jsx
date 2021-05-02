@@ -9,7 +9,11 @@ import { NotificationManager } from 'react-notifications'
 
 import axios from 'axios'
 import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
-import { loadMeetings, connectWebSocket } from '../../../redux/actions/meetings'
+import {
+	loadMeetings,
+	connectWebSocket,
+	changeVisibleMeetings,
+} from '../../../redux/actions/meetings'
 
 import Card from '../../../layout/cards/Card'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
@@ -20,12 +24,16 @@ import {
 	momentLocalizer,
 	Views,
 } from 'react-big-calendar'
-import Toolbar from './Toolbar'
-import TouchCellWrapper from './TouchCellWrapper'
+import Toolbar from './tools/Toolbar'
+import TouchCellWrapper from './tools/TouchCellWrapper'
+import WeekHeader from './tools/WeekHeader'
+
 import AddMeetingAdminForm from './AddMeetingAdminForm'
 import Legend from './Legend'
 import AddMeetingForm from './AddMeetingForm'
 import EditMeetingAdminForm from './EditMeetingAdminForm'
+import getWorkHours from '../../../helpers/getWorkHours'
+import MonthDateHeader from './tools/MonthDateHeader'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -38,10 +46,13 @@ class Calendar extends Component {
 		loading: PropTypes.bool,
 		meetings: PropTypes.array,
 		loadedDates: PropTypes.array,
+		visibleMeetings: PropTypes.array,
+		changeVisibleMeetings: PropTypes.func.isRequired,
 		loadMeetings: PropTypes.func.isRequired,
 		connectWebSocket: PropTypes.func.isRequired,
 
 		one_slot_max_meetings: PropTypes.number.isRequired,
+		work_time: PropTypes.number,
 		end_work_sunday: PropTypes.string,
 		start_work_sunday: PropTypes.string,
 		end_work_saturday: PropTypes.string,
@@ -66,12 +77,14 @@ class Calendar extends Component {
 		this.state = {
 			ws: null,
 			windowWidth: window.innerWidth,
+
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
-			startOfMonth: moment().startOf('month').startOf('week'),
-			endOfMonth: moment().endOf('month').endOf('week'),
-			startOfWeek: moment().startOf('week'),
-			endOfWeek: moment().endOf('week'),
-			visibleMeetings: props.meetings,
+			startOfMonth: moment().startOf('month').startOf('week').toDate(),
+			endOfMonth: moment().endOf('month').endOf('week').toDate(),
+			startOfWeek: moment().startOf('week').toDate(),
+			endOfWeek: moment().endOf('week').toDate(),
+
+			freeSlots: {},
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
@@ -79,8 +92,10 @@ class Calendar extends Component {
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
 		this.getCalendarDates = this.getCalendarDates.bind(this)
+		this.getDrilldownView = this.getDrilldownView.bind(this)
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
+		this.getIsDisabledSlot = this.getIsDisabledSlot.bind(this)
 		this.slotPropGetter = this.slotPropGetter.bind(this)
 		this.onSelecting = this.onSelecting.bind(this)
 		this.onSelectEvent = this.onSelectEvent.bind(this)
@@ -92,6 +107,45 @@ class Calendar extends Component {
 
 	updateWindowDimensions = () =>
 		this.setState({ windowWidth: window.innerWidth })
+
+	getIsDisabledSlot = (isAdminPanel, date) => {
+		const { one_slot_max_meetings, visibleMeetings } = this.props
+		const workingHours = getWorkHours(moment(date).format('dddd'))
+		let isDisabled = workingHours.isNonWorkingHour
+
+		// Check if on the slot can be added meeting for non admin
+		let notWorkingHours = []
+		let eventsOnSlot = []
+
+		for (let i = 0; i < visibleMeetings.length; i++) {
+			if (
+				visibleMeetings[i].start <= date &&
+				visibleMeetings[i].end > date
+			) {
+				if (visibleMeetings[i].do_not_work)
+					notWorkingHours.push(visibleMeetings[i])
+				else if (!isAdminPanel && !visibleMeetings[i].do_not_work)
+					eventsOnSlot.push(visibleMeetings[i])
+			}
+
+			if (
+				notWorkingHours.length > 0 ||
+				eventsOnSlot.length >= one_slot_max_meetings
+			) {
+				isDisabled = true
+				break
+			}
+		}
+
+		if (!isDisabled) {
+			const convertedDate = date.getHours() * 60 + date.getMinutes()
+			isDisabled =
+				convertedDate < workingHours.start ||
+				convertedDate > workingHours.end - this.props.work_time
+		}
+
+		return isDisabled
+	}
 
 	getCalendarDates = () => {
 		const today = new Date()
@@ -165,7 +219,7 @@ class Calendar extends Component {
 				today.getMonth(),
 				today.getDate(),
 				minDate.hours(),
-				minDate.minutes() - 30
+				minDate.minutes() - this.props.work_time
 			),
 
 			maxDate: new Date(
@@ -234,21 +288,82 @@ class Calendar extends Component {
 		) {
 			let visibleMeetings = []
 
+			const start =
+				this.state.view === Views.MONTH
+					? this.state.startOfMonth
+					: this.state.startOfWeek
+			const end =
+				this.state.view === Views.MONTH
+					? this.state.endOfMonth
+					: this.state.endOfWeek
+
+			// Get visibleMeetings
 			for (let i = 0; i < this.props.meetings.length; i++) {
 				if (
-					(this.props.meetings[i].start >= this.state.startOfWeek &&
-						this.props.meetings[i].end <= this.state.endOfWeek) ||
-					(this.props.meetings[i].start <= this.state.startOfWeek &&
-						this.props.meetings[i].end >= this.state.endOfWeek) ||
-					(this.props.meetings[i].start >= this.state.startOfWeek &&
-						this.state.endOfWeek > this.props.meetings[i].start) ||
-					(this.props.meetings[i].end <= this.state.endOfWeek &&
-						this.state.startOfWeek < this.props.meetings[i].end)
+					(this.props.meetings[i].start >= start &&
+						this.props.meetings[i].end <= end) ||
+					(this.props.meetings[i].start <= start &&
+						this.props.meetings[i].end >= end) ||
+					(this.props.meetings[i].start >= start &&
+						end > this.props.meetings[i].start) ||
+					(this.props.meetings[i].end <= end &&
+						start < this.props.meetings[i].end)
 				)
 					visibleMeetings.push(this.props.meetings[i])
 			}
+			this.props.changeVisibleMeetings(visibleMeetings)
+		}
 
-			this.setState({ visibleMeetings })
+		if (prevProps.visibleMeetings !== this.props.visibleMeetings) {
+			const start =
+				this.state.view === Views.MONTH
+					? this.state.startOfMonth
+					: this.state.startOfWeek
+			const end =
+				this.state.view === Views.MONTH
+					? this.state.endOfMonth
+					: this.state.endOfWeek
+
+			// Get free slots count
+			let freeSlots = {}
+			let currentDate = start
+
+			while (currentDate <= end) {
+				const workHours = getWorkHours(
+					moment(currentDate).format('dddd'),
+					false
+				)
+
+				if (!workHours.isNonWorkingHour) {
+					let currentTime = moment(workHours.start, 'H:mm').toDate()
+					while (
+						currentTime < moment(workHours.end, 'H:mm').toDate()
+					) {
+						const isDisabled = this.getIsDisabledSlot(
+							false,
+							moment(currentDate)
+								.add(currentTime.getHours(), 'hours')
+								.add(currentTime.getMinutes(), 'minutes')
+								.toDate()
+						)
+
+						if (!isDisabled && !workHours.isNonWorkingHour) {
+							const date = moment(currentDate).format(
+								'YYYY-MM-DD'
+							)
+							freeSlots[date] =
+								date in freeSlots ? freeSlots[date] + 1 : 1
+						}
+
+						currentTime = moment(currentTime)
+							.add(this.props.work_time, 'minutes')
+							.toDate()
+					}
+				}
+
+				currentDate = moment(currentDate).add(1, 'day').toDate()
+			}
+			this.setState({ freeSlots })
 		}
 	}
 
@@ -322,104 +437,14 @@ class Calendar extends Component {
 		}
 	}
 
-	checkWorkingHours = (weekDay) => {
-		const {
-			start_work_monday,
-			end_work_monday,
-			start_work_tuesday,
-			end_work_tuesday,
-			start_work_wednesday,
-			end_work_wednesday,
-			start_work_thursday,
-			end_work_thursday,
-			start_work_friday,
-			end_work_friday,
-			start_work_saturday,
-			end_work_saturday,
-			start_work_sunday,
-			end_work_sunday,
-		} = this.props
+	getDrilldownView = (targetDate, currentViewName, configuredViewNames) => {
+		if (
+			currentViewName === Views.MONTH &&
+			configuredViewNames.includes('week')
+		)
+			return 'week'
 
-		let isNonWorkingHour = false
-		let start, end
-
-		if (weekDay === 'poniedziałek') {
-			if (!start_work_monday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_monday.split(':')[0]) * 60 +
-					parseInt(start_work_monday.split(':')[1])
-				end =
-					parseInt(end_work_monday.split(':')[0]) * 60 +
-					parseInt(end_work_monday.split(':')[1])
-			}
-		} else if (weekDay === 'wtorek') {
-			if (!start_work_tuesday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_tuesday.split(':')[0]) * 60 +
-					parseInt(start_work_tuesday.split(':')[1])
-				end =
-					parseInt(end_work_tuesday.split(':')[0]) * 60 +
-					parseInt(end_work_tuesday.split(':')[1])
-			}
-		} else if (weekDay === 'środa') {
-			if (!start_work_wednesday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_wednesday.split(':')[0]) * 60 +
-					parseInt(start_work_wednesday.split(':')[1])
-				end =
-					parseInt(end_work_wednesday.split(':')[0]) * 60 +
-					parseInt(end_work_wednesday.split(':')[1])
-			}
-		} else if (weekDay === 'czwartek') {
-			if (!start_work_thursday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_thursday.split(':')[0]) * 60 +
-					parseInt(start_work_thursday.split(':')[1])
-				end =
-					parseInt(end_work_thursday.split(':')[0]) * 60 +
-					parseInt(end_work_thursday.split(':')[1])
-			}
-		} else if (weekDay === 'piątek') {
-			if (!start_work_friday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_friday.split(':')[0]) * 60 +
-					parseInt(start_work_friday.split(':')[1])
-				end =
-					parseInt(end_work_friday.split(':')[0]) * 60 +
-					parseInt(end_work_friday.split(':')[1])
-			}
-		} else if (weekDay === 'sobota') {
-			if (!start_work_saturday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_saturday.split(':')[0]) * 60 +
-					parseInt(start_work_saturday.split(':')[1])
-				end =
-					parseInt(end_work_saturday.split(':')[0]) * 60 +
-					parseInt(end_work_saturday.split(':')[1])
-			}
-		} else if (weekDay === 'niedziela') {
-			if (!start_work_sunday) isNonWorkingHour = true
-			else {
-				start =
-					parseInt(start_work_sunday.split(':')[0]) * 60 +
-					parseInt(start_work_sunday.split(':')[1])
-				end =
-					parseInt(end_work_sunday.split(':')[0]) * 60 +
-					parseInt(end_work_sunday.split(':')[1])
-			}
-		}
-
-		return {
-			start,
-			end,
-			isNonWorkingHour,
-		}
+		return null
 	}
 
 	onRangeChange = async (dates) => {
@@ -439,44 +464,8 @@ class Calendar extends Component {
 	}
 
 	slotPropGetter = (date) => {
-		const { visibleMeetings } = this.state
-		const { isAdminPanel, one_slot_max_meetings } = this.props
-		const workingHours = this.checkWorkingHours(moment(date).format('dddd'))
-		let isDisabled = workingHours.isNonWorkingHour
-
-		// Check if on the slot can be added meeting for non admin
-		let notWorkingHours = []
-		let eventsOnSlot = []
-
-		for (let i = 0; i < visibleMeetings.length; i++) {
-			if (
-				visibleMeetings[i].do_not_work &&
-				visibleMeetings[i].start <= date &&
-				visibleMeetings[i].end > date
-			)
-				notWorkingHours.push(visibleMeetings[i])
-			else if (
-				!isAdminPanel &&
-				!visibleMeetings[i].do_not_work &&
-				visibleMeetings[i].start <= date &&
-				visibleMeetings[i].end > date
-			)
-				eventsOnSlot.push(visibleMeetings[i])
-
-			if (
-				notWorkingHours.length > 0 ||
-				eventsOnSlot.length >= one_slot_max_meetings
-			) {
-				isDisabled = true
-				break
-			}
-		}
-
-		if (!isDisabled) {
-			date = date.getHours() * 60 + date.getMinutes()
-			isDisabled =
-				date < workingHours.start || date > workingHours.end - 30
-		}
+		const { isAdminPanel } = this.state
+		const isDisabled = this.getIsDisabledSlot(isAdminPanel, date)
 
 		return {
 			className: isDisabled ? 'disabled' : '',
@@ -513,9 +502,7 @@ class Calendar extends Component {
 	}
 
 	onSelectSlot = (slot) => {
-		const workingHours = this.checkWorkingHours(
-			moment(slot.start).format('dddd')
-		)
+		const workingHours = getWorkHours(moment(slot.start).format('dddd'))
 		const start = slot.start.getHours() * 60 + slot.start.getMinutes()
 
 		let [eventsOnTheSlot, isNonWorkingHour] = [
@@ -527,9 +514,9 @@ class Calendar extends Component {
 			if (
 				// Check if slot is not between work hours
 				start < workingHours.start ||
-				start > workingHours.end - 30 ||
+				start > workingHours.end - this.props.work_time ||
 				// Check if there is any do_not_work type of meeting
-				this.state.visibleMeetings.filter(
+				this.props.visibleMeetings.filter(
 					(meeting) =>
 						meeting.do_not_work &&
 						((meeting.start >= slot.start &&
@@ -546,7 +533,7 @@ class Calendar extends Component {
 
 			// Check if there are events on the slot
 			if (!isNonWorkingHour)
-				eventsOnTheSlot = this.state.visibleMeetings.filter(
+				eventsOnTheSlot = this.props.visibleMeetings.filter(
 					(meeting) =>
 						meeting.start >= slot.start && meeting.end <= slot.end
 				).length
@@ -570,6 +557,8 @@ class Calendar extends Component {
 			isAdminPanel,
 			user_phone_number,
 			isAuthenticated,
+			work_time,
+			visibleMeetings,
 		} = this.props
 		const {
 			windowWidth,
@@ -581,7 +570,6 @@ class Calendar extends Component {
 			endOfMonth,
 			startOfWeek,
 			endOfWeek,
-			visibleMeetings,
 		} = this.state
 
 		let meetings = []
@@ -691,14 +679,18 @@ class Calendar extends Component {
 									this.setState({
 										startOfMonth: moment(date)
 											.startOf('month')
-											.startOf('week'),
+											.startOf('week')
+											.toDate(),
 										endOfMonth: moment(date)
 											.endOf('month')
-											.endOf('week'),
-										startOfWeek: moment(date).startOf(
-											'week'
-										),
-										endOfWeek: moment(date).endOf('week'),
+											.endOf('week')
+											.toDate(),
+										startOfWeek: moment(date)
+											.startOf('week')
+											.toDate(),
+										endOfWeek: moment(date)
+											.endOf('week')
+											.toDate(),
 									})
 								}
 								onView={(view) => {
@@ -711,7 +703,7 @@ class Calendar extends Component {
 								onRangeChange={this.onRangeChange}
 								localizer={localizer}
 								events={meetings}
-								step={30}
+								step={work_time}
 								timeslots={1}
 								views={[Views.MONTH, Views.WEEK, Views.DAY]}
 								defaultView={view}
@@ -726,6 +718,7 @@ class Calendar extends Component {
 								onSelecting={this.onSelecting}
 								onSelectSlot={this.onSelectSlot}
 								onSelectEvent={this.onSelectEvent}
+								getDrilldownView={this.getDrilldownView}
 								components={{
 									toolbar: (props) => (
 										<Toolbar
@@ -742,8 +735,22 @@ class Calendar extends Component {
 											onSelectSlot={this.onSelectSlot}
 										/>
 									),
-									// timeGutterHeader: () => <div>xd</div>,
-									header: () => <div>xd</div>,
+									week: {
+										header: (props) => (
+											<WeekHeader
+												{...props}
+												freeSlots={this.state.freeSlots}
+											/>
+										),
+									},
+									month: {
+										dateHeader: (props) => (
+											<MonthDateHeader
+												{...props}
+												freeSlots={this.state.freeSlots}
+											/>
+										),
+									},
 								}}
 								messages={{
 									month: 'Miesiąc',
@@ -769,8 +776,10 @@ const mapStateToProps = (state) => ({
 	loading: state.meetings.loading,
 	meetings: state.meetings.data,
 	loadedDates: state.meetings.loadedDates,
+	visibleMeetings: state.meetings.visibleData,
 
 	one_slot_max_meetings: state.data.data.one_slot_max_meetings,
+	work_time: parseInt(state.data.data[process.env.REACT_APP_WORK_TIME]) || 30,
 	end_work_sunday:
 		state.data.data[process.env.REACT_APP_END_WORK_SUNDAY] || '',
 	start_work_sunday:
@@ -804,6 +813,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
 	loadMeetings,
 	connectWebSocket,
+	changeVisibleMeetings,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

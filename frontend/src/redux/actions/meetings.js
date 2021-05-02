@@ -6,6 +6,7 @@ import {
 	UPDATE_OR_CREATE_DATA,
 	LOAD_MEETINGS,
 	ADD_LOADED_DATES,
+	CHANGE_VISIBLE_MEETINGS,
 } from './types'
 
 import moment from 'moment'
@@ -115,6 +116,13 @@ export const removeMeeting = (id) => (dispatch) => {
 	dispatch({
 		type: REMOVE_MEETING,
 		payload: id,
+	})
+}
+
+export const changeVisibleMeetings = (data) => (dispatch) => {
+	dispatch({
+		type: CHANGE_VISIBLE_MEETINGS,
+		payload: data,
 	})
 }
 
