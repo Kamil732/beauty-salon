@@ -72,7 +72,7 @@ class Calendar extends Component {
 	constructor(props) {
 		super(props)
 
-		const calendarDates = this.getCalendarDates()
+		const calendarDates = this.getCalendarMinAndMaxTime()
 
 		this.state = {
 			ws: null,
@@ -91,11 +91,12 @@ class Calendar extends Component {
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
-		this.getCalendarDates = this.getCalendarDates.bind(this)
+		this.getCalendarMinAndMaxTime = this.getCalendarMinAndMaxTime.bind(this)
 		this.getDrilldownView = this.getDrilldownView.bind(this)
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
 		this.getIsDisabledSlot = this.getIsDisabledSlot.bind(this)
+		this.setCountOfFreeSlots = this.setCountOfFreeSlots.bind(this)
 		this.slotPropGetter = this.slotPropGetter.bind(this)
 		this.onSelecting = this.onSelecting.bind(this)
 		this.onSelectEvent = this.onSelectEvent.bind(this)
@@ -147,7 +148,7 @@ class Calendar extends Component {
 		return isDisabled
 	}
 
-	getCalendarDates = () => {
+	getCalendarMinAndMaxTime = () => {
 		const today = new Date()
 
 		let workHours = [
@@ -232,6 +233,82 @@ class Calendar extends Component {
 		}
 	}
 
+	getVisibleMeetings = () => {
+		let visibleMeetings = []
+
+		const start =
+			this.state.view === Views.MONTH
+				? this.state.startOfMonth
+				: this.state.startOfWeek
+		const end =
+			this.state.view === Views.MONTH
+				? this.state.endOfMonth
+				: this.state.endOfWeek
+
+		for (let i = 0; i < this.props.meetings.length; i++) {
+			if (
+				(this.props.meetings[i].start >= start &&
+					this.props.meetings[i].end <= end) ||
+				(this.props.meetings[i].start <= start &&
+					this.props.meetings[i].end >= end) ||
+				(this.props.meetings[i].start >= start &&
+					end > this.props.meetings[i].start) ||
+				(this.props.meetings[i].end <= end &&
+					start < this.props.meetings[i].end)
+			)
+				visibleMeetings.push(this.props.meetings[i])
+		}
+		this.props.changeVisibleMeetings(visibleMeetings)
+	}
+
+	setCountOfFreeSlots = () => {
+		const start =
+			this.state.view === Views.MONTH
+				? this.state.startOfMonth
+				: this.state.startOfWeek
+		const end =
+			this.state.view === Views.MONTH
+				? this.state.endOfMonth
+				: this.state.endOfWeek
+
+		// Get free slots count
+		let freeSlots = {}
+		let currentDate = start
+
+		while (currentDate <= end) {
+			const workHours = getWorkHours(
+				moment(currentDate).format('dddd'),
+				false
+			)
+
+			if (!workHours.isNonWorkingHour) {
+				let currentTime = moment(workHours.start, 'H:mm').toDate()
+				while (currentTime < moment(workHours.end, 'H:mm').toDate()) {
+					const isDisabled = this.getIsDisabledSlot(
+						false,
+						moment(currentDate)
+							.add(currentTime.getHours(), 'hours')
+							.add(currentTime.getMinutes(), 'minutes')
+							.toDate()
+					)
+
+					if (!isDisabled && !workHours.isNonWorkingHour) {
+						const date = moment(currentDate).format('YYYY-MM-DD')
+						freeSlots[date] =
+							date in freeSlots ? freeSlots[date] + 1 : 1
+					}
+
+					currentTime = moment(currentTime)
+						.add(this.props.work_time, 'minutes')
+						.toDate()
+				}
+			}
+
+			currentDate = moment(currentDate).add(1, 'day').toDate()
+		}
+		this.setState({ freeSlots })
+	}
+
 	openModal = (type, selected) => {
 		this.setState({
 			selected: {
@@ -248,6 +325,7 @@ class Calendar extends Component {
 			if (!this.props.ws) this.props.connectWebSocket()
 			if (this.props.loadedDates.length === 0) this.props.loadMeetings()
 		}
+		this.setCountOfFreeSlots()
 	}
 
 	componentWillUnmount = () =>
@@ -271,7 +349,7 @@ class Calendar extends Component {
 			this.props.end_work_monday !== prevProps.end_work_monday ||
 			this.props.start_work_monday !== prevProps.start_work_monday
 		) {
-			const calednarDates = this.getCalendarDates()
+			const calednarDates = this.getCalendarMinAndMaxTime()
 
 			this.setState({
 				minDate: calednarDates.minDate,
@@ -285,86 +363,11 @@ class Calendar extends Component {
 			prevState.endOfWeek !== this.state.endOfWeek ||
 			prevState.startOfMonth !== this.state.startOfMonth ||
 			prevState.endOfMonth !== this.state.endOfMonth
-		) {
-			let visibleMeetings = []
+		)
+			this.getVisibleMeetings()
 
-			const start =
-				this.state.view === Views.MONTH
-					? this.state.startOfMonth
-					: this.state.startOfWeek
-			const end =
-				this.state.view === Views.MONTH
-					? this.state.endOfMonth
-					: this.state.endOfWeek
-
-			// Get visibleMeetings
-			for (let i = 0; i < this.props.meetings.length; i++) {
-				if (
-					(this.props.meetings[i].start >= start &&
-						this.props.meetings[i].end <= end) ||
-					(this.props.meetings[i].start <= start &&
-						this.props.meetings[i].end >= end) ||
-					(this.props.meetings[i].start >= start &&
-						end > this.props.meetings[i].start) ||
-					(this.props.meetings[i].end <= end &&
-						start < this.props.meetings[i].end)
-				)
-					visibleMeetings.push(this.props.meetings[i])
-			}
-			this.props.changeVisibleMeetings(visibleMeetings)
-		}
-
-		if (prevProps.visibleMeetings !== this.props.visibleMeetings) {
-			const start =
-				this.state.view === Views.MONTH
-					? this.state.startOfMonth
-					: this.state.startOfWeek
-			const end =
-				this.state.view === Views.MONTH
-					? this.state.endOfMonth
-					: this.state.endOfWeek
-
-			// Get free slots count
-			let freeSlots = {}
-			let currentDate = start
-
-			while (currentDate <= end) {
-				const workHours = getWorkHours(
-					moment(currentDate).format('dddd'),
-					false
-				)
-
-				if (!workHours.isNonWorkingHour) {
-					let currentTime = moment(workHours.start, 'H:mm').toDate()
-					while (
-						currentTime < moment(workHours.end, 'H:mm').toDate()
-					) {
-						const isDisabled = this.getIsDisabledSlot(
-							false,
-							moment(currentDate)
-								.add(currentTime.getHours(), 'hours')
-								.add(currentTime.getMinutes(), 'minutes')
-								.toDate()
-						)
-
-						if (!isDisabled && !workHours.isNonWorkingHour) {
-							const date = moment(currentDate).format(
-								'YYYY-MM-DD'
-							)
-							freeSlots[date] =
-								date in freeSlots ? freeSlots[date] + 1 : 1
-						}
-
-						currentTime = moment(currentTime)
-							.add(this.props.work_time, 'minutes')
-							.toDate()
-					}
-				}
-
-				currentDate = moment(currentDate).add(1, 'day').toDate()
-			}
-			this.setState({ freeSlots })
-		}
+		if (prevProps.visibleMeetings !== this.props.visibleMeetings)
+			this.setCountOfFreeSlots()
 	}
 
 	deleteMeeting = async () => {
@@ -460,11 +463,13 @@ class Calendar extends Component {
 						.endOf('week')
 						.format('YYYY-MM-DD')
 
-		this.props.loadMeetings(from, to)
+		await this.props.loadMeetings(from, to)
+
+		this.getVisibleMeetings()
 	}
 
 	slotPropGetter = (date) => {
-		const { isAdminPanel } = this.state
+		const { isAdminPanel } = this.props
 		const isDisabled = this.getIsDisabledSlot(isAdminPanel, date)
 
 		return {
@@ -574,6 +579,7 @@ class Calendar extends Component {
 
 		let meetings = []
 
+		// Filter meetings that should be displayed
 		if (this.state.view === Views.MONTH)
 			meetings = visibleMeetings.filter(
 				(meeting) =>

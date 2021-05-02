@@ -11,7 +11,7 @@ function Header({ freeSlots, date, label }) {
 
 	return (
 		<>
-			{label} {freeHours > 0 && `(${freeHours})`}
+			{label} <h5>{freeHours > 0 && `(${freeHours})`}</h5>
 		</>
 	)
 }
