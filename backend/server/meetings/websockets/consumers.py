@@ -41,9 +41,12 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
         payload = response.get('payload')
 
         # Check permissions
-        if self.user.is_authenticated and (event == 'REMOVE_MEETING' or event == 'ADD_MEETING' or event == 'UPDATE_OR_CREATE_DATA'):
-            if (not(self.user.is_admin) and event == 'UPDATE_OR_CREATE_DATA') or (event == 'REMOVE_MEETING' and not(self.check_is_owner(payload))):
-                return
+        if self.user.is_authenticated:
+            if not(self.user.is_admin):
+                if event == 'REMOVE_MEETING' and not(self.check_is_owner(payload)):
+                    return
+                elif event == 'UPDATE_OR_CREATE_DATA':
+                    return
 
             await self.channel_layer.group_send(
                 self.room_group_name,
