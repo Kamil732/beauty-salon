@@ -126,6 +126,10 @@ $rbc-css-prefix: calendar;
 	}
 }
 
+.rbc-time-header-cell {
+	min-height: auto !important;
+}
+
 .rbc-current-time-indicator {
 	height: 2px;
 	box-shadow: 0 0 2px green;
