@@ -26,6 +26,7 @@ class Command(BaseCommand):
         Data.objects.get_or_create(
             name="home_content", value="Wolność w podejmowaniu decyzji, elastyczność w wykorzystaniu czasu. Przeżyj czas, kiedy dbanie o włosy i brodę było męskie i było częścią bycia mężczyzną")
         Data.objects.get_or_create(name="home_title", value="Męskie strzyżenie & brody")
+        Data.objects.get_or_create(name="work_time", value="30")
         Data.objects.get_or_create(name="end_work_sunday", value="")
         Data.objects.get_or_create(name="start_work_sunday", value="")
         Data.objects.get_or_create(name="end_work_saturday", value="22:00")
