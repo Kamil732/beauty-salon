@@ -1,20 +1,8 @@
 import moment from 'moment'
-import { useEffect, useState } from 'react'
 import Button from '../../../../layout/buttons/Button'
 
-function MonthDateHeader({
-	freeSlots,
-	date,
-	label,
-	drilldownView,
-	onDrillDown,
-}) {
-	const [freeHours, setFreeHours] = useState(0)
-
-	useEffect(
-		() => setFreeHours(freeSlots[moment(date).format('YYYY-MM-DD')]),
-		[date, freeSlots]
-	)
+function MonthDateHeader({ freeSlots, date, label, onDrillDown }) {
+	const freeHours = freeSlots[moment(date).format('YYYY-MM-DD')]
 
 	return (
 		<>

@@ -18,66 +18,66 @@ const getWorkHours = (weekDay, converted = true) => {
 		[process.env.REACT_APP_END_WORK_SUNDAY]: end_work_sunday,
 	} = store.getState().data.data
 
-	let isNonWorkingHour = false
+	let isNonWorkingDay = false
 	let start, end
 
 	switch (weekDay) {
-		case 'poniedziałek':
-			if (!start_work_monday) isNonWorkingHour = true
+		case 1:
+			if (!start_work_monday) isNonWorkingDay = true
 			else {
 				start = start_work_monday
 				end = end_work_monday
 			}
 			break
-		case 'wtorek':
-			if (!start_work_tuesday) isNonWorkingHour = true
+		case 2:
+			if (!start_work_tuesday) isNonWorkingDay = true
 			else {
 				start = start_work_tuesday
 				end = end_work_tuesday
 			}
 			break
-		case 'środa':
-			if (!start_work_wednesday) isNonWorkingHour = true
+		case 3:
+			if (!start_work_wednesday) isNonWorkingDay = true
 			else {
 				start = start_work_wednesday
 				end = end_work_wednesday
 			}
 			break
 
-		case 'czwartek':
-			if (!start_work_thursday) isNonWorkingHour = true
+		case 4:
+			if (!start_work_thursday) isNonWorkingDay = true
 			else {
 				start = start_work_thursday
 				end = end_work_thursday
 			}
 			break
-		case 'piątek':
-			if (!start_work_friday) isNonWorkingHour = true
+		case 5:
+			if (!start_work_friday) isNonWorkingDay = true
 			else {
 				start = start_work_friday
 				end = end_work_friday
 			}
 			break
-		case 'sobota':
-			if (!start_work_saturday) isNonWorkingHour = true
+		case 6:
+			if (!start_work_saturday) isNonWorkingDay = true
 			else {
 				start = start_work_saturday
 				end = end_work_saturday
 			}
 			break
-		case 'niedziela':
-			if (!start_work_sunday) isNonWorkingHour = true
+		case 7:
+			if (!start_work_sunday) isNonWorkingDay = true
 			else {
 				start = start_work_sunday
 				end = end_work_sunday
 			}
 			break
 		default:
-			isNonWorkingHour = true
+			isNonWorkingDay = true
 			break
 	}
 
-	if (converted && !isNonWorkingHour) {
+	if (converted && !isNonWorkingDay) {
 		start =
 			parseInt(start.split(':')[0]) * 60 + parseInt(start.split(':')[1])
 		end = parseInt(end.split(':')[0]) * 60 + parseInt(end.split(':')[1])
@@ -86,7 +86,7 @@ const getWorkHours = (weekDay, converted = true) => {
 	return {
 		start,
 		end,
-		isNonWorkingHour,
+		isNonWorkingDay,
 	}
 }
 

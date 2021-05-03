@@ -100,7 +100,7 @@ class Calendar extends Component {
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
 		this.getIsDisabledSlot = this.getIsDisabledSlot.bind(this)
-		this.setCountOfFreeSlots = this.setCountOfFreeSlots.bind(this)
+		this.getCountOfFreeSlots = this.getCountOfFreeSlots.bind(this)
 		this.slotPropGetter = this.slotPropGetter.bind(this)
 		this.onSelecting = this.onSelecting.bind(this)
 		this.onSelectEvent = this.onSelectEvent.bind(this)
@@ -115,8 +115,8 @@ class Calendar extends Component {
 
 	getIsDisabledSlot = (isAdminPanel, date) => {
 		const { one_slot_max_meetings, visibleMeetings } = this.props
-		const workingHours = getWorkHours(moment(date).format('dddd'))
-		let isDisabled = workingHours.isNonWorkingHour
+		const workingHours = getWorkHours(moment(date).isoWeekday())
+		let isDisabled = workingHours.isNonWorkingDay
 
 		// Check if on the slot can be added meeting for non admin
 		let notWorkingHours = []
@@ -266,7 +266,7 @@ class Calendar extends Component {
 		this.props.changeVisibleMeetings(visibleMeetings)
 	}
 
-	setCountOfFreeSlots = () => {
+	getCountOfFreeSlots = () => {
 		const start =
 			this.state.view === Views.MONTH
 				? this.state.startOfMonth
@@ -281,12 +281,15 @@ class Calendar extends Component {
 		let currentDate = start
 
 		while (currentDate <= end) {
+			const date = moment(currentDate).format('YYYY-MM-DD')
 			const workHours = getWorkHours(
-				moment(currentDate).format('dddd'),
+				moment(currentDate).isoWeekday(),
 				false
 			)
 
-			if (!workHours.isNonWorkingHour) {
+			if (!(date in freeSlots)) freeSlots[date] = 0
+
+			if (!workHours.isNonWorkingDay) {
 				let currentTime = moment(workHours.start, 'H:mm').toDate()
 				while (currentTime < moment(workHours.end, 'H:mm').toDate()) {
 					const isDisabled = this.getIsDisabledSlot(
@@ -297,11 +300,8 @@ class Calendar extends Component {
 							.toDate()
 					)
 
-					if (!isDisabled && !workHours.isNonWorkingHour) {
-						const date = moment(currentDate).format('YYYY-MM-DD')
-						freeSlots[date] =
-							date in freeSlots ? freeSlots[date] + 1 : 1
-					}
+					if (!isDisabled && !workHours.isNonWorkingDay)
+						freeSlots[date] += 1
 
 					currentTime = moment(currentTime)
 						.add(this.props.work_time, 'minutes')
@@ -331,7 +331,7 @@ class Calendar extends Component {
 			if (this.props.loadedDates.length === 0) this.props.loadMeetings()
 		}
 		this.getVisibleMeetings()
-		this.setCountOfFreeSlots()
+		this.getCountOfFreeSlots()
 	}
 
 	componentWillUnmount = () =>
@@ -373,7 +373,7 @@ class Calendar extends Component {
 			this.getVisibleMeetings()
 
 		if (prevProps.visibleMeetings !== this.props.visibleMeetings)
-			this.setCountOfFreeSlots()
+			this.getCountOfFreeSlots()
 	}
 
 	deleteMeeting = async () => {
@@ -540,12 +540,12 @@ class Calendar extends Component {
 	}
 
 	onSelectSlot = (slot) => {
-		const workingHours = getWorkHours(moment(slot.start).format('dddd'))
+		const workingHours = getWorkHours(moment(slot.start).isoWeekday())
 		const start = slot.start.getHours() * 60 + slot.start.getMinutes()
 
-		let [eventsOnTheSlot, isNonWorkingHour] = [
+		let [eventsOnTheSlot, isNonWorkingDay] = [
 			false,
-			workingHours.isNonWorkingHour,
+			workingHours.isNonWorkingDay,
 		]
 
 		if (start !== 0) {
@@ -567,10 +567,10 @@ class Calendar extends Component {
 								slot.start < meeting.end))
 				).length > 0
 			)
-				isNonWorkingHour = true
+				isNonWorkingDay = true
 
 			// Check if there are events on the slot
-			if (!isNonWorkingHour)
+			if (!isNonWorkingDay)
 				eventsOnTheSlot = this.props.visibleMeetings.filter(
 					(meeting) =>
 						meeting.start >= slot.start && meeting.end <= slot.end
@@ -578,11 +578,11 @@ class Calendar extends Component {
 		}
 
 		if (this.props.isAdminPanel) {
-			if (!isNonWorkingHour) this.openModal('slot', slot)
+			if (!isNonWorkingDay) this.openModal('slot', slot)
 		} else {
 			if (
 				eventsOnTheSlot < this.props.one_slot_max_meetings &&
-				!isNonWorkingHour &&
+				!isNonWorkingDay &&
 				start !== 0
 			)
 				this.openModal('slot', slot)
