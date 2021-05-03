@@ -21,7 +21,7 @@ function MonthDateHeader({
 			<Button extraSmall center role="cell" onClick={onDrillDown}>
 				{label}
 			</Button>{' '}
-			{freeHours > 0 && `(${freeHours})`}
+			{freeHours > 0 && <h5>({freeHours})</h5>}
 		</>
 	)
 }

@@ -78,6 +78,7 @@ class Calendar extends Component {
 			ws: null,
 			windowWidth: window.innerWidth,
 
+			currentDate: new Date(),
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
 			startOfMonth: moment().startOf('month').startOf('week').toDate(),
 			endOfMonth: moment().endOf('month').endOf('week').toDate(),
@@ -92,7 +93,10 @@ class Calendar extends Component {
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
 		this.getCalendarMinAndMaxTime = this.getCalendarMinAndMaxTime.bind(this)
+		this.onNavigate = this.onNavigate.bind(this)
+		this.onView = this.onView.bind(this)
 		this.getDrilldownView = this.getDrilldownView.bind(this)
+		this.onDrillDown = this.onDrillDown.bind(this)
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
 		this.getIsDisabledSlot = this.getIsDisabledSlot.bind(this)
@@ -440,6 +444,30 @@ class Calendar extends Component {
 		}
 	}
 
+	onNavigate = (date) =>
+		this.setState({
+			currentDate: date,
+			startOfMonth: moment(date)
+				.startOf('month')
+				.startOf('week')
+				.toDate(),
+			endOfMonth: moment(date).endOf('month').endOf('week').toDate(),
+			startOfWeek: moment(date).startOf('week').toDate(),
+			endOfWeek: moment(date).endOf('week').toDate(),
+		})
+
+	onView = async (view) => {
+		this.setState({ view })
+
+		if (view === Views.MONTH)
+			await this.onRangeChange([
+				this.state.startOfMonth,
+				this.state.endOfMonth,
+			])
+
+		this.getVisibleMeetings()
+	}
+
 	getDrilldownView = (targetDate, currentViewName, configuredViewNames) => {
 		if (
 			currentViewName === Views.MONTH &&
@@ -448,6 +476,11 @@ class Calendar extends Component {
 			return 'week'
 
 		return null
+	}
+
+	onDrillDown = (date, drilldownView) => {
+		this.onNavigate(date)
+		this.onView(drilldownView)
 	}
 
 	onRangeChange = async (dates) => {
@@ -464,8 +497,6 @@ class Calendar extends Component {
 						.format('YYYY-MM-DD')
 
 		await this.props.loadMeetings(from, to)
-
-		this.getVisibleMeetings()
 	}
 
 	slotPropGetter = (date) => {
@@ -568,6 +599,7 @@ class Calendar extends Component {
 		const {
 			windowWidth,
 			view,
+			currentDate,
 			selected,
 			minDate,
 			maxDate,
@@ -580,47 +612,35 @@ class Calendar extends Component {
 		let meetings = []
 
 		// Filter meetings that should be displayed
-		if (this.state.view === Views.MONTH)
-			meetings = visibleMeetings.filter(
-				(meeting) =>
-					meeting.allDay &&
-					((meeting.start >= startOfMonth &&
-						meeting.end <= endOfMonth) ||
-						(meeting.start <= startOfMonth &&
-							meeting.end >= endOfMonth) ||
-						(meeting.start >= startOfMonth &&
-							endOfMonth > meeting.start) ||
-						(meeting.end <= endOfMonth &&
-							startOfMonth < meeting.end))
-			)
-		else
-			meetings = this.props.isAdminPanel
-				? visibleMeetings.filter(
-						(meeting) =>
-							(meeting.start >= startOfWeek &&
-								meeting.end <= endOfWeek) ||
-							(meeting.start <= startOfWeek &&
-								meeting.end >= endOfWeek) ||
-							(meeting.start >= startOfWeek &&
-								endOfWeek > meeting.start) ||
-							(meeting.end <= endOfWeek &&
-								startOfWeek < meeting.end)
-				  )
-				: visibleMeetings.filter(
-						(meeting) =>
-							(meeting.do_not_work ||
-								(meeting.customer_phone_number ===
-									user_phone_number &&
-									isAuthenticated)) &&
-							((meeting.start >= startOfWeek &&
-								meeting.end <= endOfWeek) ||
-								(meeting.start <= startOfWeek &&
-									meeting.end >= endOfWeek) ||
-								(meeting.start >= startOfWeek &&
-									endOfWeek > meeting.start) ||
-								(meeting.end <= endOfWeek &&
-									startOfWeek < meeting.end))
-				  )
+		for (let i = 0; i < visibleMeetings.length; i++) {
+			const start = view === Views.MONTH ? startOfMonth : startOfWeek
+			const end = view === Views.MONTH ? endOfMonth : endOfWeek
+
+			if (
+				(visibleMeetings[i].start >= start &&
+					visibleMeetings[i].end <= end) ||
+				(visibleMeetings[i].start <= start &&
+					visibleMeetings[i].end >= end) ||
+				(visibleMeetings[i].start >= start &&
+					end > visibleMeetings[i].start) ||
+				(visibleMeetings[i].end <= end &&
+					start < visibleMeetings[i].end)
+			) {
+				if (
+					// MONTH and allDay meeting
+					(view === Views.MONTH && visibleMeetings[i].allDay) ||
+					// Not MONTH and IsAdminPanel
+					(view !== Views.MONTH && isAdminPanel) ||
+					// Not MONTH and is owner of meeting
+					(view !== Views.MONTH &&
+						(visibleMeetings[i].do_not_work ||
+							(visibleMeetings[i].customer_phone_number ===
+								user_phone_number &&
+								isAuthenticated)))
+				)
+					meetings.push(visibleMeetings[i])
+			}
+		}
 
 		return (
 			<>
@@ -681,38 +701,16 @@ class Calendar extends Component {
 					<Card.Body>
 						<div style={{ display: loading ? 'none' : 'block' }}>
 							<BigCalendar
-								onNavigate={(date) =>
-									this.setState({
-										startOfMonth: moment(date)
-											.startOf('month')
-											.startOf('week')
-											.toDate(),
-										endOfMonth: moment(date)
-											.endOf('month')
-											.endOf('week')
-											.toDate(),
-										startOfWeek: moment(date)
-											.startOf('week')
-											.toDate(),
-										endOfWeek: moment(date)
-											.endOf('week')
-											.toDate(),
-									})
-								}
-								onView={(view) => {
-									if (view === Views.MONTH)
-										this.onRangeChange([
-											startOfMonth,
-											endOfMonth,
-										])
-								}}
+								onNavigate={this.onNavigate}
+								onView={this.onView}
 								onRangeChange={this.onRangeChange}
 								localizer={localizer}
 								events={meetings}
 								step={work_time}
 								timeslots={1}
 								views={[Views.MONTH, Views.WEEK, Views.DAY]}
-								defaultView={view}
+								view={view}
+								date={currentDate}
 								min={minDate}
 								max={maxDate}
 								dayLayoutAlgorithm="no-overlap"
@@ -725,13 +723,11 @@ class Calendar extends Component {
 								onSelectSlot={this.onSelectSlot}
 								onSelectEvent={this.onSelectEvent}
 								getDrilldownView={this.getDrilldownView}
+								onDrillDown={this.onDrillDown}
 								components={{
 									toolbar: (props) => (
 										<Toolbar
 											windowWidth={windowWidth}
-											setView={(state) =>
-												this.setState({ view: state })
-											}
 											{...props}
 										/>
 									),

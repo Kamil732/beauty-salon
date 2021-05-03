@@ -8,7 +8,6 @@ import Button from '../../../../layout/buttons/Button'
 
 const Toolbar = ({
 	windowWidth,
-	setView,
 	view,
 	views,
 	onView,
@@ -16,10 +15,7 @@ const Toolbar = ({
 	date,
 	localizer,
 }) => {
-	const goToView = (view) => {
-		onView(view)
-		setView(view)
-	}
+	const goToView = (view) => onView(view)
 
 	if (windowWidth < 768 && view !== Views.DAY) goToView(Views.DAY)
 

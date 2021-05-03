@@ -31,6 +31,12 @@ function Legend() {
 				></span>
 				<span>Nie można umówić wizyty</span>
 			</div>
+			<div className="legend__item">
+				<span>
+					<h5>(1)</h5>
+				</span>
+				<span>Liczba wolnych godzin</span>
+			</div>
 		</div>
 	)
 }
