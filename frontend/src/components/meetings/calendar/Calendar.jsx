@@ -262,6 +262,7 @@ class Calendar extends Component {
 			)
 				visibleMeetings.push(this.props.meetings[i])
 		}
+
 		this.props.changeVisibleMeetings(visibleMeetings)
 	}
 
@@ -329,6 +330,7 @@ class Calendar extends Component {
 			if (!this.props.ws) this.props.connectWebSocket()
 			if (this.props.loadedDates.length === 0) this.props.loadMeetings()
 		}
+		this.getVisibleMeetings()
 		this.setCountOfFreeSlots()
 	}
 
