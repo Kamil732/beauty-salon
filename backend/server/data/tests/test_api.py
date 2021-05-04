@@ -2,7 +2,7 @@ import json
 
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APITestCase
 
 from faker import Faker
 from accounts.models import Account
@@ -47,10 +47,8 @@ class TestData(APITestCase):
 
     def test_update_data_not_logged(self):
         # Create Data
-        display_name = self.faker.word()
-        name = slugify(display_name)
+        name = slugify(self.faker.word()[:100])
         Data.objects.create(
-            display_name=display_name,
             name=name,
             value=self.faker.word()
         )
@@ -65,11 +63,9 @@ class TestData(APITestCase):
 
     def test_update_data_not_admin(self):
         # Create Data
-        display_name = self.faker.word()
-        name = slugify(display_name)
+        name = slugify(self.faker.word())
         Data.objects.create(
-            display_name=display_name,
-            name=name,
+            name=name[:50],
             value=self.faker.word()
         )
 
@@ -90,11 +86,9 @@ class TestData(APITestCase):
 
     def test_update_data(self):
         # Create Data
-        display_name = self.faker.word()
-        name = slugify(display_name)
+        name = slugify(slugify(self.faker.word()))
         Data.objects.create(
-            display_name=display_name,
-            name=name,
+            name=name[:50],
             value=self.faker.word()
         )
 

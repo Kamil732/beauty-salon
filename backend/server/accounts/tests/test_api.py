@@ -4,7 +4,7 @@ import io
 from PIL import Image
 
 from django.urls import reverse
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APITestCase
 
 from faker import Faker
 from accounts.models import Account

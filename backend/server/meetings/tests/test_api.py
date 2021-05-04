@@ -4,10 +4,10 @@ import datetime
 
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APITestCase
 
-from phonenumber_field.phonenumber import PhoneNumber
 from faker import Faker
+from data.models import Data
 from accounts.models import Account
 from meetings.models import Meeting
 
@@ -15,6 +15,23 @@ from meetings.models import Meeting
 class TestMeetings(APITestCase):
     def setUp(self):
         self.faker = Faker('pl_PL')
+
+        # Create data
+        Data.objects.get_or_create(name="work_time", value="30")
+        Data.objects.get_or_create(name="end_work_sunday", value="")
+        Data.objects.get_or_create(name="start_work_sunday", value="")
+        Data.objects.get_or_create(name="end_work_saturday", value="22:00")
+        Data.objects.get_or_create(name="start_work_saturday", value="10:00")
+        Data.objects.get_or_create(name="end_work_friday", value="22:00")
+        Data.objects.get_or_create(name="start_work_friday", value="10:00")
+        Data.objects.get_or_create(name="end_work_thursday", value="22:00")
+        Data.objects.get_or_create(name="start_work_thursday", value="10:00")
+        Data.objects.get_or_create(name="end_work_wednesday", value="22:00")
+        Data.objects.get_or_create(name="start_work_wednesday", value="10:00")
+        Data.objects.get_or_create(name="end_work_tuesday", value="22:00")
+        Data.objects.get_or_create(name="start_work_tuesday", value="10:00")
+        Data.objects.get_or_create(name="end_work_monday", value="22:00")
+        Data.objects.get_or_create(name="start_work_monday", value="10:00")
 
         self.email = self.faker.email()
         self.password = self.faker.sentence()
@@ -135,8 +152,9 @@ class TestMeetings(APITestCase):
         self.client.post(self.login_url, data=data, content_type='application/json')
 
         # Create meeting
-        end = datetime.datetime.now() + datetime.timedelta(minutes=60)
-        start = datetime.datetime.now() + datetime.timedelta(minutes=30)
+        now = datetime.datetime.now()
+        end = now + datetime.timedelta(minutes=60)
+        start = now + datetime.timedelta(minutes=30)
         type = random.choice(['hair', 'beard'])
         data = json.dumps({
             'barber': self.admin.slug,

@@ -65,7 +65,7 @@ class CustomerMeetingSerializer(MeetingSerializer):
         # Cannot add meeting on non working hour []
         # Cannot add meeting when there are more than `one_slot_max_meetings` []
         # Cannot add meeting 15 minutes before meeting [x]
-        # Cannot add meeting that is longer than 30 minutes []
+        # Cannot add meeting that is longer than work_time []
         # Cannot add meeting with the occupied barber []
         # Ca
 
@@ -102,15 +102,15 @@ class AdminMeetingSerializer(MeetingSerializer):
     type = serializers.ChoiceField(choices=Meeting.TYPES, write_only=True, allow_null=True)
 
     def validate(self, data):
+        work_time = int(Data.objects.get(name="work_time").value)
         # if data['start'] < timezone.now() - timedelta(hours=1):
         #     raise serializers.ValidationError('Wizyta nie może odbyć się wcześniej niż 1 godzinę temu')
 
-        week_day = data['start'].weekday()
-        working_hours = get_working_hours(week_day)
+        working_hours = get_working_hours(data['start'].weekday())
         start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
 
         # Check if meeting is not between work hours
-        if not(data['type']) == Meeting.TYPES[2][0] and (working_hours['is_non_working_hour'] or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - 30):
+        if (not(data['type'] == Meeting.TYPES[2][0]) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - work_time)):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
         # Check if there is any meeting form start to end
