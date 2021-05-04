@@ -34,11 +34,11 @@ class Login extends Component {
 
 	onChange = (e) => this.setState({ [e.target.name]: e.target.value })
 
-	onSubmit = (e) => {
+	onSubmit = async (e) => {
 		e.preventDefault()
 
 		this.setState({ loading: true })
-		this.props.login('xd', this.state.email, this.state.password)
+		await this.props.login('xd', this.state.email, this.state.password)
 		this.setState({ loading: false })
 	}
 

@@ -376,8 +376,10 @@ class Calendar extends Component {
 			this.getCountOfFreeSlots()
 	}
 
-	deleteMeeting = async () => {
+	deleteMeeting = async (loading = null) => {
 		const { selected } = this.state
+
+		if (loading) loading(true)
 
 		try {
 			await axios.delete(
@@ -395,10 +397,12 @@ class Calendar extends Component {
 			this.setState({ selected: {} })
 		} catch (err) {
 			NotificationManager.error('Nie udało się usunąć wizyty', 'błąd')
+		} finally {
+			if (loading) loading(false)
 		}
 	}
 
-	addMeeting = async (data) => {
+	addMeeting = async (data, loading = null) => {
 		const { start, end } = this.state.selected
 		const {
 			do_not_work,
@@ -410,6 +414,8 @@ class Calendar extends Component {
 			barber,
 			type,
 		} = data
+
+		if (loading) loading(true)
 
 		try {
 			const body = JSON.stringify({
@@ -443,6 +449,8 @@ class Calendar extends Component {
 			this.setState({ selected: {} })
 		} catch (err) {
 			NotificationManager.error('Nie udało się zapisać wizyty', 'błąd')
+		} finally {
+			if (loading) loading(false)
 		}
 	}
 

@@ -18,6 +18,7 @@ class AddMeetingAdminForm extends Component {
 		super(props)
 
 		this.state = {
+			loading: false,
 			do_not_work: props.doNotWork,
 			customer: '',
 			customer_first_name: '',
@@ -34,7 +35,7 @@ class AddMeetingAdminForm extends Component {
 		this.loadCustomers = this.loadCustomers.bind(this)
 	}
 
-	onSubmit = (e) => {
+	onSubmit = async (e) => {
 		e.preventDefault()
 
 		const phoneRegexValidation = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im
@@ -52,7 +53,9 @@ class AddMeetingAdminForm extends Component {
 			return
 		}
 
-		this.props.addMeeting(this.state)
+		await this.props.addMeeting(this.state, (state) =>
+			this.setState({ loading: state })
+		)
 	}
 
 	onChange = (e) => {
@@ -96,6 +99,7 @@ class AddMeetingAdminForm extends Component {
 
 	render() {
 		const {
+			loading,
 			do_not_work,
 			customer,
 			customer_first_name,
@@ -329,12 +333,22 @@ class AddMeetingAdminForm extends Component {
 							/>
 						</FormControl>
 
-						<Button danger center>
+						<Button
+							danger
+							center
+							loading={loading}
+							loadingText="Zapisywanie"
+						>
 							Zapisz urlop
 						</Button>
 					</>
 				) : (
-					<Button success center>
+					<Button
+						success
+						center
+						loading={loading}
+						loadingText="Zapisywanie"
+					>
 						Zapisz wizytę
 					</Button>
 				)}
