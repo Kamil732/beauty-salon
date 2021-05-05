@@ -111,6 +111,7 @@ class EditMeetingAdminForm extends Component {
 						<FormControl.ChoiceField
 							id="customer"
 							name="customer"
+							labelValue={customer}
 							value={{
 								value: customer,
 								label: `${customer_first_name} ${customer_last_name}`,

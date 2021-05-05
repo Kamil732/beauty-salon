@@ -98,6 +98,7 @@ function ChoiceField({
 	defaultOptions,
 	searchAsync,
 	onChange,
+	labelValue,
 	id,
 	...props
 }) {
@@ -143,7 +144,6 @@ function ChoiceField({
 					defaultOptions={
 						defaultOptions?.length > 0 ? defaultOptions : true
 					}
-					// cacheOptions
 					loadOptions={choices}
 					loadingMessage={loadingMessage}
 					noOptionsMessage={noOptionsMessage}
@@ -160,7 +160,7 @@ function ChoiceField({
 						tabIndex={-1}
 						autoComplete="off"
 						style={{ height: 0, width: 0, opacity: 0 }}
-						value={value}
+						value={labelValue}
 						required
 					/>
 				)}
@@ -178,7 +178,11 @@ function ChoiceField({
 				onChange={handleOnChange}
 				isClearable={!isNotClearable}
 				hideSelectedOptions
-				value={choices.find((choice) => choice.value === value)}
+				value={
+					value
+						? choices.find((choice) => choice.value === value)
+						: null
+				}
 				isLoading={choices.length === 0}
 			/>
 			{props.required && (
@@ -186,7 +190,7 @@ function ChoiceField({
 					tabIndex={-1}
 					autoComplete="off"
 					style={{ height: 0, width: 0, opacity: 0 }}
-					value={value}
+					value={labelValue}
 					required
 				/>
 			)}
@@ -205,7 +209,8 @@ ChoiceField.prototype.propTypes = {
 			value: PropTypes.string.isRequired,
 		}).isRequired
 	).isRequired,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	labelValue: PropTypes.string.isRequired,
+	value: PropTypes.any,
 	onChange: PropTypes.func.isRequired,
 }
 

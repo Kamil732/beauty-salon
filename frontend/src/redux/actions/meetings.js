@@ -158,7 +158,10 @@ export const loadBarbers = () => async (dispatch) => {
 	}
 }
 
-export const loadCustomers = (value) => async (dispatch, getState) => {
+export const loadCustomers = (value, callback) => async (
+	dispatch,
+	getState
+) => {
 	try {
 		const res = await axios.get(
 			`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
@@ -171,11 +174,16 @@ export const loadCustomers = (value) => async (dispatch, getState) => {
 
 		value = value.toLowerCase()
 
-		return getState().meetings.customerChoiceList.filter(
-			(customer) =>
-				customer.label.toLowerCase().startsWith(value) ||
-				customer.label.split(' ')[0].toLowerCase().startsWith(value) ||
-				customer.label.split(' ')[1].toLowerCase().startsWith(value)
+		callback(
+			getState().meetings.customerChoiceList.filter(
+				(customer) =>
+					customer.label.toLowerCase().startsWith(value) ||
+					customer.label
+						.split(' ')[0]
+						.toLowerCase()
+						.startsWith(value) ||
+					customer.label.split(' ')[1].toLowerCase().startsWith(value)
+			)
 		)
 	} catch (err) {
 		NotificationManager.error(

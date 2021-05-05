@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import axios from 'axios'
-import { loadBarbers } from '../../../redux/actions/meetings'
+import { loadBarbers, loadCustomers } from '../../../redux/actions/meetings'
 
 import FormControl from '../../../layout/forms/FormControl'
 import FormGroup from '../../../layout/forms/FormGroup'
@@ -16,7 +15,9 @@ class AddMeetingAdminForm extends Component {
 		addMeeting: PropTypes.func.isRequired,
 		doNotWork: PropTypes.bool,
 		barberChoiceList: PropTypes.array,
+		customerChoiceList: PropTypes.array,
 		loadBarbers: PropTypes.func.isRequired,
+		loadCustomers: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
@@ -37,7 +38,6 @@ class AddMeetingAdminForm extends Component {
 
 		this.onChange = this.onChange.bind(this)
 		this.onSubmit = this.onSubmit.bind(this)
-		this.loadCustomers = this.loadCustomers.bind(this)
 	}
 
 	componentDidMount = () => {
@@ -74,24 +74,8 @@ class AddMeetingAdminForm extends Component {
 		this.setState({ [e.target.name]: value })
 	}
 
-	loadCustomers = async (value) => {
-		try {
-			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
-			)
-
-			return res.data
-		} catch (err) {
-			NotificationManager.error(
-				'Nie udało się załadować listy klientów',
-				'Błąd',
-				4000
-			)
-		}
-	}
-
 	render() {
-		const { barberChoiceList } = this.props
+		const { barberChoiceList, customerChoiceList } = this.props
 		const {
 			loading,
 			do_not_work,
@@ -136,7 +120,7 @@ class AddMeetingAdminForm extends Component {
 									<FormControl.ChoiceField
 										id="customer"
 										name="customer"
-										value={customer}
+										labelValue={customer}
 										onChange={(_, value) =>
 											this.setState({
 												customer: value.slug || '',
@@ -151,8 +135,8 @@ class AddMeetingAdminForm extends Component {
 											})
 										}
 										searchAsync
-										defaultOptions={this.props.customerList}
-										choices={this.loadCustomers}
+										defaultOptions={customerChoiceList}
+										choices={this.props.loadCustomers}
 									/>
 								</FormControl>
 
@@ -305,6 +289,7 @@ class AddMeetingAdminForm extends Component {
 								required={do_not_work}
 								id="barber"
 								name="barber"
+								labelValue={barber}
 								value={barber}
 								onChange={(_, value) =>
 									this.setState({
@@ -347,10 +332,12 @@ class AddMeetingAdminForm extends Component {
 
 const mapStateToProps = (state) => ({
 	barberChoiceList: state.meetings.barberChoiceList,
+	customerChoiceList: state.meetings.customerChoiceList,
 })
 
 const mapDispatchToProps = {
 	loadBarbers,
+	loadCustomers,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddMeetingAdminForm)
