@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+
+import axios from 'axios'
+import { loadBarbers } from '../../../redux/actions/meetings'
 
 import FormControl from '../../../layout/forms/FormControl'
 import FormGroup from '../../../layout/forms/FormGroup'
 import Button from '../../../layout/buttons/Button'
-import axios from 'axios'
 import NotificationManager from 'react-notifications/lib/NotificationManager'
 import CSRFToken from '../../CSRFToken'
 
@@ -12,6 +15,8 @@ class AddMeetingAdminForm extends Component {
 	static propTypes = {
 		addMeeting: PropTypes.func.isRequired,
 		doNotWork: PropTypes.bool,
+		barberChoiceList: PropTypes.array,
+		loadBarbers: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
@@ -19,6 +24,7 @@ class AddMeetingAdminForm extends Component {
 
 		this.state = {
 			loading: false,
+
 			do_not_work: props.doNotWork,
 			customer: '',
 			customer_first_name: '',
@@ -31,8 +37,11 @@ class AddMeetingAdminForm extends Component {
 
 		this.onChange = this.onChange.bind(this)
 		this.onSubmit = this.onSubmit.bind(this)
-		this.loadBarbers = this.loadBarbers.bind(this)
 		this.loadCustomers = this.loadCustomers.bind(this)
+	}
+
+	componentDidMount = () => {
+		if (this.props.barberChoiceList.length === 0) this.props.loadBarbers()
 	}
 
 	onSubmit = async (e) => {
@@ -65,22 +74,6 @@ class AddMeetingAdminForm extends Component {
 		this.setState({ [e.target.name]: value })
 	}
 
-	loadBarbers = async (value) => {
-		try {
-			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/choice-list/barbers/?search=${value}`
-			)
-
-			return res.data
-		} catch (err) {
-			NotificationManager.error(
-				'Nie udało się załadować listy fryzjerów',
-				'Błąd',
-				4000
-			)
-		}
-	}
-
 	loadCustomers = async (value) => {
 		try {
 			const res = await axios.get(
@@ -98,6 +91,7 @@ class AddMeetingAdminForm extends Component {
 	}
 
 	render() {
+		const { barberChoiceList } = this.props
 		const {
 			loading,
 			do_not_work,
@@ -180,8 +174,7 @@ class AddMeetingAdminForm extends Component {
 												barber: value,
 											})
 										}
-										searchAsync
-										choices={this.loadBarbers}
+										choices={barberChoiceList}
 									/>
 								</FormControl>
 							</FormGroup>
@@ -318,18 +311,13 @@ class AddMeetingAdminForm extends Component {
 										barber: value,
 									})
 								}
-								searchAsync
-								choices={(value) => {
-									let data = this.loadBarbers(value)
-									try {
-										data.unshift({
-											label: 'Każdego',
-											value: '',
-										})
-									} catch (err) {}
-
-									return data
-								}}
+								choices={[
+									{
+										label: 'Wszystkich',
+										value: 'everyone',
+									},
+									...barberChoiceList,
+								]}
 							/>
 						</FormControl>
 
@@ -357,4 +345,12 @@ class AddMeetingAdminForm extends Component {
 	}
 }
 
-export default AddMeetingAdminForm
+const mapStateToProps = (state) => ({
+	barberChoiceList: state.meetings.barberChoiceList,
+})
+
+const mapDispatchToProps = {
+	loadBarbers,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddMeetingAdminForm)

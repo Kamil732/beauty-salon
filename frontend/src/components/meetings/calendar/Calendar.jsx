@@ -8,7 +8,11 @@ import getHeaders from '../../../helpers/getHeaders'
 import { NotificationManager } from 'react-notifications'
 
 import axios from 'axios'
-import { ADD_MEETING, REMOVE_MEETING } from '../../../redux/actions/types'
+import {
+	ADD_MEETING,
+	REMOVE_MEETING,
+	UPDATE_MEETING,
+} from '../../../redux/actions/types'
 import {
 	loadMeetings,
 	connectWebSocket,
@@ -106,6 +110,7 @@ class Calendar extends Component {
 		this.onSelectEvent = this.onSelectEvent.bind(this)
 		this.onSelectSlot = this.onSelectSlot.bind(this)
 		this.openModal = this.openModal.bind(this)
+		this.saveMeeting = this.saveMeeting.bind(this)
 		this.deleteMeeting = this.deleteMeeting.bind(this)
 		this.addMeeting = this.addMeeting.bind(this)
 	}
@@ -426,7 +431,7 @@ class Calendar extends Component {
 				customer_last_name,
 				customer_phone_number,
 				customer_fax_number,
-				barber,
+				barber: do_not_work && barber === 'everyone' ? '' : barber,
 				type: do_not_work ? 'do_not_work' : type,
 			})
 
@@ -449,6 +454,35 @@ class Calendar extends Component {
 			this.setState({ selected: {} })
 		} catch (err) {
 			NotificationManager.error('Nie udało się zapisać wizyty', 'błąd')
+		} finally {
+			if (loading) loading(false)
+		}
+	}
+
+	saveMeeting = async (data, loading = null) => {
+		const { selected } = this.state
+
+		if (loading) loading(true)
+
+		try {
+			const body = JSON.stringify(data)
+
+			const res = await axios.put(
+				`${process.env.REACT_APP_API_URL}/meetings/${selected.id}/`,
+				body,
+				getHeaders(true)
+			)
+
+			this.props.ws.send(
+				JSON.stringify({
+					event: UPDATE_MEETING,
+					payload: res.data,
+				})
+			)
+
+			this.setState({ selected: {} })
+		} catch (err) {
+			NotificationManager.error('Nie udało się zapisać wizyty', 'Błąd')
 		} finally {
 			if (loading) loading(false)
 		}
@@ -677,6 +711,7 @@ class Calendar extends Component {
 						<Modal.Body>
 							{selected.selected_type === 'event' ? (
 								<EditMeetingAdminForm
+									saveMeeting={this.saveMeeting}
 									deleteMeeting={this.deleteMeeting}
 									selected={selected}
 								/>

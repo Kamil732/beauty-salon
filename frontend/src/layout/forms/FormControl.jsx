@@ -91,7 +91,16 @@ function SelectSingleValue({ children, id, ...props }) {
 	)
 }
 
-function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
+function ChoiceField({
+	isNotClearable,
+	value,
+	choices,
+	defaultOptions,
+	searchAsync,
+	onChange,
+	id,
+	...props
+}) {
 	const handleOnChange = (opt) => onChange(opt?.label || '', opt?.value || '')
 
 	const styles = {
@@ -131,8 +140,10 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 		return (
 			<>
 				<AsyncSelect
-					defaultOptions
-					cacheOptions
+					defaultOptions={
+						defaultOptions?.length > 0 ? defaultOptions : true
+					}
+					// cacheOptions
 					loadOptions={choices}
 					loadingMessage={loadingMessage}
 					noOptionsMessage={noOptionsMessage}
@@ -140,8 +151,9 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 					styles={styles}
 					placeholder=""
 					onChange={handleOnChange}
-					isClearable
-					hideSelectedOptions={value}
+					isClearable={!isNotClearable}
+					hideSelectedOptions
+					defaultValue={value}
 				/>
 				{props.required && (
 					<input
@@ -164,9 +176,10 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 				styles={styles}
 				placeholder=""
 				onChange={handleOnChange}
-				isClearable
+				isClearable={!isNotClearable}
 				hideSelectedOptions
-				isOptionSelected={value}
+				value={choices.find((choice) => choice.value === value)}
+				isLoading={choices.length === 0}
 			/>
 			{props.required && (
 				<input
@@ -182,8 +195,10 @@ function ChoiceField({ value, choices, searchAsync, onChange, id, ...props }) {
 }
 
 ChoiceField.prototype.propTypes = {
+	isNotClearable: PropTypes.bool,
 	searchAsync: PropTypes.bool,
 	loadOptions: PropTypes.func,
+	defaultOptions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
 	choices: PropTypes.arrayOf(
 		PropTypes.shape({
 			label: PropTypes.string.isRequired,

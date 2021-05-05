@@ -7,6 +7,9 @@ import {
 	CLEAR_MEETINGS,
 	ADD_LOADED_DATES,
 	CHANGE_VISIBLE_MEETINGS,
+	UPDATE_MEETING,
+	LOAD_BARBERS,
+	LOAD_CUSTOMERS,
 } from '../actions/types'
 
 const initialState = {
@@ -14,12 +17,36 @@ const initialState = {
 	data: [],
 	loadedDates: [],
 	visibleData: [],
+	barberChoiceList: [],
+	customerChoiceList: [],
 	ws: null,
 }
 
 // eslint-disable-next-line
 export default function (state = initialState, action) {
 	switch (action.type) {
+		case LOAD_BARBERS:
+			return {
+				...state,
+				barberChoiceList: action.payload,
+			}
+		case LOAD_CUSTOMERS:
+			let newCustomers = []
+
+			for (let i = 0; i < action.payload.length; i++) {
+				const found = state.customerChoiceList.some(
+					(item) => item.value.id === action.payload[i].value.id
+				)
+				if (!found) newCustomers.push(action.payload[i])
+			}
+
+			return {
+				...state,
+				customerChoiceList: [
+					...state.customerChoiceList,
+					...newCustomers,
+				],
+			}
 		case MEETINGS_LOADING:
 			return {
 				...state,
@@ -62,6 +89,21 @@ export default function (state = initialState, action) {
 					(meeting) => meeting.id !== action.payload
 				),
 			}
+		case UPDATE_MEETING:
+			return {
+				...state,
+				data: state.data.map((item) => {
+					if (item.id !== action.payload.id) return item
+
+					const { start, end, ...data } = action.payload
+
+					return {
+						...item,
+						...data,
+					}
+				}),
+			}
+		// TODO: update vivisbleMeetings as well
 		default:
 			return state
 	}

@@ -7,6 +7,9 @@ import {
 	LOAD_MEETINGS,
 	ADD_LOADED_DATES,
 	CHANGE_VISIBLE_MEETINGS,
+	UPDATE_MEETING,
+	LOAD_BARBERS,
+	LOAD_CUSTOMERS,
 } from './types'
 
 import moment from 'moment'
@@ -96,7 +99,10 @@ export const loadMeetings = (
 export const addMeeting = (data) => async (dispatch, getState) => {
 	const dates = getDates(data.from, data.to, getState().meetings.loadedDates)
 
-	if (dates.length === 0) {
+	if (
+		dates.length === 0 &&
+		!getState().meetings.data.some((meeting) => meeting.id === data.id)
+	) {
 		try {
 			const res = await axios.get(
 				`${process.env.REACT_APP_API_URL}/meetings/${data.id}/`
@@ -119,11 +125,65 @@ export const removeMeeting = (id) => (dispatch) => {
 	})
 }
 
+export const updateMeeting = (data) => (dispatch) => {
+	dispatch({
+		type: UPDATE_MEETING,
+		payload: data,
+	})
+}
+
 export const changeVisibleMeetings = (data) => (dispatch) => {
 	dispatch({
 		type: CHANGE_VISIBLE_MEETINGS,
 		payload: data,
 	})
+}
+
+export const loadBarbers = () => async (dispatch) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/accounts/choice-list/barbers/`
+		)
+
+		dispatch({
+			type: LOAD_BARBERS,
+			payload: res.data,
+		})
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się załadować listy fryzjerów',
+			'Błąd',
+			4000
+		)
+	}
+}
+
+export const loadCustomers = (value) => async (dispatch, getState) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
+		)
+
+		dispatch({
+			type: LOAD_CUSTOMERS,
+			payload: res.data,
+		})
+
+		value = value.toLowerCase()
+
+		return getState().meetings.customerChoiceList.filter(
+			(customer) =>
+				customer.label.toLowerCase().startsWith(value) ||
+				customer.label.split(' ')[0].toLowerCase().startsWith(value) ||
+				customer.label.split(' ')[1].toLowerCase().startsWith(value)
+		)
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się załadować listy klientów',
+			'Błąd',
+			4000
+		)
+	}
 }
 
 export const connectWebSocket = () => (dispatch) => {
@@ -154,13 +214,25 @@ export const connectWebSocket = () => (dispatch) => {
 	ws.onmessage = (e) => {
 		const data = JSON.parse(e.data)
 
-		if (data.event === REMOVE_MEETING) dispatch(removeMeeting(data.payload))
-		else if (data.event === ADD_MEETING) dispatch(addMeeting(data.payload))
-		else if (data.event === UPDATE_OR_CREATE_DATA)
-			dispatch({
-				type: data.event,
-				payload: data.payload,
-			})
+		switch (data.event) {
+			case REMOVE_MEETING:
+				dispatch(removeMeeting(data.payload))
+				break
+			case ADD_MEETING:
+				dispatch(addMeeting(data.payload))
+				break
+			case UPDATE_MEETING:
+				dispatch(updateMeeting(data.payload))
+				break
+			case UPDATE_OR_CREATE_DATA:
+				dispatch({
+					type: data.event,
+					payload: data.payload,
+				})
+				break
+			default:
+				break
+		}
 	}
 
 	ws.onclose = (e) => {

@@ -1,15 +1,18 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+
+import { loadBarbers } from '../../../redux/actions/meetings'
+
 import FormControl from '../../../layout/forms/FormControl'
 import Button from '../../../layout/buttons/Button'
-import { NotificationManager } from 'react-notifications'
-import axios from 'axios'
 
 class AddMeetingForm extends Component {
 	static propTypes = {
 		isAuthenticated: PropTypes.bool,
 		data: PropTypes.object,
+		barberChoiceList: PropTypes.array,
+		loadBarbers: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
@@ -20,27 +23,14 @@ class AddMeetingForm extends Component {
 			barber: '',
 			type: '',
 		}
-
-		this.loadBarbers = this.loadBarbers.bind(this)
 	}
 
-	loadBarbers = async (value) => {
-		try {
-			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/choice-list/barbers/?search=${value}`
-			)
-
-			return res.data
-		} catch (err) {
-			NotificationManager.error(
-				'Nie udało się załadować listy fryzjerów',
-				'Błąd',
-				4000
-			)
-		}
+	componentDidMount = () => {
+		if (this.props.barberChoiceList.length === 0) this.props.loadBarbers()
 	}
 
 	render() {
+		const { barberChoiceList } = this.props
 		const { loading, barber, type } = this.state
 
 		return (
@@ -60,8 +50,7 @@ class AddMeetingForm extends Component {
 								barber: value,
 							})
 						}
-						searchAsync
-						choices={this.loadBarbers}
+						choices={barberChoiceList}
 					/>
 				</FormControl>
 
@@ -98,8 +87,11 @@ class AddMeetingForm extends Component {
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
 	data: state.auth.data,
+	barberChoiceList: state.meetings.barberChoiceList,
 })
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+	loadBarbers,
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddMeetingForm)
