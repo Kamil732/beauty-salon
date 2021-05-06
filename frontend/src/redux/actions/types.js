@@ -1,6 +1,6 @@
 // Data
 export const GET_DATA = 'GET_DATA'
-export const UPDATE_OR_CREATE_DATA = 'UPDATE_OR_CREATE_DATA'
+export const UPDATE_DATA = 'UPDATE_DATA'
 
 // Auth
 export const AUTH_LOADING = 'AUTH_LOADING'

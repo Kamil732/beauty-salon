@@ -231,34 +231,20 @@ WorkHours.prototype.propTypes = {
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
 
-	end_work_sunday:
-		state.data.data[process.env.REACT_APP_END_WORK_SUNDAY] || '',
-	start_work_sunday:
-		state.data.data[process.env.REACT_APP_START_WORK_SUNDAY] || '',
-	end_work_saturday:
-		state.data.data[process.env.REACT_APP_END_WORK_SATURDAY] || '',
-	start_work_saturday:
-		state.data.data[process.env.REACT_APP_START_WORK_SATURDAY] || '',
-	end_work_friday:
-		state.data.data[process.env.REACT_APP_END_WORK_FRIDAY] || '',
-	start_work_friday:
-		state.data.data[process.env.REACT_APP_START_WORK_FRIDAY] || '',
-	end_work_thursday:
-		state.data.data[process.env.REACT_APP_END_WORK_THURSDAY] || '',
-	start_work_thursday:
-		state.data.data[process.env.REACT_APP_START_WORK_THURSDAY] || '',
-	end_work_wednesday:
-		state.data.data[process.env.REACT_APP_END_WORK_WEDNESDAY] || '',
-	start_work_wednesday:
-		state.data.data[process.env.REACT_APP_START_WORK_WEDNESDAY] || '',
-	end_work_tuesday:
-		state.data.data[process.env.REACT_APP_END_WORK_TUESDAY] || '',
-	start_work_tuesday:
-		state.data.data[process.env.REACT_APP_START_WORK_TUESDAY] || '',
-	end_work_monday:
-		state.data.data[process.env.REACT_APP_END_WORK_MONDAY] || '',
-	start_work_monday:
-		state.data.data[process.env.REACT_APP_START_WORK_MONDAY] || '',
+	end_work_sunday: state.data.data.end_work_sunday || '',
+	start_work_sunday: state.data.data.start_work_sunday || '',
+	end_work_saturday: state.data.data.end_work_saturday || '',
+	start_work_saturday: state.data.data.start_work_saturday || '',
+	end_work_friday: state.data.data.end_work_friday || '',
+	start_work_friday: state.data.data.start_work_friday || '',
+	end_work_thursday: state.data.data.end_work_thursday || '',
+	start_work_thursday: state.data.data.start_work_thursday || '',
+	end_work_wednesday: state.data.data.end_work_wednesday || '',
+	start_work_wednesday: state.data.data.start_work_wednesday || '',
+	end_work_tuesday: state.data.data.end_work_tuesday || '',
+	start_work_tuesday: state.data.data.start_work_tuesday || '',
+	end_work_monday: state.data.data.end_work_monday || '',
+	start_work_monday: state.data.data.start_work_monday || '',
 })
 
 export default connect(mapStateToProps, null)(WorkHours)

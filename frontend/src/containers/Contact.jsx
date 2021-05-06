@@ -71,7 +71,7 @@ class Contact extends Component {
 									className="unique-text icon-container"
 								>
 									<FaPhoneAlt className="icon-container__icon" />
-									+48 {phone_number}
+									{phone_number}
 								</a>
 							) : isAdmin ? (
 								<div className="unique-text icon-container">
@@ -139,16 +139,12 @@ class Contact extends Component {
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
 
-	contact_title: state.data.data[process.env.REACT_APP_CONTACT_TITLE] || '',
-	contact_content:
-		state.data.data[process.env.REACT_APP_CONTACT_CONTENT] || '',
-	contact_content_second:
-		state.data.data[process.env.REACT_APP_CONTACT_CONTENT_SECOND] || '',
-	phone_number: state.data.data[process.env.REACT_APP_PHONE_NUMBER] || '',
-	location:
-		state.data.data[process.env.REACT_APP_LOCATION] || 'BRAK LOKALIZACJI',
-	google_maps_url:
-		state.data.data[process.env.REACT_APP_GOOGLE_MAPS_URL] || '',
+	contact_title: state.data.data.contact_title || '',
+	contact_content: state.data.data.contact_content || '',
+	contact_content_second: state.data.data.contact_content_second || '',
+	phone_number: state.data.data.phone_number || '',
+	location: state.data.data.location || 'BRAK LOKALIZACJI',
+	google_maps_url: state.data.data.google_maps_url || '',
 })
 
 export default connect(mapStateToProps, null)(Contact)

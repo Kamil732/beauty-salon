@@ -102,10 +102,7 @@ class CustomerListAPIView(APIView):
 
 class BarberListAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        search_field = request.query_params.get('search', '')
-
-        accounts = Account.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
-            first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=False).values('slug', 'first_name', 'last_name')
+        accounts = Account.objects.filter(is_admin=True).values('slug', 'first_name', 'last_name').iterator()
 
         res = [
             {

@@ -128,9 +128,8 @@ class Gallery extends Component {
 
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
-	gallery_title: state.data.data[process.env.REACT_APP_GALLERY_TITLE] || '',
-	gallery_content:
-		state.data.data[process.env.REACT_APP_GALLERY_CONTENT] || '',
+	gallery_title: state.data.data.gallery_title || '',
+	gallery_content: state.data.data.gallery_content || '',
 })
 
 export default connect(mapStateToProps, null)(Gallery)

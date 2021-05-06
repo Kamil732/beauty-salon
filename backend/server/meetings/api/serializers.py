@@ -15,8 +15,9 @@ from accounts.api.serializers import AccountSerializer
 
 class MeetingSerializer(serializers.ModelSerializer):
     barber = serializers.SlugRelatedField(queryset=Account.objects.filter(
-        is_admin=True), slug_field='slug', write_only=True, allow_null=True)
+        is_admin=True), slug_field='slug', allow_null=True)
     barber_first_name = serializers.ReadOnlyField(source='barber.first_name')
+    barber_last_name = serializers.ReadOnlyField(source='barber.last_name')
     do_not_work = serializers.SerializerMethodField('get_do_not_work')
 
     def get_do_not_work(self, obj):
@@ -44,6 +45,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             'id',
             'barber',
             'barber_first_name',
+            'barber_last_name',
             'customer',
             'start',
             'end',
@@ -69,7 +71,7 @@ class CustomerMeetingSerializer(MeetingSerializer):
         # Cannot add meeting with the occupied barber []
         # Ca
 
-        one_slot_max_meetings = Account.objects.filter(is_admin=True).count()
+        one_slot_max_meetings = Data.objects.first().one_slot_max_meetings
 
         x = Meeting.objects.filter(
             Q(start__gte=data['start']) & Q(end__lte=data['end']) |
@@ -89,6 +91,7 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
     class Meta(MeetingSerializer.Meta):
         extra_kwargs = {
+
             'customer_first_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_last_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_phone_number': {'write_only': True, 'required': False, 'allow_blank': True},
@@ -98,11 +101,11 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
 class AdminMeetingSerializer(MeetingSerializer):
     customer = serializers.SlugRelatedField(queryset=Account.objects.filter(
-        is_admin=False), slug_field='slug', write_only=True, allow_null=True)
+        is_admin=False), slug_field='slug', allow_null=True)
     type = serializers.ChoiceField(choices=Meeting.TYPES, write_only=True, allow_null=True)
 
     def validate(self, data):
-        work_time = int(Data.objects.get(name="work_time").value)
+        work_time = Data.objects.first().work_time
         # if data['start'] < timezone.now() - timedelta(hours=1):
         #     raise serializers.ValidationError('Wizyta nie może odbyć się wcześniej niż 1 godzinę temu')
 
@@ -134,6 +137,7 @@ class AdminMeetingSerializer(MeetingSerializer):
 
     class Meta(MeetingSerializer.Meta):
         extra_kwargs = {
+
             'customer_first_name': {'required': False, 'allow_blank': True},
             'customer_last_name': {'required': False, 'allow_blank': True},
             'customer_phone_number': {'required': False, 'allow_blank': True},

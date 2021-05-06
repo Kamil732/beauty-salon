@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'server.urls'
 
 TEMPLATES = [
@@ -168,3 +169,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY')
+
+REST_FRAMEWORK = {
+    'TIME_FORMAT': '%H:%M',
+    'TIME_INPUT_FORMATS': ['%H:%M'],
+}
