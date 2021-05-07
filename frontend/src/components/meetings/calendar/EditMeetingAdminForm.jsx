@@ -111,7 +111,6 @@ class EditMeetingAdminForm extends Component {
 						<FormControl.ChoiceField
 							id="customer"
 							name="customer"
-							labelValue={customer}
 							value={{
 								value: customer,
 								label: `${customer_first_name} ${customer_last_name}`,
@@ -142,6 +141,7 @@ class EditMeetingAdminForm extends Component {
 							id="barber"
 							name="barber"
 							value={barber}
+							labelValue={barber}
 							isNotClearable
 							onChange={(_, value) =>
 								this.setState({
@@ -250,6 +250,7 @@ class EditMeetingAdminForm extends Component {
 						name="type"
 						onChange={(_, value) => this.setState({ type: value })}
 						value={type}
+						labelValue={type}
 						isNotClearable
 						choices={[
 							{ value: 'hair', label: 'Włosy' },
@@ -270,6 +271,7 @@ class EditMeetingAdminForm extends Component {
 						}
 						loading={deleteLoading}
 						loadingText="Usuwanie"
+						disabled={saveLoading}
 					>
 						Usuń{' '}
 						{selected.do_not_work ? 'wolne od pracy' : 'wizytę'}
@@ -280,6 +282,7 @@ class EditMeetingAdminForm extends Component {
 						small
 						loading={saveLoading}
 						loadingText="Zapisywanie"
+						disabled={deleteLoading}
 					>
 						Zapisz
 					</Button>

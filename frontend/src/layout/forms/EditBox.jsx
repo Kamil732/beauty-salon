@@ -104,8 +104,7 @@ function EditBox({
 							small
 							primary
 							onClick={cancel}
-							loading={loading}
-							loadingText="Anuluj"
+							disabled={loading}
 						>
 							Anuluj
 						</Button>

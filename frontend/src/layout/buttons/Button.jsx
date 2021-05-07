@@ -10,6 +10,7 @@ function Button({
 	success,
 	danger,
 	loading,
+	disabled,
 	small,
 	extraSmall,
 	center,
@@ -29,7 +30,7 @@ function Button({
 				}${extraSmall ? ' btn__extraSmall slide-floor' : ''}${
 					center ? ' center' : ''
 				}`}
-				disabled={loading}
+				disabled={loading || disabled}
 				{...props}
 			>
 				{loading && loadingText ? loadingText : children}
@@ -46,7 +47,7 @@ function Button({
 			}${to ? ' btn__link' : ''}${small ? ' btn__small' : ''}${
 				extraSmall ? ' btn__extraSmall slide-floor' : ''
 			}${center ? ' center' : ''}`}
-			disabled={loading}
+			disabled={loading || disabled}
 			{...props}
 		>
 			{loading && loadingText ? loadingText : children}
@@ -57,6 +58,7 @@ function Button({
 Button.prototype.propTypes = {
 	loading: PropTypes.bool,
 	loadingText: PropTypes.string,
+	disabled: PropTypes.bool,
 	primary: PropTypes.bool,
 	secondary: PropTypes.bool,
 	success: PropTypes.bool,

@@ -45,6 +45,7 @@ class AddMeetingForm extends Component {
 						id="barber"
 						name="barber"
 						value={barber}
+						labelValue={barber}
 						onChange={(_, value) =>
 							this.setState({
 								barber: value,
@@ -64,6 +65,7 @@ class AddMeetingForm extends Component {
 						name="type"
 						onChange={(_, value) => this.setState({ type: value })}
 						value={type}
+						labelValue={type}
 						choices={[
 							{ value: 'hair', label: 'Włosy' },
 							{ value: 'beard', label: 'Broda' },

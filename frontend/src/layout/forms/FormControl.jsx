@@ -180,7 +180,7 @@ function ChoiceField({
 				hideSelectedOptions
 				value={
 					value
-						? choices.find((choice) => choice.value === value)
+						? choices.filter((choice) => choice.value === value)
 						: null
 				}
 				isLoading={choices.length === 0}
