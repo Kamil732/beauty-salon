@@ -114,6 +114,8 @@
 	}
 
 	&__loading {
+		padding: 6px !important;
+
 		&::before {
 			content: '';
 			display: inline-block;
