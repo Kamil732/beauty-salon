@@ -22,6 +22,8 @@ class Pricing extends Component {
 							<EditBox
 								name={process.env.REACT_APP_HAIR_PRICE}
 								value={hair_price}
+								type="number"
+								step=".01"
 							>
 								{hair_price ? `${hair_price} zł` : 'Za darmo'}
 							</EditBox>
@@ -33,6 +35,8 @@ class Pricing extends Component {
 							<EditBox
 								name={process.env.REACT_APP_BEARD_PRICE}
 								value={beard_price}
+								type="number"
+								step=".01"
 							>
 								{beard_price ? `${beard_price} zł` : 'Za darmo'}
 							</EditBox>

@@ -20,6 +20,10 @@ function WorkHours({
 	start_work_sunday,
 	end_work_sunday,
 }) {
+	const regexValidation = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+	const validationErrorMessage =
+		'Nie poprawny format. Format musi być w HH:MM'
+
 	return (
 		<table className="table">
 			<thead>
@@ -38,6 +42,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_monday"
 									value={start_work_monday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_monday || '--:--'}
 								</EditBox>
@@ -46,6 +54,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_monday"
 									value={end_work_monday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_monday || '--:--'}
 								</EditBox>
@@ -63,6 +75,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_tuesday"
 									value={start_work_tuesday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_tuesday || '--:--'}
 								</EditBox>
@@ -71,6 +87,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_tuesday"
 									value={end_work_tuesday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_tuesday || '--:--'}
 								</EditBox>
@@ -88,6 +108,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_wednesday"
 									value={start_work_wednesday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_wednesday || '--:--'}
 								</EditBox>
@@ -96,6 +120,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_wednesday"
 									value={end_work_wednesday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_wednesday || '--:--'}
 								</EditBox>
@@ -113,6 +141,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_thursday"
 									value={start_work_thursday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_thursday || '--:--'}
 								</EditBox>
@@ -121,6 +153,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_thursday"
 									value={end_work_thursday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_thursday || '--:--'}
 								</EditBox>
@@ -138,6 +174,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_friday"
 									value={start_work_friday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_friday || '--:--'}
 								</EditBox>
@@ -146,6 +186,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_friday"
 									value={end_work_friday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_friday || '--:--'}
 								</EditBox>
@@ -163,6 +207,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_saturday"
 									value={start_work_saturday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_saturday || '--:--'}
 								</EditBox>
@@ -171,6 +219,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_saturday"
 									value={end_work_saturday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_saturday || '--:--'}
 								</EditBox>
@@ -188,6 +240,10 @@ function WorkHours({
 								<EditBox
 									name="start_work_sunday"
 									value={start_work_sunday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{start_work_sunday || '--:--'}
 								</EditBox>
@@ -196,6 +252,10 @@ function WorkHours({
 								<EditBox
 									name="end_work_sunday"
 									value={end_work_sunday}
+									regexValidation={regexValidation}
+									validationErrorMessage={
+										validationErrorMessage
+									}
 								>
 									{end_work_sunday || '--:--'}
 								</EditBox>

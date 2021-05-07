@@ -39,9 +39,9 @@ class Contact extends Component {
 					<PageHero.Content>
 						<PageHero.Title>
 							<EditBox
-								name={process.env.REACT_APP_CONTACT_TITLE}
+								name="contact_title"
 								value={contact_title}
-								textarea
+								type="textarea"
 							>
 								{isAdmin && !contact_title
 									? 'BRAK TREŚCI'
@@ -51,9 +51,9 @@ class Contact extends Component {
 
 						<PageHero.Text>
 							<EditBox
-								name={process.env.REACT_APP_CONTACT_CONTENT}
+								name="contact_content"
 								value={contact_content}
-								textarea
+								type="textarea"
 							>
 								{isAdmin && !contact_content
 									? 'BRAK TREŚCI'
@@ -62,12 +62,16 @@ class Contact extends Component {
 						</PageHero.Text>
 
 						<EditBox
-							name={process.env.REACT_APP_PHONE_NUMBER}
+							name="phone_number"
 							value={phone_number}
+							regexValidation={
+								/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/
+							}
+							validationErrorMessage="Nie poprawny numer telefonu"
 						>
 							{phone_number ? (
 								<a
-									href={`tel:+48-${phone_number}`}
+									href={`tel:${phone_number}`}
 									className="unique-text icon-container"
 								>
 									<FaPhoneAlt className="icon-container__icon" />
@@ -82,11 +86,9 @@ class Contact extends Component {
 
 						<PageHero.Text>
 							<EditBox
-								name={
-									process.env.REACT_APP_CONTACT_CONTENT_SECOND
-								}
+								name="contact_content_second"
 								value={contact_content_second}
-								textarea
+								type="textarea"
 							>
 								{isAdmin && !contact_content_second
 									? 'BRAK TREŚCI'
@@ -108,25 +110,27 @@ class Contact extends Component {
 							Nasz salon fryzjerski znajdziesz pod adresem:
 						</PageHero.Text>
 						<span className="unique-text" style={{ width: '100%' }}>
-							<EditBox
-								name={process.env.REACT_APP_LOCATION}
-								value={location}
-							>
+							<EditBox name="location" value={location}>
 								{location}
 							</EditBox>
 						</span>
 					</PageHero.Content>
 					<div style={{ textAlign: 'center' }} data-aos="fade-left">
 						<EditBox
-							name={process.env.REACT_APP_GOOGLE_MAPS_URL}
+							name="google_maps_url"
 							value={google_maps_url}
+							type="url"
+							regexValidation={
+								/^(https|http):\/\/(www\.|)google\.[a-z]+\/maps/
+							}
+							validationErrorMessage="Link powinien prowadzić do map google"
 						>
 							<iframe
 								title="map"
 								src={google_maps_url}
-								height="300"
-								allowfullscreen=""
+								allowfullscreen
 								loading="lazy"
+								className="google_map"
 							></iframe>
 						</EditBox>
 					</div>

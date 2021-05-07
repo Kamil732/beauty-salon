@@ -195,7 +195,6 @@ export const loadCustomers = (value, callback) => async (
 }
 
 export const connectWebSocket = () => (dispatch) => {
-	dispatch({ type: MEETINGS_LOADING })
 	const ws = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/meetings/`)
 	let connectInterval = null
 	let timeout = 250

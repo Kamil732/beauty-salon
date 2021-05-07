@@ -72,9 +72,9 @@ class Gallery extends Component {
 					<PageHero.Content>
 						<PageHero.Title>
 							<EditBox
-								name={process.env.REACT_APP_GALLERY_TITLE}
+								name="gallery_title"
 								value={gallery_title}
-								textarea
+								type="textarea"
 							>
 								{isAdmin && !gallery_title
 									? 'BRAK TREŚCI'
@@ -83,9 +83,9 @@ class Gallery extends Component {
 						</PageHero.Title>
 						<PageHero.Text>
 							<EditBox
-								name={process.env.REACT_APP_GALLERY_CONTENT}
+								name="gallery_content"
 								value={gallery_content}
-								textarea
+								type="textarea"
 							>
 								{isAdmin && !gallery_content
 									? 'BRAK TREŚCI'

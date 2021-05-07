@@ -17,10 +17,11 @@ import PrivateRoute from '../common/PrivateRoute'
 class Routes extends Component {
 	static propTypes = {
 		loading: PropTypes.bool,
+		ws: PropTypes.object,
 	}
 
 	render() {
-		if (this.props.loading)
+		if (this.props.loading || !this.props.ws)
 			return (
 				<PageHero>
 					<PageHero.Body>
@@ -46,6 +47,7 @@ class Routes extends Component {
 
 const mapStateToProps = (state) => ({
 	loading: state.data.loading,
+	ws: state.meetings.ws,
 })
 
 export default connect(mapStateToProps, null)(Routes)

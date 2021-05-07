@@ -47,7 +47,7 @@ class AddMeetingAdminForm extends Component {
 	onSubmit = async (e) => {
 		e.preventDefault()
 
-		const phoneRegexValidation = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im
+		const phoneRegexValidation = /^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/
 
 		if (
 			!this.state.do_not_work &&

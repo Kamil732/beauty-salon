@@ -30,9 +30,9 @@ function Home({
 				<PageHero.Content>
 					<PageHero.Title>
 						<EditBox
-							name={process.env.REACT_APP_HOME_TITLE}
+							name="home_title"
 							value={home_title}
-							textarea
+							type="textarea"
 						>
 							{isAdmin && !home_title
 								? 'BRAK TREŚCI'
@@ -42,9 +42,9 @@ function Home({
 
 					<PageHero.Text>
 						<EditBox
-							name={process.env.REACT_APP_HOME_CONTENT}
+							name="home_content"
 							value={home_content}
-							textarea
+							type="textarea"
 						>
 							{isAdmin && !home_content
 								? 'BRAK TREŚCI'

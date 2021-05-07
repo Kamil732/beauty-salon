@@ -331,10 +331,9 @@ class Calendar extends Component {
 	componentDidMount = () => {
 		window.addEventListener('resize', this.updateWindowDimensions)
 
-		if (!this.props.loading) {
-			if (!this.props.ws) this.props.connectWebSocket()
-			if (this.props.loadedDates.length === 0) this.props.loadMeetings()
-		}
+		if (!this.props.loading && this.props.loadedDates.length === 0)
+			this.props.loadMeetings()
+
 		this.getVisibleMeetings()
 		this.getCountOfFreeSlots()
 	}

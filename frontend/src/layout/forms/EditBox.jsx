@@ -11,7 +11,17 @@ import Button from '../buttons/Button'
 import ButtonContainer from '../buttons/ButtonContainer'
 import CSRFToken from '../../components/CSRFToken'
 
-function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
+function EditBox({
+	type,
+	children,
+	isAdmin,
+	ws,
+	regexValidation,
+	validationErrorMessage,
+	value,
+	name,
+	...props
+}) {
 	const [loading, setLoading] = useState(false)
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [newValue, setNewValue] = useState(value)
@@ -25,6 +35,11 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 
 	const save = async (e) => {
 		e.preventDefault()
+
+		if (newValue && regexValidation && !newValue.match(regexValidation)) {
+			NotificationManager.error(validationErrorMessage, 'błąd')
+			return
+		}
 
 		setLoading(true)
 
@@ -44,6 +59,8 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 					payload: res.data,
 				})
 			)
+
+			NotificationManager.success('Zapisano zmainę')
 		} catch (err) {
 			NotificationManager.error('Nie udało się zapisać zmian', 'błąd')
 		} finally {
@@ -52,21 +69,24 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 	}
 
 	return (
-		<div className="edit-box" {...props}>
+		<div className="edit-box">
 			{isEditMode ? (
 				<form onSubmit={save}>
 					<CSRFToken />
-					{textarea ? (
+					{type === 'textarea' ? (
 						<textarea
 							value={newValue}
 							onChange={(e) => setNewValue(e.target.value)}
+							{...props}
 						>
 							{value}
 						</textarea>
 					) : (
 						<input
+							type={type || 'text'}
 							value={newValue}
 							onChange={(e) => setNewValue(e.target.value)}
+							{...props}
 						/>
 					)}
 					<ButtonContainer style={{ marginTop: '1rem' }}>
@@ -106,9 +126,11 @@ function EditBox({ children, isAdmin, ws, textarea, value, name, ...props }) {
 EditBox.prototype.propTypes = {
 	isAdmin: PropTypes.bool,
 	ws: PropTypes.object.isRequired,
-	textarea: PropTypes.bool,
+	type: PropTypes.string,
 	name: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
+	regexValidation: PropTypes.string,
+	validationErrorMessage: PropTypes.string,
 }
 
 const mapStateToProps = (state) => ({

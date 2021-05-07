@@ -56,7 +56,7 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				ws: action.payload,
-				loading: state.loadedDates.length > 0 ? false : true,
+				loading: state.loadedDates.length > 0 ? false : state.loading,
 			}
 		case CLEAR_MEETINGS:
 			return {
