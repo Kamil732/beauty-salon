@@ -60,8 +60,8 @@ def get_working_hours(week_day, translated_time=True):
             end = data.end_work_sunday
 
     if translated_time:
-        start = int(start.split(':')[0]) * 60 + int(start.split(':')[1])
-        end = int(end.split(':')[0]) * 60 + int(end.split(':')[1])
+        start = int(start.hour) * 60 + int(start.minute)
+        end = int(end.hour) * 60 + int(end.minute)
 
     return {
         'start': start,
