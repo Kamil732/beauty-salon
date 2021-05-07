@@ -23,8 +23,8 @@ class DataSerializer(serializers.ModelSerializer):
             data['start_work_friday'] = None
         if 'end_work_thursday' in data and not(data['end_work_thursday']):
             data['end_work_thursday'] = None
-        if 'start_work_thurday' in data and not(data['start_work_thurday']):
-            data['start_work_thurday'] = None
+        if 'start_work_thursday' in data and not(data['start_work_thursday']):
+            data['start_work_thursday'] = None
         if 'end_work_wednesday' in data and not(data['end_work_wednesday']):
             data['end_work_wednesday'] = None
         if 'start_work_wednesday' in data and not(data['start_work_wednesday']):

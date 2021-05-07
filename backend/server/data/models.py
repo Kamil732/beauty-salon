@@ -36,7 +36,7 @@ class Data(models.Model):
     start_work_tuesday = models.TimeField(null=True, blank=True)
     end_work_monday = models.TimeField(null=True, blank=True)
     start_work_monday = models.TimeField(null=True, blank=True)
-    google_maps_url = models.URLField(blank=True)
+    google_maps_url = models.URLField(blank=True, max_length=500)
     location = models.CharField(max_length=100, blank=True)
     phone_number = PhoneNumberField(blank=True)
 
