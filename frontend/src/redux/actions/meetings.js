@@ -22,16 +22,9 @@ const setMeeting = (data) => {
 	data.start = moment.utc(data.start).toDate()
 	data.end = moment.utc(data.end).toDate()
 
-	if (data.customer_first_name) data.title = data.customer_first_name
-
-	if (data.do_not_work) {
-		data.title = 'NIE PRACUJE'
-		data.full_title = 'NIE PRACUJE'
-
-		if (parseInt(moment(data.end).hours()) === 0) {
-			data.end = moment(data.end).add(23, 'hours')
-			data.allDay = true
-		}
+	if (data.do_not_work && parseInt(moment(data.end).hours()) === 0) {
+		data.end = moment(data.end).add(23, 'hours')
+		data.allDay = true
 	}
 
 	return data

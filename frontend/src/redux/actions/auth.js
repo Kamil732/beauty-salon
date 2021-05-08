@@ -9,7 +9,6 @@ import {
 	AUTH_SUCCESS,
 	AUTH_ERROR,
 	CLEAR_MEETINGS,
-	MEETINGS_LOADING,
 } from './types'
 
 import getHeaders from '../../helpers/getHeaders'
@@ -56,7 +55,6 @@ export const login = (recaptchaToken, email, password) => async (dispatch) => {
 		})
 		NotificationManager.success(res.data.message, 'Zalogowano')
 
-		dispatch({ type: MEETINGS_LOADING })
 		dispatch({ type: CLEAR_MEETINGS })
 	} catch (err) {
 		if (err.response)
@@ -128,7 +126,6 @@ export const logout = () => async (dispatch) => {
 		})
 		NotificationManager.success(res.data.message, 'Wylogowano')
 
-		dispatch({ type: MEETINGS_LOADING })
 		dispatch({ type: CLEAR_MEETINGS })
 	} catch (err) {
 		if (err.response)

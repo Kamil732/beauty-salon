@@ -368,6 +368,13 @@ class Calendar extends Component {
 		}
 
 		if (
+			prevProps.loadedDates.length !== this.props.loadedDates.length &&
+			!this.props.loading &&
+			this.props.loadedDates.length === 0
+		)
+			this.props.loadMeetings()
+
+		if (
 			prevProps.meetings !== this.props.meetings ||
 			prevState.startOfWeek !== this.state.startOfWeek ||
 			prevState.endOfWeek !== this.state.endOfWeek ||
@@ -464,9 +471,15 @@ class Calendar extends Component {
 		if (loading) loading(true)
 
 		try {
-			const body = JSON.stringify(data)
+			const body = JSON.stringify({
+				...data,
+				barber:
+					selected.do_not_work && data.barber === 'everyone'
+						? ''
+						: selected.barber,
+			})
 
-			const res = await axios.put(
+			await axios.patch(
 				`${process.env.REACT_APP_API_URL}/meetings/${selected.id}/`,
 				body,
 				getHeaders(true)
@@ -475,7 +488,7 @@ class Calendar extends Component {
 			this.props.ws.send(
 				JSON.stringify({
 					event: UPDATE_MEETING,
-					payload: res.data,
+					payload: body,
 				})
 			)
 
@@ -685,6 +698,13 @@ class Calendar extends Component {
 			}
 		}
 
+		const getTitle = (event) => {
+			if (event.customer_first_name) return event.customer_first_name
+
+			if (event.do_not_work)
+				return `${event?.barber_first_name || ''} NIE PRACUJE`
+		}
+
 		return (
 			<>
 				{Object.keys(selected).length ? (
@@ -705,7 +725,7 @@ class Calendar extends Component {
 								</>
 							)}
 							<br />
-							{selected?.full_title}
+							{getTitle(selected)}
 						</Modal.Header>
 						<Modal.Body>
 							{selected.selected_type === 'event' ? (
@@ -798,6 +818,8 @@ class Calendar extends Component {
 										),
 									},
 								}}
+								titleAccessor={getTitle}
+								tooltipAccessor={getTitle}
 								messages={{
 									month: 'Miesiąc',
 									week: 'Tydzień',

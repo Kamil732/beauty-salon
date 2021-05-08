@@ -95,7 +95,7 @@ export default function (state = initialState, action) {
 				data: state.data.map((item) => {
 					if (item.id !== action.payload.id) return item
 
-					const { start, end, ...data } = action.payload
+					const { id, start, end, ...data } = action.payload
 
 					return {
 						...item,
