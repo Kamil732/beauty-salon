@@ -90,8 +90,12 @@ class CustomerMeetingSerializer(MeetingSerializer):
         return super(CustomerMeetingSerializer, self).validate(data)
 
     class Meta(MeetingSerializer.Meta):
-        extra_kwargs = {
+        fields = (
+            *MeetingSerializer.Meta.fields,
+            'customer_id',
+        )
 
+        extra_kwargs = {
             'customer_first_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_last_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_phone_number': {'write_only': True, 'required': False, 'allow_blank': True},
@@ -137,7 +141,6 @@ class AdminMeetingSerializer(MeetingSerializer):
 
     class Meta(MeetingSerializer.Meta):
         extra_kwargs = {
-
             'customer_first_name': {'required': False, 'allow_blank': True},
             'customer_last_name': {'required': False, 'allow_blank': True},
             'customer_phone_number': {'required': False, 'allow_blank': True},

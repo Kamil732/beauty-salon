@@ -24,14 +24,14 @@ class MeetingListAPIView(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+        user = request.user
 
-        data = []
+        data = self.get_serializer(queryset, many=True).data
 
-        for meeting in queryset:
-            serializer = serializers.AdminMeetingSerializer(meeting, many=False) if self.request.user.is_authenticated and (
-                self.request.user.is_admin or meeting.customer == self.request.user) else serializers.CustomerMeetingSerializer(meeting, many=False)
-
-            data.append(serializer.data)
+        if user.is_authenticated and not(user.is_admin):
+            for i in range(len(data)):
+                if data[i]['customer_id'] == user.id:
+                    data[i] = serializers.AdminMeetingSerializer(Meeting.objects.get(id=data[i]['id']), many=False).data
 
         return Response(data)
 
@@ -43,7 +43,7 @@ class MeetingListAPIView(generics.ListCreateAPIView):
         from_ = self.request.query_params.get('from', monday)
         to = self.request.query_params.get('to', monday + datetime.timedelta(days=7))
 
-        return Meeting.objects.filter(start__gte=from_, start__lte=to)
+        return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('barber', 'customer')
 
 
 @method_decorator(csrf_protect, name='update')

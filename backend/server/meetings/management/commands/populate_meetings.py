@@ -33,9 +33,8 @@ class Command(BaseCommand):
 
             if not(work_hours['is_non_working_hour']):
                 current_time = current_date.replace(
-                    hour=int(work_hours['start'].split(':')[0]), minute=int(work_hours['start'].split(':')[1]))
-                end_time = current_date.replace(hour=int(work_hours['end'].split(
-                    ':')[0]), minute=int(work_hours['end'].split(':')[1]))
+                    hour=int(work_hours['start'].hour), minute=int(work_hours['start'].minute))
+                end_time = current_date.replace(hour=int(work_hours['end'].hour), minute=int(work_hours['end'].minute))
 
                 while current_time < end_time:
                     customer1, _ = Account.objects.get_or_create(

@@ -5,7 +5,7 @@ from django.db.models import Q
 from data.models import Data
 
 
-def get_working_hours(week_day, translated_time=True):
+def get_working_hours(week_day, converted_time=True):
     is_non_working_hour = False
     start = end = 0
     data = Data.objects.first()
@@ -59,7 +59,7 @@ def get_working_hours(week_day, translated_time=True):
             start = data.start_work_sunday
             end = data.end_work_sunday
 
-    if translated_time:
+    if converted_time:
         start = int(start.hour) * 60 + int(start.minute)
         end = int(end.hour) * 60 + int(end.minute)
 
