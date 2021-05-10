@@ -96,6 +96,7 @@ function EditBox({
 							success
 							loading={loading}
 							loadingText="Zapisywanie"
+							disabled={newValue === value}
 						>
 							Zapisz
 						</Button>
