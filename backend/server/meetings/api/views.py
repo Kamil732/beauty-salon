@@ -1,6 +1,5 @@
 import datetime
 
-from django.core.cache.backends import locmem
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -41,7 +40,8 @@ class MeetingListAPIView(generics.ListCreateAPIView):
         monday = today - datetime.timedelta(days=today.weekday())
 
         from_ = self.request.query_params.get('from', monday)
-        to = self.request.query_params.get('to', monday + datetime.timedelta(days=7))
+        to = self.request.query_params.get('to', monday + datetime.timedelta(days=8))
+        to = datetime.datetime.strptime(to, '%Y-%m-%d') + datetime.timedelta(days=1)
 
         return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('barber', 'customer')
 
