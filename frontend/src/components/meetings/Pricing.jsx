@@ -20,7 +20,7 @@ class Pricing extends Component {
 						<th>Włosy</th>
 						<td>
 							<EditBox
-								name={process.env.REACT_APP_HAIR_PRICE}
+								name="hair_price"
 								value={hair_price}
 								type="number"
 								step=".01"
@@ -33,7 +33,7 @@ class Pricing extends Component {
 						<th>Broda</th>
 						<td>
 							<EditBox
-								name={process.env.REACT_APP_BEARD_PRICE}
+								name="beard_price"
 								value={beard_price}
 								type="number"
 								step=".01"

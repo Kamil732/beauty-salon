@@ -1,7 +1,5 @@
 import React from 'react'
 
-import moment from 'moment'
-
 import { Views } from 'react-big-calendar'
 import ButtonContainer from '../../../../layout/buttons/ButtonContainer'
 import Button from '../../../../layout/buttons/Button'
@@ -12,30 +10,20 @@ const Toolbar = ({
 	views,
 	onView,
 	onNavigate,
-	date,
+
 	localizer,
+	label,
 }) => {
 	const goToView = (view) => onView(view)
 
 	if (windowWidth < 768 && view !== Views.DAY) goToView(Views.DAY)
+	else if (windowWidth >= 768 && view === Views.DAY) goToView('threedays')
 
 	const goToBack = () => onNavigate('PREV')
 
 	const goToNext = () => onNavigate('NEXT')
 
 	const goToCurrent = () => onNavigate('TODAY')
-
-	const label = () => {
-		date = moment(date)
-
-		return (
-			<span>
-				{view === Views.DAY && <span>{date.format('DD')}</span>}
-				<b> {date.format('MMMM')}</b>
-				<span> {date.format('YYYY')}</span>
-			</span>
-		)
-	}
 
 	return (
 		<div className="toolbar-container">
@@ -51,13 +39,13 @@ const Toolbar = ({
 				</Button>
 			</ButtonContainer>
 
-			<label className="label-date">{label()}</label>
+			<label className="label-date">{label}</label>
 
 			{windowWidth >= 768 && views.length > 1 && (
 				<ButtonContainer.Group>
 					{views.map((v, index) => (
 						<React.Fragment key={index}>
-							{view !== v && (
+							{view !== v && v !== Views.DAY && (
 								<Button
 									primary
 									small

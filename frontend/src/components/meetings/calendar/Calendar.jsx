@@ -38,6 +38,7 @@ import AddMeetingForm from './AddMeetingForm'
 import EditMeetingAdminForm from './EditMeetingAdminForm'
 import getWorkHours from '../../../helpers/getWorkHours'
 import MonthDateHeader from './tools/MonthDateHeader'
+import ThreeDaysView from './tools/ThreeDaysView'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -88,6 +89,8 @@ class Calendar extends Component {
 			endOfMonth: moment().endOf('month').endOf('week').toDate(),
 			startOfWeek: moment().startOf('week').toDate(),
 			endOfWeek: moment().endOf('week').toDate(),
+			startOf3days: moment().startOf('day').subtract(1, 'days').toDate(),
+			endOf3days: moment().endOf('day').add(1, 'days').toDate(),
 
 			freeSlots: {},
 			minDate: calendarDates.minDate,
@@ -243,43 +246,68 @@ class Calendar extends Component {
 	}
 
 	getVisibleMeetings = () => {
+		const { meetings } = this.props
+		const {
+			view,
+			startOfMonth,
+			startOfWeek,
+			startOf3days,
+			endOfMonth,
+			endOfWeek,
+			endOf3days,
+		} = this.state
 		let visibleMeetings = []
 
 		const start =
-			this.state.view === Views.MONTH
-				? this.state.startOfMonth
-				: this.state.startOfWeek
+			view === Views.MONTH
+				? startOfMonth
+				: view === 'threedays'
+				? startOf3days
+				: startOfWeek
 		const end =
-			this.state.view === Views.MONTH
-				? this.state.endOfMonth
-				: this.state.endOfWeek
+			view === Views.MONTH
+				? endOfMonth
+				: view === 'threedays'
+				? endOf3days
+				: endOfWeek
 
 		for (let i = 0; i < this.props.meetings.length; i++) {
 			if (
-				(this.props.meetings[i].start >= start &&
-					this.props.meetings[i].end <= end) ||
-				(this.props.meetings[i].start <= start &&
-					this.props.meetings[i].end >= end) ||
-				(this.props.meetings[i].start >= start &&
+				(meetings[i].start >= start && meetings[i].end <= end) ||
+				(meetings[i].start <= start && meetings[i].end >= end) ||
+				(meetings[i].start >= start &&
 					end > this.props.meetings[i].start) ||
-				(this.props.meetings[i].end <= end &&
-					start < this.props.meetings[i].end)
+				(meetings[i].end <= end && start < this.props.meetings[i].end)
 			)
-				visibleMeetings.push(this.props.meetings[i])
+				visibleMeetings.push(meetings[i])
 		}
 
 		this.props.changeVisibleMeetings(visibleMeetings)
 	}
 
 	getCountOfFreeSlots = () => {
+		const {
+			view,
+			startOfMonth,
+			startOfWeek,
+			startOf3days,
+			endOfMonth,
+			endOfWeek,
+			endOf3days,
+		} = this.state
+
 		const start =
-			this.state.view === Views.MONTH
-				? this.state.startOfMonth
-				: this.state.startOfWeek
+			view === Views.MONTH
+				? startOfMonth
+				: view === 'threedays'
+				? startOf3days
+				: startOfWeek
 		const end =
-			this.state.view === Views.MONTH
-				? this.state.endOfMonth
-				: this.state.endOfWeek
+			view === Views.MONTH
+				? endOfMonth
+				: view === 'threedays'
+				? endOf3days
+				: endOfWeek
 
 		// Get free slots count
 		let freeSlots = {}
@@ -365,6 +393,7 @@ class Calendar extends Component {
 				minDate: calednarDates.minDate,
 				maxDate: calednarDates.maxDate,
 			})
+			this.getCountOfFreeSlots()
 		}
 
 		if (
@@ -379,7 +408,9 @@ class Calendar extends Component {
 			prevState.startOfWeek !== this.state.startOfWeek ||
 			prevState.endOfWeek !== this.state.endOfWeek ||
 			prevState.startOfMonth !== this.state.startOfMonth ||
-			prevState.endOfMonth !== this.state.endOfMonth
+			prevState.endOfMonth !== this.state.endOfMonth ||
+			prevState.startOf3days !== this.state.startOf3days ||
+			prevState.endOf3days !== this.state.endOf3days
 		)
 			this.getVisibleMeetings()
 
@@ -464,7 +495,6 @@ class Calendar extends Component {
 			if (loading) loading(false)
 		}
 	}
-
 	saveMeeting = async (data, loading = null) => {
 		const { selected } = this.state
 
@@ -507,9 +537,21 @@ class Calendar extends Component {
 				.startOf('month')
 				.startOf('week')
 				.toDate(),
-			endOfMonth: moment(date).endOf('month').endOf('week').toDate(),
+			endOfMonth: moment(date)
+				.endOf('month')
+				.endOf('week')
+
+				.toDate(),
 			startOfWeek: moment(date).startOf('week').toDate(),
-			endOfWeek: moment(date).endOf('week').toDate(),
+			endOfWeek: moment(date)
+				.endOf('week')
+
+				.toDate(),
+			startOf3days: moment(date)
+				.startOf('day')
+				.subtract(1, 'days')
+				.toDate(),
+			endOf3days: moment(date).endOf('day').add(1, 'days').toDate(),
 		})
 
 	onView = async (view) => {
@@ -520,37 +562,42 @@ class Calendar extends Component {
 				this.state.startOfMonth,
 				this.state.endOfMonth,
 			])
+		else if (view === 'threedays')
+			await this.onRangeChange([
+				this.state.startOf3days,
+				this.state.endOf3days,
+			])
 
-		this.getVisibleMeetings()
+		setTimeout(this.getVisibleMeetings, 0)
 	}
 
 	getDrilldownView = (targetDate, currentViewName, configuredViewNames) => {
 		if (
 			currentViewName === Views.MONTH &&
-			configuredViewNames.includes('week')
+			configuredViewNames.includes('threedays')
 		)
-			return 'week'
+			return 'threedays'
 
 		return null
 	}
 
 	onDrillDown = (date, drilldownView) => {
 		this.onNavigate(date)
-		this.onView(drilldownView)
+		setTimeout(() => this.onView(drilldownView), 0)
 	}
 
 	onRangeChange = async (dates) => {
+		const { view } = this.state
+
 		const from =
-			this.state.view === Views.MONTH
+			view === Views.MONTH
 				? moment(dates.start).format('YYYY-MM-DD')
-				: moment(dates[0]).startOf('week').format('YYYY-MM-DD')
+				: moment(dates[0]).format('YYYY-MM-DD')
 
 		const to =
-			this.state.view === Views.MONTH
+			view === Views.MONTH
 				? moment(dates.end).format('YYYY-MM-DD')
-				: moment(dates[dates.length - 1])
-						.endOf('week')
-						.format('YYYY-MM-DD')
+				: moment(dates[dates.length - 1]).format('YYYY-MM-DD')
 
 		await this.props.loadMeetings(from, to)
 	}
@@ -663,14 +710,26 @@ class Calendar extends Component {
 			endOfMonth,
 			startOfWeek,
 			endOfWeek,
+			startOf3days,
+			endOf3days,
 		} = this.state
 
 		let meetings = []
 
 		// Filter meetings that should be displayed
 		for (let i = 0; i < visibleMeetings.length; i++) {
-			const start = view === Views.MONTH ? startOfMonth : startOfWeek
-			const end = view === Views.MONTH ? endOfMonth : endOfWeek
+			const start =
+				view === Views.MONTH
+					? startOfMonth
+					: view === 'threedays'
+					? startOf3days
+					: startOfWeek
+			const end =
+				view === Views.MONTH
+					? endOfMonth
+					: view === 'threedays'
+					? endOf3days
+					: endOfWeek
 
 			if (
 				(visibleMeetings[i].start >= start &&
@@ -697,6 +756,7 @@ class Calendar extends Component {
 					meetings.push(visibleMeetings[i])
 			}
 		}
+		console.log(meetings.length, visibleMeetings.length)
 
 		const getTitle = (event) => {
 			if (event.customer_first_name) return event.customer_first_name
@@ -742,7 +802,7 @@ class Calendar extends Component {
 										selected.start.getHours() * 60 +
 											selected.start.getMinutes() ===
 											0 ||
-										visibleMeetings.filter(
+										meetings.filter(
 											(meeting) =>
 												meeting.start >=
 													selected.start &&
@@ -772,7 +832,12 @@ class Calendar extends Component {
 								events={meetings}
 								step={work_time}
 								timeslots={1}
-								views={[Views.MONTH, Views.WEEK, Views.DAY]}
+								views={{
+									week: true,
+									month: true,
+									threedays: ThreeDaysView,
+									day: true,
+								}}
 								view={view}
 								date={currentDate}
 								min={minDate}
@@ -809,6 +874,14 @@ class Calendar extends Component {
 											/>
 										),
 									},
+									threedays: {
+										header: (props) => (
+											<WeekHeader
+												{...props}
+												freeSlots={this.state.freeSlots}
+											/>
+										),
+									},
 									month: {
 										dateHeader: (props) => (
 											<MonthDateHeader
@@ -826,6 +899,7 @@ class Calendar extends Component {
 									day: 'Dzień',
 									date: 'Data',
 									event: 'Spotkanie',
+									threedays: '3 Dni',
 								}}
 							/>
 						</div>
