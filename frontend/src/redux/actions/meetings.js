@@ -22,10 +22,12 @@ const setMeeting = (data) => {
 	data.start = moment.utc(data.start).toDate()
 	data.end = moment.utc(data.end).toDate()
 
-	if (data.do_not_work && parseInt(moment(data.end).hours()) === 0) {
-		data.end = moment(data.end).add(23, 'hours')
+	if (
+		data.do_not_work &&
+		(moment(data.end).diff(moment(data.start), 'days') > 0 ||
+			parseInt(moment(data.end).hours()) === 0)
+	)
 		data.allDay = true
-	}
 
 	return data
 }
