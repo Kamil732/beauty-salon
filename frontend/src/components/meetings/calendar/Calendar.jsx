@@ -495,21 +495,21 @@ class Calendar extends Component {
 			if (loading) loading(false)
 		}
 	}
+
 	saveMeeting = async (data, loading = null) => {
 		const { selected } = this.state
 
 		if (loading) loading(true)
 
 		try {
-			const body = JSON.stringify({
-				...data,
-				barber:
-					selected.do_not_work && data.barber === 'everyone'
-						? ''
-						: selected.barber,
-			})
+			data.barber =
+				selected.do_not_work && data.barber === 'everyone'
+					? ''
+					: data.barber
 
-			await axios.patch(
+			const body = JSON.stringify({ ...data })
+
+			const res = await axios.patch(
 				`${process.env.REACT_APP_API_URL}/meetings/${selected.id}/`,
 				body,
 				getHeaders(true)
@@ -518,7 +518,7 @@ class Calendar extends Component {
 			this.props.ws.send(
 				JSON.stringify({
 					event: UPDATE_MEETING,
-					payload: body,
+					payload: res.data,
 				})
 			)
 
@@ -756,13 +756,15 @@ class Calendar extends Component {
 					meetings.push(visibleMeetings[i])
 			}
 		}
-		console.log(meetings.length, visibleMeetings.length)
+		console.log(view, meetings.length, visibleMeetings.length)
 
 		const getTitle = (event) => {
 			if (event.customer_first_name) return event.customer_first_name
 
 			if (event.do_not_work)
-				return `${event?.barber_first_name || ''} NIE PRACUJE`
+				return event.barber_first_name
+					? `${event.barber_first_name} NIE PRACUJE`
+					: 'ZAMKNIĘTE'
 		}
 
 		return (

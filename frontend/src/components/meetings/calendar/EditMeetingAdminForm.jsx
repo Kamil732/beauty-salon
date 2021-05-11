@@ -59,18 +59,24 @@ class EditMeetingAdminForm extends Component {
 			type,
 		} = this.state
 
-		const payload = {
-			id: this.props.selected.id,
-			start: this.props.selected.start,
-			end: this.props.selected.end,
-			customer,
-			customer_first_name,
-			customer_last_name,
-			customer_phone_number,
-			customer_fax_number,
-			barber,
-			type,
-		}
+		const payload = this.props.selected.do_not_work
+			? {
+					start: this.props.selected.start,
+					end: this.props.selected.end,
+					barber,
+					type,
+			  }
+			: {
+					start: this.props.selected.start,
+					end: this.props.selected.end,
+					customer,
+					customer_first_name,
+					customer_last_name,
+					customer_phone_number,
+					customer_fax_number,
+					barber,
+					type,
+			  }
 
 		await this.props.saveMeeting(payload, (state) =>
 			this.setState({ saveLoading: state })
@@ -99,165 +105,210 @@ class EditMeetingAdminForm extends Component {
 			<form onSubmit={this.onSubmit}>
 				<CSRFToken />
 
-				<FormGroup>
+				{selected.do_not_work ? (
 					<FormControl>
 						<FormControl.Label
-							htmlFor="customer"
-							inputValue={customer}
+							htmlFor="barber"
+							inputValue={barber || 'everyone'}
 						>
-							Konto Klienta
-						</FormControl.Label>
-
-						<FormControl.ChoiceField
-							id="customer"
-							name="customer"
-							value={{
-								value: customer,
-								label: `${customer_first_name} ${customer_last_name}`,
-							}}
-							onChange={(_, value) =>
-								this.setState({
-									customer: value.slug || '',
-									customer_first_name: value.first_name || '',
-									customer_last_name: value.last_name || '',
-									customer_phone_number:
-										value.phone_number || '',
-									customer_fax_number: value.fax_number || '',
-								})
-							}
-							searchAsync
-							defaultOptions={customerChoiceList}
-							choices={this.props.loadCustomers}
-						/>
-					</FormControl>
-
-					<FormControl>
-						<FormControl.Label htmlFor="barber" inputValue={barber}>
-							Fryzjer
+							Urlop dla
 						</FormControl.Label>
 
 						<FormControl.ChoiceField
 							required
 							id="barber"
 							name="barber"
-							value={barber}
-							labelValue={barber}
-							isNotClearable
+							labelValue={barber || 'everyone'}
+							value={barber || 'everyone'}
 							onChange={(_, value) =>
 								this.setState({
 									barber: value,
 								})
 							}
-							choices={barberChoiceList}
+							choices={[
+								{
+									label: 'Wszystkich',
+									value: 'everyone',
+								},
+								...barberChoiceList,
+							]}
 						/>
 					</FormControl>
-				</FormGroup>
+				) : (
+					<>
+						<FormGroup>
+							<FormControl>
+								<FormControl.Label
+									htmlFor="customer"
+									inputValue={customer}
+								>
+									Konto Klienta
+								</FormControl.Label>
 
-				<FormGroup>
-					<FormControl>
-						<FormControl.Label
-							htmlFor="customer_first_name"
-							inputValue={customer_first_name}
-						>
-							Imię klienta
-						</FormControl.Label>
-						<FormControl.Input
-							required
-							type="text"
-							id="customer_first_name"
-							name="customer_first_name"
-							onChange={(e) => {
-								if (!customer) this.onChange(e)
-							}}
-							value={customer_first_name}
-							minLength="3"
-							maxLength="20"
-						/>
-					</FormControl>
+								<FormControl.ChoiceField
+									id="customer"
+									name="customer"
+									value={
+										customer
+											? {
+													value: customer,
+													label: `${customer_first_name} ${customer_last_name}`,
+											  }
+											: null
+									}
+									onChange={(_, value) =>
+										this.setState({
+											customer: value.slug || '',
+											customer_first_name:
+												value.first_name || '',
+											customer_last_name:
+												value.last_name || '',
+											customer_phone_number:
+												value.phone_number || '',
+											customer_fax_number:
+												value.fax_number || '',
+										})
+									}
+									searchAsync
+									defaultOptions={customerChoiceList}
+									choices={this.props.loadCustomers}
+								/>
+							</FormControl>
 
-					<FormControl>
-						<FormControl.Label
-							htmlFor="customer_last_name"
-							inputValue={customer_last_name}
-						>
-							Nazwisko klienta
-						</FormControl.Label>
-						<FormControl.Input
-							required
-							type="text"
-							id="customer_last_name"
-							name="customer_last_name"
-							onChange={(e) => {
-								if (!customer) this.onChange(e)
-							}}
-							value={customer_last_name}
-							minLength="3"
-							maxLength="20"
-						/>
-					</FormControl>
-				</FormGroup>
+							<FormControl>
+								<FormControl.Label
+									htmlFor="barber"
+									inputValue={barber}
+								>
+									Fryzjer
+								</FormControl.Label>
 
-				<FormGroup>
-					<FormControl>
-						<FormControl.Label
-							htmlFor="customer_phone_number"
-							inputValue={customer_phone_number}
-						>
-							Nr. tel. klienta
-						</FormControl.Label>
-						<FormControl.Input
-							required
-							type="text"
-							id="customer_phone_number"
-							name="customer_phone_number"
-							onChange={(e) => {
-								if (!customer) this.onChange(e)
-							}}
-							value={customer_phone_number}
-							minLength="9"
-							maxLength="12"
-						/>
-					</FormControl>
+								<FormControl.ChoiceField
+									required
+									id="barber"
+									name="barber"
+									value={barber}
+									labelValue={barber}
+									isNotClearable
+									onChange={(_, value) =>
+										this.setState({
+											barber: value,
+										})
+									}
+									choices={barberChoiceList}
+								/>
+							</FormControl>
+						</FormGroup>
 
-					<FormControl>
-						<FormControl.Label
-							htmlFor="customer_fax_number"
-							inputValue={customer_fax_number}
-						>
-							Zapasowy nr. tel. klienta
-						</FormControl.Label>
-						<FormControl.Input
-							type="text"
-							id="customer_fax_number"
-							name="customer_fax_number"
-							onChange={(e) => {
-								if (!customer) this.onChange(e)
-							}}
-							value={customer_fax_number}
-							minLength="9"
-							maxLength="12"
-						/>
-					</FormControl>
-				</FormGroup>
+						<FormGroup>
+							<FormControl>
+								<FormControl.Label
+									htmlFor="customer_first_name"
+									inputValue={customer_first_name}
+								>
+									Imię klienta
+								</FormControl.Label>
+								<FormControl.Input
+									required
+									type="text"
+									id="customer_first_name"
+									name="customer_first_name"
+									onChange={(e) => {
+										if (!customer) this.onChange(e)
+									}}
+									value={customer_first_name}
+									minLength="3"
+									maxLength="20"
+								/>
+							</FormControl>
 
-				<FormControl>
-					<FormControl.Label htmlFor="type" inputValue={type}>
-						Typ Wizyty
-					</FormControl.Label>
-					<FormControl.ChoiceField
-						required
-						id="type"
-						name="type"
-						onChange={(_, value) => this.setState({ type: value })}
-						value={type}
-						labelValue={type}
-						isNotClearable
-						choices={[
-							{ value: 'hair', label: 'Włosy' },
-							{ value: 'beard', label: 'Broda' },
-						]}
-					/>
-				</FormControl>
+							<FormControl>
+								<FormControl.Label
+									htmlFor="customer_last_name"
+									inputValue={customer_last_name}
+								>
+									Nazwisko klienta
+								</FormControl.Label>
+								<FormControl.Input
+									required
+									type="text"
+									id="customer_last_name"
+									name="customer_last_name"
+									onChange={(e) => {
+										if (!customer) this.onChange(e)
+									}}
+									value={customer_last_name}
+									minLength="3"
+									maxLength="20"
+								/>
+							</FormControl>
+						</FormGroup>
+
+						<FormGroup>
+							<FormControl>
+								<FormControl.Label
+									htmlFor="customer_phone_number"
+									inputValue={customer_phone_number}
+								>
+									Nr. tel. klienta
+								</FormControl.Label>
+								<FormControl.Input
+									required
+									type="text"
+									id="customer_phone_number"
+									name="customer_phone_number"
+									onChange={(e) => {
+										if (!customer) this.onChange(e)
+									}}
+									value={customer_phone_number}
+									minLength="9"
+									maxLength="12"
+								/>
+							</FormControl>
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor="customer_fax_number"
+									inputValue={customer_fax_number}
+								>
+									Zapasowy nr. tel. klienta
+								</FormControl.Label>
+								<FormControl.Input
+									type="text"
+									id="customer_fax_number"
+									name="customer_fax_number"
+									onChange={(e) => {
+										if (!customer) this.onChange(e)
+									}}
+									value={customer_fax_number}
+									minLength="9"
+									maxLength="12"
+								/>
+							</FormControl>
+						</FormGroup>
+
+						<FormControl>
+							<FormControl.Label htmlFor="type" inputValue={type}>
+								Typ Wizyty
+							</FormControl.Label>
+							<FormControl.ChoiceField
+								required
+								id="type"
+								name="type"
+								onChange={(_, value) =>
+									this.setState({ type: value })
+								}
+								value={type}
+								labelValue={type}
+								isNotClearable
+								choices={[
+									{ value: 'hair', label: 'Włosy' },
+									{ value: 'beard', label: 'Broda' },
+								]}
+							/>
+						</FormControl>
+					</>
+				)}
 
 				<ButtonContainer style={{ justifyContent: 'space-between' }}>
 					<Button
@@ -273,8 +324,7 @@ class EditMeetingAdminForm extends Component {
 						loadingText="Usuwanie"
 						disabled={saveLoading}
 					>
-						Usuń{' '}
-						{selected.do_not_work ? 'wolne od pracy' : 'wizytę'}
+						Usuń {selected.do_not_work ? 'urlop' : 'wizytę'}
 					</Button>
 					<Button
 						type="submit"

@@ -95,15 +95,9 @@ export default function (state = initialState, action) {
 				data: state.data.map((item) => {
 					if (item.id !== action.payload.id) return item
 
-					const { id, start, end, ...data } = action.payload
-
-					return {
-						...item,
-						...data,
-					}
+					return action.payload
 				}),
 			}
-		// TODO: update vivisbleMeetings as well
 		default:
 			return state
 	}
