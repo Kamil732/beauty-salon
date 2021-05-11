@@ -18,9 +18,9 @@ class Meeting(models.Model):
     barber = models.ForeignKey(verbose_name='Fryzjer', to=Account, on_delete=models.CASCADE, blank=True, null=True)
     customer = models.ForeignKey(verbose_name='Konto klienta', to=Account, blank=True,
                                  null=True, on_delete=models.DO_NOTHING, related_name='meetings')
-    customer_first_name = models.CharField(verbose_name='Imię klienta', max_length=20)
-    customer_last_name = models.CharField(verbose_name='Nazwisko klienta', max_length=20)
-    customer_phone_number = PhoneNumberField(verbose_name='Numer telefonu klienta')
+    customer_first_name = models.CharField(verbose_name='Imię klienta', blank=True, max_length=20)
+    customer_last_name = models.CharField(verbose_name='Nazwisko klienta', blank=True, max_length=20)
+    customer_phone_number = PhoneNumberField(verbose_name='Numer telefonu klienta', blank=True)
     customer_fax_number = PhoneNumberField(verbose_name='Zapasowy numer telefonu klienta', blank=True)
     type = models.CharField(verbose_name='Typ wizyty', max_length=11, choices=TYPES)
     start = models.DateTimeField(verbose_name='Zaczyna się o')

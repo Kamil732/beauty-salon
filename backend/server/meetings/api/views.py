@@ -54,7 +54,7 @@ class MeetingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'meeting_id'
 
     def get_serializer_class(self):
-        if self.request.user.is_authenticated and (self.request.user.is_admin or self.get_object().customer == self.request.user):
+        if self.request.user.is_authenticated and self.request.user.is_admin:
             return serializers.AdminMeetingSerializer
         return serializers.CustomerMeetingSerializer
 
@@ -62,3 +62,13 @@ class MeetingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         if (self.request.user.is_admin):
             return Meeting.objects.select_related('barber', 'customer')
         return Meeting.objects.filter(customer=self.request.user).select_related('barber', 'customer')
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated and not(request.user.is_admin) and self.get_object().customer == request.user:
+            serializer = serializers.AdminMeetingSerializer(instance)
+        else:
+            serializer = self.get_serializer(instance)
+
+        return Response(serializer.data)

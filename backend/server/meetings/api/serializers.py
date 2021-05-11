@@ -25,12 +25,6 @@ class MeetingSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if not(data['type'] == Meeting.TYPES[2][0]):
-            if len(data['customer_first_name']) < 3:
-                raise serializers.ValidationError('Imię musi mieć conajmniej 3 znaki')
-            if len(data['customer_last_name']) < 3:
-                raise serializers.ValidationError('Nazwisko musi mieć conajmniej 3 znaki')
-            if not(data['customer_phone_number']):
-                raise serializers.ValidationError('Numer telefonu jest wymagany')
             if not(data['barber']):
                 raise serializers.ValidationError('Fryzjer jest wymagany')
 
@@ -96,6 +90,15 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
         return super(CustomerMeetingSerializer, self).validate(data)
 
+    def create(self, data):
+        user = self.context.get('request').user
+        data['customer_first_name'] = user.first_name
+        data['customer_last_name'] = user.last_name
+        data['customer_phone_number'] = user.phone_number
+        data['customer_fax_number'] = user.fax_number
+
+        return Meeting.objects.create(**data)
+
     class Meta(MeetingSerializer.Meta):
         fields = (
             *MeetingSerializer.Meta.fields,
@@ -119,6 +122,14 @@ class AdminMeetingSerializer(MeetingSerializer):
         work_time = Data.objects.first().work_time
         # if data['start'] < timezone.now() - timedelta(hours=1):
         #     raise serializers.ValidationError('Wizyta nie może odbyć się wcześniej niż 1 godzinę temu')
+
+        if not(data['type'] == Meeting.TYPES[2][0]):
+            if len(data['customer_first_name']) < 3:
+                raise serializers.ValidationError('Imię musi mieć conajmniej 3 znaki')
+            if len(data['customer_last_name']) < 3:
+                raise serializers.ValidationError('Nazwisko musi mieć conajmniej 3 znaki')
+            if not(data['customer_phone_number']):
+                raise serializers.ValidationError('Numer telefonu jest wymagany')
 
         working_hours = get_working_hours(data['start'].weekday())
         start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
