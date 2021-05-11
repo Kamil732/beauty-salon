@@ -33,14 +33,18 @@ class MeetingSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Numer telefonu jest wymagany')
             if not(data['barber']):
                 raise serializers.ValidationError('Fryzjer jest wymagany')
-        elif (data['end'] - data['start']).days > 0 or data['end'].hour == 0:
-            # If meeting should be allDay then add 1 day to it.
-            data['end'] += timedelta(days=1)
 
         if (data['end'] < data['start']):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
         return data
+
+    def create(self, data):
+        if (data['end'] - data['start']).days > 0 or data['end'].hour == 0:
+            # If meeting should be allDay then add 1 day to it.
+            data['end'] += timedelta(days=1)
+
+        return Meeting.objects.create(**data)
 
     class Meta:
         model = Meeting
@@ -59,7 +63,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             'customer_phone_number',
             'customer_fax_number',
         )
-        read_only_fields = ('id', 'do_not_work', 'barber_first_name',)
+        read_only_fields = ('id', 'do_not_work',)
 
 
 class CustomerMeetingSerializer(MeetingSerializer):
