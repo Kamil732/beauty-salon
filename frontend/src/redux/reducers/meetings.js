@@ -63,6 +63,8 @@ export default function (state = initialState, action) {
 				...state,
 				loadedDates: initialState.loadedDates,
 				data: initialState.data,
+				visibleData: initialState.visibleData,
+				customerChoiceList: initialState.customerChoiceList,
 			}
 		case CHANGE_VISIBLE_MEETINGS:
 			return {

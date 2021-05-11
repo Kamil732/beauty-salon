@@ -125,6 +125,7 @@ class EditMeetingAdminForm extends Component {
 									barber: value,
 								})
 							}
+							isNotClearable
 							choices={[
 								{
 									label: 'Wszystkich',

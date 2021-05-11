@@ -29,12 +29,22 @@ class AddMeetingForm extends Component {
 		if (this.props.barberChoiceList.length === 0) this.props.loadBarbers()
 	}
 
+	onSubmit = async (e) => {
+		e.preventDefault()
+
+		const { barber, type } = this.state
+
+		this.props.addMeeting({ barber, type }, (state) =>
+			this.setState({ loading: state })
+		)
+	}
+
 	render() {
 		const { barberChoiceList } = this.props
 		const { loading, barber, type } = this.state
 
 		return (
-			<form>
+			<form onSubmit={this.onSubmit}>
 				<FormControl>
 					<FormControl.Label htmlFor="barber" inputValue={barber}>
 						Fryzjer

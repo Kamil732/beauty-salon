@@ -445,6 +445,7 @@ class Calendar extends Component {
 	}
 
 	addMeeting = async (data, loading = null) => {
+		const { isAdminPanel } = this.props
 		const { start, end } = this.state.selected
 		const {
 			do_not_work,
@@ -457,21 +458,28 @@ class Calendar extends Component {
 			type,
 		} = data
 
+		const body = isAdminPanel
+			? JSON.stringify({
+					start,
+					end,
+					customer,
+					customer_first_name,
+					customer_last_name,
+					customer_phone_number,
+					customer_fax_number,
+					barber: do_not_work && barber === 'everyone' ? '' : barber,
+					type: do_not_work ? 'do_not_work' : type,
+			  })
+			: JSON.stringify({
+					start,
+					end,
+					barber,
+					type,
+			  })
+
 		if (loading) loading(true)
 
 		try {
-			const body = JSON.stringify({
-				start,
-				end,
-				customer,
-				customer_first_name,
-				customer_last_name,
-				customer_phone_number,
-				customer_fax_number,
-				barber: do_not_work && barber === 'everyone' ? '' : barber,
-				type: do_not_work ? 'do_not_work' : type,
-			})
-
 			const res = await axios.post(
 				`${process.env.REACT_APP_API_URL}/meetings/`,
 				body,
@@ -814,7 +822,7 @@ class Calendar extends Component {
 									}
 								/>
 							) : (
-								<AddMeetingForm />
+								<AddMeetingForm addMeeting={this.addMeeting} />
 							)}
 						</Modal.Body>
 					</Modal>
