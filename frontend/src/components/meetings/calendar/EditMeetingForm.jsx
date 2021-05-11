@@ -20,15 +20,18 @@ class EditMeetingForm extends Component {
 	constructor(props) {
 		super(props)
 
+		this.TYPES = [
+			{ value: 'hair', label: 'Włosy' },
+			{ value: 'beard', label: 'Broda' },
+		]
+
 		this.state = {
 			saveLoading: false,
 			deleteLoading: false,
 
 			barber: props.selected.barber,
-			type: [
-				{ value: 'hair', label: 'Włosy' },
-				{ value: 'beard', label: 'Broda' },
-			].find((choice) => choice.label === props.selected.type).value,
+			type: this.TYPES.find((type) => type.label === props.selected.type)
+				.value,
 		}
 
 		this.onSubmit = this.onSubmit.bind(this)
@@ -56,7 +59,7 @@ class EditMeetingForm extends Component {
 	}
 
 	render() {
-		const { barberChoiceList } = this.props
+		const { barberChoiceList, selected } = this.props
 		const { saveLoading, deleteLoading, barber, type } = this.state
 
 		return (
@@ -95,10 +98,7 @@ class EditMeetingForm extends Component {
 						value={type}
 						labelValue={type}
 						isNotClearable
-						choices={[
-							{ value: 'hair', label: 'Włosy' },
-							{ value: 'beard', label: 'Broda' },
-						]}
+						choices={this.TYPES}
 					/>
 				</FormControl>
 
@@ -124,7 +124,14 @@ class EditMeetingForm extends Component {
 						small
 						loading={saveLoading}
 						loadingText="Zapisywanie"
-						disabled={deleteLoading}
+						disabled={
+							deleteLoading ||
+							(barber === selected.barber &&
+								type ===
+									this.TYPES.find(
+										(type) => type.label === selected.type
+									).value)
+						}
 					>
 						Zapisz
 					</Button>

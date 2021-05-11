@@ -23,6 +23,12 @@ class EditMeetingAdminForm extends Component {
 	constructor(props) {
 		super(props)
 
+		this.TYPES = [
+			{ value: 'hair', label: 'Włosy' },
+			{ value: 'beard', label: 'Broda' },
+			{ value: 'do_not_work', label: 'NIE PRACUJE' },
+		]
+
 		this.state = {
 			saveLoading: false,
 			deleteLoading: false,
@@ -33,11 +39,8 @@ class EditMeetingAdminForm extends Component {
 			customer_phone_number: props.selected.customer_phone_number,
 			customer_fax_number: props.selected.customer_fax_number,
 			barber: props.selected.barber,
-			type: [
-				{ value: 'hair', label: 'Włosy' },
-				{ value: 'beard', label: 'Broda' },
-				{ value: 'do_not_work', label: 'NIE PRACUJE' },
-			].find((choice) => choice.label === props.selected.type).value,
+			type: this.TYPES.find((type) => type.label === props.selected.type)
+				.value,
 		}
 
 		this.onChange = this.onChange.bind(this)
@@ -333,7 +336,23 @@ class EditMeetingAdminForm extends Component {
 						small
 						loading={saveLoading}
 						loadingText="Zapisywanie"
-						disabled={deleteLoading}
+						disabled={
+							deleteLoading ||
+							(barber === selected.barber &&
+								customer === selected.customer &&
+								customer_first_name ===
+									selected.customer_first_name &&
+								customer_last_name ===
+									selected.customer_last_name &&
+								customer_phone_number ===
+									selected.customer_phone_number &&
+								customer_fax_number ===
+									selected.customer_fax_number &&
+								type ===
+									this.TYPES.find(
+										(type) => type.label === selected.type
+									).value)
+						}
 					>
 						Zapisz
 					</Button>
