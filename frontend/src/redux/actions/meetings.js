@@ -17,7 +17,7 @@ import moment from 'moment'
 import { NotificationManager } from 'react-notifications'
 import axios from 'axios'
 
-// Helper function
+// Helper functions
 const setMeeting = (data) => {
 	data.start = moment.utc(data.start).toDate()
 	data.end = moment.utc(data.end).toDate()
@@ -45,6 +45,18 @@ const getDates = (from, to, loadedDates) => {
 	}
 
 	return dates
+}
+
+const getMeeting = async (id) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/meetings/${id}/`
+		)
+
+		return res.data
+	} catch (err) {
+		NotificationManager.error('Nie udało sie zaktualizować kalendarza')
+	}
 }
 
 export const addLoadedDates = (dates) => (dispatch) => {
@@ -96,18 +108,10 @@ export const addMeeting = (data) => async (dispatch, getState) => {
 		dates.length === 0 &&
 		!getState().meetings.data.some((meeting) => meeting.id === data.id)
 	) {
-		try {
-			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/meetings/${data.id}/`
-			)
-
-			dispatch({
-				type: ADD_MEETING,
-				payload: setMeeting(res.data),
-			})
-		} catch (err) {
-			NotificationManager.error('Nie udało sie zaktualizować kalendarza')
-		}
+		dispatch({
+			type: ADD_MEETING,
+			payload: setMeeting(await getMeeting(data.id)),
+		})
 	}
 }
 
@@ -118,11 +122,13 @@ export const removeMeeting = (id) => (dispatch) => {
 	})
 }
 
-export const updateMeeting = (data) => (dispatch) => {
-	dispatch({
-		type: UPDATE_MEETING,
-		payload: setMeeting(data),
-	})
+export const updateMeeting = (id) => async (dispatch, getState) => {
+	if (getState().meetings.data.some((meeting) => meeting.id === id)) {
+		dispatch({
+			type: UPDATE_MEETING,
+			payload: setMeeting(await getMeeting(id)),
+		})
+	}
 }
 
 export const changeVisibleMeetings = (data) => (dispatch) => {

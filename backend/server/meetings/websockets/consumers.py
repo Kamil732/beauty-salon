@@ -45,7 +45,7 @@ class MeetingConsumer(AsyncJsonWebsocketConsumer):
             if not(self.user.is_admin):
                 if event == 'REMOVE_MEETING' and not(self.check_is_owner(payload)):
                     return
-                if event == 'UPDATE_MEETING' and not(self.check_is_owner(payload['id'])):
+                if event == 'UPDATE_MEETING' and not(self.check_is_owner(payload)):
                     return
                 elif event == 'UPDATE_DATA':
                     return

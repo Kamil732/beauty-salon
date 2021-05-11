@@ -39,6 +39,7 @@ import EditMeetingAdminForm from './EditMeetingAdminForm'
 import getWorkHours from '../../../helpers/getWorkHours'
 import MonthDateHeader from './tools/MonthDateHeader'
 import ThreeDaysView from './tools/ThreeDaysView'
+import EditMeetingForm from './EditMeetingForm'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -445,41 +446,22 @@ class Calendar extends Component {
 	}
 
 	addMeeting = async (data, loading = null) => {
-		const { isAdminPanel } = this.props
 		const { start, end } = this.state.selected
-		const {
-			do_not_work,
-			customer,
-			customer_first_name,
-			customer_last_name,
-			customer_phone_number,
-			customer_fax_number,
-			barber,
-			type,
-		} = data
 
-		const body = isAdminPanel
-			? JSON.stringify({
-					start,
-					end,
-					customer,
-					customer_first_name,
-					customer_last_name,
-					customer_phone_number,
-					customer_fax_number,
-					barber: do_not_work && barber === 'everyone' ? '' : barber,
-					type: do_not_work ? 'do_not_work' : type,
-			  })
-			: JSON.stringify({
-					start,
-					end,
-					barber,
-					type,
-			  })
+		data.start = start
+		data.end = end
+
+		if (data.do_not_work) {
+			delete data.do_not_work
+			data.type = 'do_not_work'
+
+			if (data.barber === 'everyone') data.barber = ''
+		}
 
 		if (loading) loading(true)
 
 		try {
+			const body = JSON.stringify({ ...data })
 			const res = await axios.post(
 				`${process.env.REACT_APP_API_URL}/meetings/`,
 				body,
@@ -507,14 +489,10 @@ class Calendar extends Component {
 	saveMeeting = async (data, loading = null) => {
 		const { selected } = this.state
 
+		if (selected.do_not_work && data.barber === 'everyone') data.barber = ''
 		if (loading) loading(true)
 
 		try {
-			data.barber =
-				selected.do_not_work && data.barber === 'everyone'
-					? ''
-					: data.barber
-
 			const body = JSON.stringify({ ...data })
 
 			const res = await axios.patch(
@@ -526,7 +504,7 @@ class Calendar extends Component {
 			this.props.ws.send(
 				JSON.stringify({
 					event: UPDATE_MEETING,
-					payload: res.data,
+					payload: res.data.id,
 				})
 			)
 
@@ -798,28 +776,36 @@ class Calendar extends Component {
 							{getTitle(selected)}
 						</Modal.Header>
 						<Modal.Body>
-							{selected.selected_type === 'event' ? (
-								<EditMeetingAdminForm
+							{isAdminPanel ? (
+								selected.selected_type === 'event' ? (
+									<EditMeetingAdminForm
+										saveMeeting={this.saveMeeting}
+										deleteMeeting={this.deleteMeeting}
+										selected={selected}
+									/>
+								) : (
+									<AddMeetingAdminForm
+										addMeeting={this.addMeeting}
+										doNotWork={
+											selected.slots.length > 2 ||
+											selected.start.getHours() * 60 +
+												selected.start.getMinutes() ===
+												0 ||
+											meetings.filter(
+												(meeting) =>
+													meeting.start >=
+														selected.start &&
+													meeting.end <= selected.end
+											).length >=
+												this.props.one_slot_max_meetings
+										}
+									/>
+								)
+							) : selected.selected_type === 'event' ? (
+								<EditMeetingForm
 									saveMeeting={this.saveMeeting}
 									deleteMeeting={this.deleteMeeting}
 									selected={selected}
-								/>
-							) : isAdminPanel ? (
-								<AddMeetingAdminForm
-									addMeeting={this.addMeeting}
-									doNotWork={
-										selected.slots.length > 2 ||
-										selected.start.getHours() * 60 +
-											selected.start.getMinutes() ===
-											0 ||
-										meetings.filter(
-											(meeting) =>
-												meeting.start >=
-													selected.start &&
-												meeting.end <= selected.end
-										).length >=
-											this.props.one_slot_max_meetings
-									}
 								/>
 							) : (
 								<AddMeetingForm addMeeting={this.addMeeting} />
