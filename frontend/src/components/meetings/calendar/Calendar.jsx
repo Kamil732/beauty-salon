@@ -611,6 +611,12 @@ class Calendar extends Component {
 		const { colors, isAdminPanel, isAuthenticated, user_phone_number } =
 			this.props
 
+		const hexcolor = `#${colors[event.barber]}`
+		const r = parseInt(hexcolor.substr(1, 2), 16)
+		const g = parseInt(hexcolor.substr(3, 2), 16)
+		const b = parseInt(hexcolor.substr(4, 2), 16)
+		const yiq = (r * 299 + g * 587 + b * 114) / 1000
+
 		return {
 			className: `${event.do_not_work ? 'doNotWork' : ''} ${
 				isAdminPanel ||
@@ -619,12 +625,13 @@ class Calendar extends Component {
 					!event.do_not_work)
 					? 'selectable'
 					: ''
-			}`,
-			style: !event.do_not_work
-				? {
-						backgroundColor: `#${colors[event.barber]}`,
-				  }
-				: null,
+			} ${yiq < 60 ? 'white' : ''}`,
+			style:
+				!event.do_not_work && colors[event.barber]
+					? {
+							backgroundColor: hexcolor,
+					  }
+					: null,
 		}
 	}
 

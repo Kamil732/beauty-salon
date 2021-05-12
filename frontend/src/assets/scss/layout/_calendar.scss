@@ -54,6 +54,7 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-event {
+	color: #000;
 	cursor: default;
 	text-align: center;
 	font-size: 0.9em;
@@ -64,6 +65,11 @@ $rbc-css-prefix: calendar;
 	z-index: 2;
 	margin-right: 0;
 	padding: 0.5rem;
+	opacity: 0.8;
+
+	&.white {
+		color: #fff;
+	}
 
 	&-label {
 		padding: 0 !important;
@@ -85,8 +91,12 @@ $rbc-css-prefix: calendar;
 		cursor: pointer;
 
 		&:hover {
-			background-color: darken($event-bg, 20%);
-			color: set-text-color(darken($event-bg, 20%));
+			opacity: 1;
+			color: #000;
+
+			&.white {
+				color: #fff;
+			}
 		}
 	}
 }
@@ -149,6 +159,12 @@ $rbc-css-prefix: calendar;
 
 @include media-laptop {
 	.legend {
-		max-width: 50%;
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@include media-laptop-lg-extra {
+	.legend {
+		max-width: 80%;
 	}
 }

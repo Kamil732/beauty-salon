@@ -6,7 +6,7 @@ import { loadBarbers } from '../../../redux/actions/meetings'
 import EditBox from '../../../layout/forms/EditBox'
 import axios from 'axios'
 
-function Legend({ isAuthenticated, loadBarbers, barbers, colors }) {
+function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 	useEffect(() => {
 		if (barbers.length === 0) loadBarbers()
 	}, [barbers, loadBarbers])
@@ -62,36 +62,44 @@ function Legend({ isAuthenticated, loadBarbers, barbers, colors }) {
 				<span>Liczba wolnych godzin</span>
 			</div>
 			{isAuthenticated &&
-				barbers.map((barber) => (
-					<div className="legend__item">
-						<EditBox
-							name={barber.value}
-							value={colors[barber.value]}
-							onSave={onSave}
-						>
-							<span
-								style={{
-									width: '2rem',
-									height: '1rem',
-									backgroundColor: `#${colors[barber.value]}`,
-								}}
-							></span>
-							<span>{barber.label}</span>
-						</EditBox>
-					</div>
-				))}
+				barbers.map((barber) => {
+					if (!colors[barber.value] && !isAdmin) return null
+
+					return (
+						<div className="legend__item">
+							<EditBox
+								name={barber.value}
+								value={colors[barber.value]}
+								onSave={onSave}
+							>
+								<span
+									style={{
+										width: '2rem',
+										height: '1rem',
+										backgroundColor: `#${
+											colors[barber.value]
+										}`,
+									}}
+								></span>
+								<span>{barber.label}</span>
+							</EditBox>
+						</div>
+					)
+				})}
 		</div>
 	)
 }
 
 Legend.prototype.propTypes = {
 	isAuthenticated: PropTypes.bool,
+	isAdmin: PropTypes.bool,
 	barbers: PropTypes.array,
 	colors: PropTypes.object,
 }
 
 const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
+	isAdmin: state.auth.data.is_admin,
 	barbers: state.meetings.barberChoiceList,
 	colors: state.data.data.colors,
 })
