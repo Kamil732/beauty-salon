@@ -57,6 +57,7 @@ class Calendar extends Component {
 		loadMeetings: PropTypes.func.isRequired,
 		connectWebSocket: PropTypes.func.isRequired,
 
+		colors: PropTypes.object,
 		one_slot_max_meetings: PropTypes.number.isRequired,
 		work_time: PropTypes.number,
 		end_work_sunday: PropTypes.string,
@@ -94,6 +95,7 @@ class Calendar extends Component {
 			endOf3days: moment().endOf('day').add(1, 'days').toDate(),
 
 			freeSlots: {},
+
 			minDate: calendarDates.minDate,
 			maxDate: calendarDates.maxDate,
 			selected: {},
@@ -108,7 +110,8 @@ class Calendar extends Component {
 		this.onRangeChange = this.onRangeChange.bind(this)
 		this.eventPropGetter = this.eventPropGetter.bind(this)
 		this.getIsDisabledSlot = this.getIsDisabledSlot.bind(this)
-		this.getCountOfFreeSlots = this.getCountOfFreeSlots.bind(this)
+		this.getCountOfFreeSlotsAndMyMeetings =
+			this.getCountOfFreeSlotsAndMyMeetings.bind(this)
 		this.slotPropGetter = this.slotPropGetter.bind(this)
 		this.onSelecting = this.onSelecting.bind(this)
 		this.onSelectEvent = this.onSelectEvent.bind(this)
@@ -286,7 +289,8 @@ class Calendar extends Component {
 		this.props.changeVisibleMeetings(visibleMeetings)
 	}
 
-	getCountOfFreeSlots = () => {
+	getCountOfFreeSlotsAndMyMeetings = () => {
+		const { work_time } = this.props
 		const {
 			view,
 			startOfMonth,
@@ -312,6 +316,7 @@ class Calendar extends Component {
 
 		// Get free slots count
 		let freeSlots = {}
+
 		let currentDate = start
 
 		while (currentDate <= end) {
@@ -338,12 +343,14 @@ class Calendar extends Component {
 						freeSlots[date] += 1
 
 					currentTime = moment(currentTime)
-						.add(this.props.work_time, 'minutes')
+						.add(work_time, 'minutes')
 						.toDate()
 				}
 			}
 
-			currentDate = moment(currentDate).add(1, 'day').toDate()
+			const newCurrentDate = moment(currentDate).add(1, 'day').toDate()
+
+			currentDate = newCurrentDate
 		}
 		this.setState({ freeSlots })
 	}
@@ -364,7 +371,7 @@ class Calendar extends Component {
 			this.props.loadMeetings()
 
 		this.getVisibleMeetings()
-		this.getCountOfFreeSlots()
+		this.getCountOfFreeSlotsAndMyMeetings()
 	}
 
 	componentWillUnmount = () =>
@@ -394,7 +401,7 @@ class Calendar extends Component {
 				minDate: calednarDates.minDate,
 				maxDate: calednarDates.maxDate,
 			})
-			this.getCountOfFreeSlots()
+			this.getCountOfFreeSlotsAndMyMeetings()
 		}
 
 		if (
@@ -416,7 +423,7 @@ class Calendar extends Component {
 			this.getVisibleMeetings()
 
 		if (prevProps.visibleMeetings !== this.props.visibleMeetings)
-			this.getCountOfFreeSlots()
+			this.getCountOfFreeSlotsAndMyMeetings()
 	}
 
 	deleteMeeting = async (loading = null) => {
@@ -601,16 +608,23 @@ class Calendar extends Component {
 	}
 
 	eventPropGetter = (event) => {
+		const { colors, isAdminPanel, isAuthenticated, user_phone_number } =
+			this.props
+
 		return {
 			className: `${event.do_not_work ? 'doNotWork' : ''} ${
-				this.props.isAdminPanel ||
-				(this.props.isAuthenticated &&
-					event.customer_phone_number ===
-						this.props.user_phone_number &&
+				isAdminPanel ||
+				(isAuthenticated &&
+					event.customer_phone_number === user_phone_number &&
 					!event.do_not_work)
 					? 'selectable'
 					: ''
 			}`,
+			style: !event.do_not_work
+				? {
+						backgroundColor: `#${colors[event.barber]}`,
+				  }
+				: null,
 		}
 	}
 
@@ -698,6 +712,7 @@ class Calendar extends Component {
 			endOfWeek,
 			startOf3days,
 			endOf3days,
+			freeSlots,
 		} = this.state
 
 		let meetings = []
@@ -733,11 +748,10 @@ class Calendar extends Component {
 					// Not MONTH and IsAdminPanel
 					(view !== Views.MONTH && isAdminPanel) ||
 					// Not MONTH and is owner of meeting
-					(view !== Views.MONTH &&
-						(visibleMeetings[i].do_not_work ||
-							(visibleMeetings[i].customer_phone_number ===
-								user_phone_number &&
-								isAuthenticated)))
+
+					(visibleMeetings[i].customer_phone_number ===
+						user_phone_number &&
+						isAuthenticated)
 				)
 					meetings.push(visibleMeetings[i])
 			}
@@ -866,7 +880,7 @@ class Calendar extends Component {
 										header: (props) => (
 											<WeekHeader
 												{...props}
-												freeSlots={this.state.freeSlots}
+												freeSlots={freeSlots}
 											/>
 										),
 									},
@@ -874,7 +888,7 @@ class Calendar extends Component {
 										header: (props) => (
 											<WeekHeader
 												{...props}
-												freeSlots={this.state.freeSlots}
+												freeSlots={freeSlots}
 											/>
 										),
 									},
@@ -882,7 +896,7 @@ class Calendar extends Component {
 										dateHeader: (props) => (
 											<MonthDateHeader
 												{...props}
-												freeSlots={this.state.freeSlots}
+												freeSlots={freeSlots}
 											/>
 										),
 									},
@@ -916,6 +930,7 @@ const mapStateToProps = (state) => ({
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
 
+	colors: state.data.data.colors,
 	one_slot_max_meetings: state.data.data.one_slot_max_meetings,
 	work_time: state.data.data.work_time || 30,
 	end_work_sunday: state.data.data.end_work_sunday || '',

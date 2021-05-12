@@ -1,6 +1,30 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
-function Legend() {
+import { loadBarbers } from '../../../redux/actions/meetings'
+import EditBox from '../../../layout/forms/EditBox'
+import axios from 'axios'
+
+function Legend({ isAuthenticated, loadBarbers, barbers, colors }) {
+	useEffect(() => {
+		if (barbers.length === 0) loadBarbers()
+	}, [barbers, loadBarbers])
+
+	const onSave = async (name, newValue, headers) => {
+		const body = JSON.stringify({ color: newValue })
+
+		await axios.patch(
+			`${process.env.REACT_APP_API_URL}/accounts/${name}/`,
+			body,
+			headers
+		)
+
+		colors[name] = newValue
+
+		return { colors }
+	}
+
 	return (
 		<div className="legend">
 			<div className="legend__item">
@@ -37,8 +61,43 @@ function Legend() {
 				</span>
 				<span>Liczba wolnych godzin</span>
 			</div>
+			{isAuthenticated &&
+				barbers.map((barber) => (
+					<div className="legend__item">
+						<EditBox
+							name={barber.value}
+							value={colors[barber.value]}
+							onSave={onSave}
+						>
+							<span
+								style={{
+									width: '2rem',
+									height: '1rem',
+									backgroundColor: `#${colors[barber.value]}`,
+								}}
+							></span>
+							<span>{barber.label}</span>
+						</EditBox>
+					</div>
+				))}
 		</div>
 	)
 }
 
-export default Legend
+Legend.prototype.propTypes = {
+	isAuthenticated: PropTypes.bool,
+	barbers: PropTypes.array,
+	colors: PropTypes.object,
+}
+
+const mapStateToProps = (state) => ({
+	isAuthenticated: state.auth.isAuthenticated,
+	barbers: state.meetings.barberChoiceList,
+	colors: state.data.data.colors,
+})
+
+const mapDispatchToProps = {
+	loadBarbers,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Legend)

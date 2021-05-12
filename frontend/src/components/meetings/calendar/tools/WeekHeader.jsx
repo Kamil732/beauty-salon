@@ -1,12 +1,21 @@
 import moment from 'moment'
 import React from 'react'
 
-function Header({ freeSlots, date, label }) {
-	const freeHours = freeSlots[moment(date).format('YYYY-MM-DD')]
+function Header({ freeSlots, myMeetings, date, label }) {
+	freeSlots = freeSlots[moment(date).format('YYYY-MM-DD')]
 
 	return (
 		<>
-			{label} <h5>{freeHours > 0 && `(${freeHours})`}</h5>
+			{label}
+			<div
+				style={{
+					display: 'flex',
+					justifyContent: 'space-around',
+					alignItems: 'center',
+				}}
+			>
+				<h5>{freeSlots > 0 && `(${freeSlots})`}</h5>
+			</div>
 		</>
 	)
 }

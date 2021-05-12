@@ -20,6 +20,7 @@ function EditBox({
 	validationErrorMessage,
 	value,
 	name,
+	onSave,
 	...props
 }) {
 	const [loading, setLoading] = useState(false)
@@ -44,19 +45,26 @@ function EditBox({
 		setLoading(true)
 
 		try {
-			const body = JSON.stringify({ [name]: newValue })
+			const headers = getHeaders(true)
+			let res
 
-			const res = await axios.patch(
-				`${process.env.REACT_APP_API_URL}/data/`,
-				body,
-				getHeaders(true)
-			)
+			if (onSave) res = await onSave(name, newValue, headers)
+			else {
+				const body = JSON.stringify({ [name]: newValue })
+
+				res = await axios.patch(
+					`${process.env.REACT_APP_API_URL}/data/`,
+					body,
+					headers
+				)
+				res = res.data
+			}
 
 			setIsEditMode(false)
 			ws.send(
 				JSON.stringify({
 					event: UPDATE_DATA,
-					payload: res.data,
+					payload: res,
 				})
 			)
 
@@ -131,6 +139,7 @@ EditBox.prototype.propTypes = {
 	value: PropTypes.string.isRequired,
 	regexValidation: PropTypes.string,
 	validationErrorMessage: PropTypes.string,
+	onSave: PropTypes.func,
 }
 
 const mapStateToProps = (state) => ({

@@ -2,15 +2,15 @@ import moment from 'moment'
 import Button from '../../../../layout/buttons/Button'
 
 function MonthDateHeader({ freeSlots, date, label, onDrillDown }) {
-	const freeHours = freeSlots[moment(date).format('YYYY-MM-DD')]
+	freeSlots = freeSlots[moment(date).format('YYYY-MM-DD')]
 
 	return (
-		<>
+		<div>
 			<Button extraSmall center role="cell" onClick={onDrillDown}>
 				{label}
 			</Button>{' '}
-			{freeHours > 0 && <h5>({freeHours})</h5>}
-		</>
+			{freeSlots > 0 && <h5>({freeSlots})</h5>}
+		</div>
 	)
 }
 
