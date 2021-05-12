@@ -1,12 +1,20 @@
 from rest_framework import serializers
 
+from accounts.models import Account
 from data.models import Data
 
 
 class DataSerializer(serializers.ModelSerializer):
+    colors = serializers.SerializerMethodField('get_colors')
 
-    # def get_work_time(self, obj):
-    #     return obj.
+    def get_colors(self, obj):
+        # Set colors
+        value = {}
+
+        for barber in Account.objects.filter(is_admin=True).values_list('slug', 'color'):
+            value[barber[0]] = barber[1]
+
+        return value
 
     def to_internal_value(self, data):
         if 'start_work_sunday' in data and not(data['start_work_sunday']):
@@ -44,14 +52,6 @@ class DataSerializer(serializers.ModelSerializer):
         model = Data
         exclude = ('id',)
         extra_kwargs = {
-            'message': {'allow_blank': True},
-            'contact_content_second': {'allow_blank': True},
-            'gallery_content': {'allow_blank': True},
-            'gallery_title': {'allow_blank': True},
-            'contact_content': {'allow_blank': True},
-            'contact_title': {'allow_blank': True},
-            'home_content': {'allow_blank': True},
-            'home_title': {'allow_blank': True},
             'end_work_sunday': {'allow_null': True},
             'start_work_sunday': {'allow_null': True},
             'end_work_saturday': {'allow_null': True},
@@ -66,7 +66,4 @@ class DataSerializer(serializers.ModelSerializer):
             'start_work_tuesday': {'allow_null': True},
             'end_work_monday': {'allow_null': True},
             'start_work_monday': {'allow_null': True},
-            'google_maps_url': {'allow_blank': True},
-            'location': {'allow_blank': True},
-            'phone_number': {'allow_blank': True}
         }

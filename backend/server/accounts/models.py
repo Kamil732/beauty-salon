@@ -55,6 +55,7 @@ class Account(AbstractBaseUser):
 
     is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=True)
     is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
+    color = models.CharField(max_length=6, default='212121')
     is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
     is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
     slug = AutoSlugField(populate_from='first_name', unique=True)

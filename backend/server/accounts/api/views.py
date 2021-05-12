@@ -12,7 +12,7 @@ from rest_framework.exceptions import ValidationError
 
 from . import serializers
 from . import pagination
-from server.permissions import IsAdminOrReadOnly, IsAdmin
+from server.permissions import IsAdminOrReadOnly, IsAdmin, IsOwnerOrIsAdminOrReadOnly
 from accounts.models import CustomerImage, Account
 
 
@@ -53,6 +53,21 @@ class LoginAPIView(APIView):
                 'user': serializers.AccountSerializer(user).data,
             }, status=status.HTTP_200_OK)
         raise ValidationError({'detail': 'Email lub hasło jest niepoprawne'})
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class UpdateAccountAPIView(generics.UpdateAPIView):
+    permission_classes = (IsOwnerOrIsAdminOrReadOnly,)
+    serializer_class = serializers.AccountSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'account_slug'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_authenticated and user.is_admin:
+            return Account.objects.all()
+        return Account.objects.filter(id=user.id)
 
 
 @method_decorator(csrf_protect, name='dispatch')

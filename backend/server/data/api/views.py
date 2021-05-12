@@ -4,8 +4,7 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from server.permissions import IsAdmin, IsAdminOrReadOnly
-from accounts.models import Account
+from server.permissions import IsAdminOrReadOnly
 from data.models import Data
 from . import serializers
 
@@ -18,7 +17,6 @@ class DataListAPIView(APIView):
 
     def get(self, request):
         serializer = self.serializer_class(self.object, many=False)
-
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):

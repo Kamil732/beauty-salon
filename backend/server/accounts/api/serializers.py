@@ -7,7 +7,7 @@ from accounts.models import Account, CustomerImage
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('id', 'email', 'phone_number', 'fax_number', 'first_name', 'last_name', 'slug', 'is_admin',)
+        exclude = ('id', 'password', 'is_superuser', 'is_staff',)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
