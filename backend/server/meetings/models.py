@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.db.models.base import ModelStateFieldsCacheDescriptor
 from django.utils import timezone
 
 from datetime import timedelta
@@ -25,6 +26,7 @@ class Meeting(models.Model):
     type = models.CharField(verbose_name='Typ wizyty', max_length=11, choices=TYPES)
     start = models.DateTimeField(verbose_name='Zaczyna się o')
     end = models.DateTimeField(verbose_name='Kończy się o', blank=True)
+    confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.type

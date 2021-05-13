@@ -1,7 +1,6 @@
 import pytz
 from datetime import timedelta
 
-from django.db.models import Q
 from django.utils import timezone
 
 from rest_framework import serializers
@@ -23,7 +22,18 @@ class MeetingSerializer(serializers.ModelSerializer):
     def get_do_not_work(self, obj):
         return obj.type == Meeting.TYPES[2][0]
 
-    def validate(self, data):
+    def validate(self, data, pass_cached_data=False):
+        # Cannot create meeting WHEN it's not between 2 slots, but maybe in the middle of them []
+
+        server_data = Data.objects.first()
+
+        # Get meetings in the same slot
+        same_slot_meetings = Meeting.objects.filter(
+            start__lte=data['start'], end__gt=data['start']).select_related('barber')
+
+        working_hours = get_working_hours(data['start'].weekday())
+        start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
+
         if not(data['type'] == Meeting.TYPES[2][0]):
             if not(data['barber']):
                 raise serializers.ValidationError('Fryzjer jest wymagany')
@@ -31,14 +41,26 @@ class MeetingSerializer(serializers.ModelSerializer):
         if (data['end'] < data['start']):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
+        # Validate meeting date
+        if data['start'] < timezone.now() + timedelta(minutes=15):
+            raise serializers.ValidationError(
+                {'detail': 'Nie można umówić wizyty krócej niż 15min przed jej rozpoczęciem'})
+
+        # Validate if meeting is NOT between work hours and validate meeting work_time
+        if not(data['type'] == Meeting.TYPES[2][0]) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < server_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - server_data.work_time):
+            raise serializers.ValidationError('Nie poprawna data wizyty')
+
+        # Validate if barber is occupied
+        if not(data['type'] == Meeting.TYPES[2][0]):
+            for barber in same_slot_meetings.values_list('barber__slug', flat=True):
+                if barber == data['barber'].slug:
+                    raise serializers.ValidationError({'detail': 'Nie umówić wizyty z nieczynnym fryzjerem'})
+
+        if pass_cached_data:
+            data['same_slot_meeting_count'] = same_slot_meetings.count()
+            data['one_slot_max_meetings'] = server_data.one_slot_max_meetings
+
         return data
-
-    def create(self, data):
-        if (data['end'] - data['start']).days > 0 or data['end'].hour == 0:
-            # If meeting should be allDay then add 1 day to it.
-            data['end'] += timedelta(days=1)
-
-        return Meeting.objects.create(**data)
 
     class Meta:
         model = Meeting
@@ -56,6 +78,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             'customer_last_name',
             'customer_phone_number',
             'customer_fax_number',
+            'confirmed'
         )
         read_only_fields = ('id', 'do_not_work',)
 
@@ -65,39 +88,46 @@ class CustomerMeetingSerializer(MeetingSerializer):
     type = serializers.ChoiceField(choices=Meeting.TYPES[:2], write_only=True, allow_null=True)
 
     def validate(self, data):
-        # Cannot add meeting on non working hour []
-        # Cannot add meeting when there are more than `one_slot_max_meetings` []
-        # Cannot add meeting 15 minutes before meeting [x]
-        # Cannot add meeting that is longer than work_time []
-        # Cannot add meeting with the occupied barber []
-        # Ca
+        data = super(CustomerMeetingSerializer, self).validate(data, True)
 
-        one_slot_max_meetings = Data.objects.first().one_slot_max_meetings
+        # Validate same slot meeting count
+        if data['same_slot_meeting_count'] >= data['one_slot_max_meetings']:
+            raise serializers.ValidationError({'detail': 'Nie porawna ilość wizyt w jednym czasie'})
 
-        x = Meeting.objects.filter(
-            Q(start__gte=data['start']) & Q(end__lte=data['end']) |
-            Q(start__lte=data['start']) & Q(end__gte=data['end']) |
-            Q(start__gte=data['start']) & Q(end__gt=data['end']) |
-            Q(start__lte=data['start']) & Q(end__lt=data['end'])
-        ).count()
+        del data['same_slot_meeting_count']
+        del data['one_slot_max_meetings']
 
-        if x:
-            #  > int(one_slot_max_meetings)
-            print(x)
-
-        if data['start'] < timezone.now() + timedelta(minutes=15):
-            raise serializers.ValidationError('Wizytę można umówic tylko wcześniej niż 15min przed rozpoczęciem')
-
-        return super(CustomerMeetingSerializer, self).validate(data)
+        return data
 
     def create(self, data):
         user = self.context.get('request').user
+        server_data = Data.objects.first()
+
         data['customer_first_name'] = user.first_name
         data['customer_last_name'] = user.last_name
         data['customer_phone_number'] = user.phone_number
         data['customer_fax_number'] = user.fax_number
+        data['confirmed'] = True
 
-        return Meeting.objects.create(**data)
+        user.bookings += 1
+        user.revenue += round(getattr(server_data, f"{data['type']}_price"))
+        user.save()
+
+        return super(CustomerMeetingSerializer, self).create(data)
+
+    def update(self, instance, data):
+        confirmed = instance.confirmed
+        instance = super(CustomerMeetingSerializer, self).update(instance, data)
+
+        if not(instance.type == Meeting.TYPES[2][0]) and not(confirmed) and data.get('confirmed'):
+            user = instance.customer
+            server_data = Data.objects.first()
+
+            user.bookings += 1
+            user.revenue += round(getattr(server_data, f"{data['type']}_price"))
+            user.save()
+
+        return instance
 
     class Meta(MeetingSerializer.Meta):
         fields = (
@@ -119,9 +149,7 @@ class AdminMeetingSerializer(MeetingSerializer):
     type = serializers.ChoiceField(choices=Meeting.TYPES, write_only=True, allow_null=True)
 
     def validate(self, data):
-        work_time = Data.objects.first().work_time
-        # if data['start'] < timezone.now() - timedelta(hours=1):
-        #     raise serializers.ValidationError('Wizyta nie może odbyć się wcześniej niż 1 godzinę temu')
+        data = super(AdminMeetingSerializer, self).validate(data, True)
 
         if not(data['type'] == Meeting.TYPES[2][0]):
             if len(data['customer_first_name']) < 3:
@@ -131,26 +159,22 @@ class AdminMeetingSerializer(MeetingSerializer):
             if not(data['customer_phone_number']):
                 raise serializers.ValidationError('Numer telefonu jest wymagany')
 
-        working_hours = get_working_hours(data['start'].weekday())
-        start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
+        # Validate same slot meeting count
+        if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data['type'] == Meeting.TYPES[2][0])) or \
+                (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data['type'] == Meeting.TYPES[2][0]):
+            raise serializers.ValidationError({'detail': 'Nie porawna ilość wizyt w jednym czasie'})
 
-        # Check if meeting is not between work hours
-        if (not(data['type'] == Meeting.TYPES[2][0]) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - work_time)):
-            raise serializers.ValidationError('Nie poprawna data wizyty')
+        del data['same_slot_meeting_count']
+        del data['one_slot_max_meetings']
 
-        # Check if there is any meeting form start to end
-        x = Meeting.objects.filter(
-            Q(start__gte=data['start']) & Q(end__lte=data['end']) |
-            Q(start__lte=data['start']) & Q(end__gte=data['end']) |
-            Q(start__gte=data['start']) & Q(end__gt=data['end']) |
-            Q(start__lte=data['start']) & Q(end__lt=data['end'])
-        ).count()
+        return data
 
-        if x:
-            #  > int(one_slot_max_meetings)
-            print(x)
+    def create(self, data):
+        if (data['end'] - data['start']).days > 0 or data['end'].hour == 0:
+            # If meeting should be allDay then add 1 day to it.
+            data['end'] += timedelta(days=1)
 
-        return super(AdminMeetingSerializer, self).validate(data)
+        return super(AdminMeetingSerializer, self).create(data)
 
     def to_representation(self, instance):
         data = super(AdminMeetingSerializer, self).to_representation(instance)
