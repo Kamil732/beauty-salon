@@ -72,11 +72,7 @@ $rbc-css-prefix: calendar;
 	}
 
 	&-label {
-		padding: 0 !important;
-		margin: 5px 0 5px;
-		text-align: center;
-		min-width: 100%;
-		white-space: pre-line;
+		display: none;
 	}
 
 	&-content {

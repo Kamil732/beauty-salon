@@ -1,5 +1,5 @@
 @function set-text-color($color) {
-	@if (lightness($color) < 60%) {
+	@if (lightness($color) < 40%) {
 		@return #fff;
 	} @else {
 		@return #000;

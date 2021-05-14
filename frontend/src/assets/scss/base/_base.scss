@@ -189,8 +189,11 @@ a {
 
 	.header {
 		margin-bottom: 0;
-		& > .nav > .nav__link {
-			font-size: 1.6rem;
+
+		& > .nav {
+			& > .nav__link {
+				font-size: 1.6rem;
+			}
 		}
 	}
 }
@@ -210,6 +213,7 @@ a {
 		}
 
 		& > .nav {
+			gap: 0rem;
 			height: auto;
 			width: max-content;
 			transform: translate3d(0vw, 0, 0);
@@ -217,7 +221,7 @@ a {
 			align-items: center;
 			background-color: inherit;
 			position: static;
-			gap: 2.5rem;
+			gap: 1rem;
 			padding: 0;
 
 			& > .nav__link {
@@ -231,7 +235,11 @@ a {
 }
 
 @include media-laptop-lg {
-	.header > .nav > .nav__link {
-		font-size: 1.5rem;
+	.header > .nav {
+		gap: 2.5rem;
+
+		& > .nav__link {
+			font-size: 1.5rem;
+		}
 	}
 }
