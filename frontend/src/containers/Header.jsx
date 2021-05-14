@@ -5,11 +5,19 @@ import { Link } from 'react-router-dom'
 
 import logo from '../assets/images/logo.png'
 
+import { getNotifications } from '../redux/actions/data'
+
 import { default as NavigationMenu } from '../components/navigation/Menu'
+import { IoMdMegaphone, IoMdNotifications } from 'react-icons/io'
+import Button from '../layout/buttons/Button'
+import Dropdown from '../layout/buttons/Dropdown'
 
 class Header extends Component {
 	static propTypes = {
 		message: PropTypes.string,
+		isAuthenticated: PropTypes.bool,
+		notifications: PropTypes.array,
+		getNotifications: PropTypes.func.isRequired,
 	}
 
 	state = {
@@ -17,7 +25,8 @@ class Header extends Component {
 	}
 
 	render() {
-		const { message } = this.props
+		const { message, isAuthenticated, getNotifications, notifications } =
+			this.props
 		const { isNavActive } = this.state
 
 		return (
@@ -31,6 +40,21 @@ class Header extends Component {
 								alt="Damian Kwiecień"
 							/>
 						</Link>
+
+						{window.innerWidth <= 1024 && isAuthenticated && (
+							<Dropdown
+								btnContent={<IoMdNotifications size={25} />}
+								rounded
+								loadItems={getNotifications}
+								items={notifications}
+								noItemsContent={
+									<div style={{ textAlign: 'center' }}>
+										<IoMdMegaphone fontSize="80" />
+										<h3>Nie masz żadnych powiadomień</h3>
+									</div>
+								}
+							/>
+						)}
 
 						<div
 							className="nav-btn"
@@ -76,7 +100,13 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	message: state.data.data[process.env.MESSAGE],
+	message: state.data.data.message,
+	notifications: state.data.notifications,
+	isAuthenticated: state.auth.isAuthenticated,
 })
 
-export default connect(mapStateToProps, null)(Header)
+const mapDispatchToProps = {
+	getNotifications,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header)

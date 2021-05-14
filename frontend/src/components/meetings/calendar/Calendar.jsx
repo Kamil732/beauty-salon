@@ -625,7 +625,7 @@ class Calendar extends Component {
 					!event.do_not_work)
 					? 'selectable'
 					: ''
-			} ${yiq < 60 ? 'white' : ''}`,
+			} ${yiq < 40 ? 'white' : ''}`,
 			style:
 				!event.do_not_work && colors[event.barber]
 					? {
@@ -754,8 +754,9 @@ class Calendar extends Component {
 					(view === Views.MONTH && visibleMeetings[i].allDay) ||
 					// Not MONTH and IsAdminPanel
 					(view !== Views.MONTH && isAdminPanel) ||
-					// Not MONTH and is owner of meeting
-
+					// Not MONTH is do_not_work
+					(view !== Views.MONTH && visibleMeetings[i].do_not_work) ||
+					// Is owner of meeting
 					(visibleMeetings[i].customer_phone_number ===
 						user_phone_number &&
 						isAuthenticated)
@@ -917,6 +918,7 @@ class Calendar extends Component {
 									date: 'Data',
 									event: 'Spotkanie',
 									threedays: '3 Dni',
+									showMore: (amount) => `+${amount} więcej`,
 								}}
 							/>
 						</div>

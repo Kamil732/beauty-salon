@@ -54,6 +54,19 @@
 		background-color: transparent;
 	}
 
+	&__rounded {
+		background-color: transparent;
+		padding: 0.7rem !important;
+		border: none;
+		border-radius: 30px;
+
+		&:hover {
+			$color: $secondary-color;
+			background-color: $color;
+			color: set-text-color($color);
+		}
+	}
+
 	&__primary {
 		border-color: $primary-color;
 		background-color: $primary-color;
@@ -159,6 +172,62 @@
 		position: absolute;
 		top: 1rem;
 		right: 1rem;
+	}
+}
+
+.dropdown {
+	position: relative;
+
+	& > &__content {
+		overflow-x: hidden;
+		background-color: $surface-color;
+		border-radius: 12px;
+		padding: 1rem 0;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 300px;
+		max-height: 440px;
+		z-index: 2;
+		border: 1px solid rgba(0, 0, 0, 0.04);
+		box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
+
+		& > .dropdown__list {
+			display: flex;
+			width: 200%;
+			height: 100%;
+			transition: transform 0.3s ease-in-out;
+
+			&.slide {
+				transform: translateX(-50%);
+			}
+
+			& > ul {
+				list-style: none;
+				width: 50%;
+				height: 100%;
+				overflow-y: auto;
+				flex-shrink: 0;
+
+				& > li {
+					padding: 10px 1rem;
+					cursor: pointer;
+
+					&:hover {
+						background-color: $secondary-color;
+					}
+				}
+			}
+
+			& > .dropdown__selected {
+				background-color: $surface-color;
+				padding: 1rem;
+				width: 50%;
+				height: 100%;
+				overflow-y: auto;
+				flex-shrink: 0;
+			}
+		}
 	}
 }
 

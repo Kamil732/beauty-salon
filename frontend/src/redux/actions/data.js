@@ -1,4 +1,4 @@
-import { GET_DATA } from './types'
+import { GET_DATA, GET_NOTIFICATIONS, NOTIFICATIONS_LOADING } from './types'
 
 import { NotificationManager } from 'react-notifications'
 import axios from 'axios'
@@ -14,7 +14,28 @@ export const getData = () => async (dispatch) => {
 	} catch (err) {
 		NotificationManager.error(
 			'Wystąpił błąd przy wczytywaniu strony, spróbuj odświeżyć stronę',
-			null,
+			'Błąd',
+			10 ** 6
+		)
+	}
+}
+
+export const getNotifications = () => async (dispatch) => {
+	dispatch({ type: NOTIFICATIONS_LOADING })
+
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/notifications/`
+		)
+
+		dispatch({
+			type: GET_NOTIFICATIONS,
+			payload: res.data,
+		})
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się załadować powiadomień',
+			'Błąd',
 			10 ** 6
 		)
 	}

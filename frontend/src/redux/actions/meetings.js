@@ -53,6 +53,7 @@ const getMeeting = async (id) => {
 			`${process.env.REACT_APP_API_URL}/meetings/${id}/`
 		)
 
+		NotificationManager.info('Zaktualizowano kalendarz')
 		return res.data
 	} catch (err) {
 		NotificationManager.error('Nie udało sie zaktualizować kalendarza')
@@ -108,10 +109,13 @@ export const addMeeting = (data) => async (dispatch, getState) => {
 		dates.length === 0 &&
 		!getState().meetings.data.some((meeting) => meeting.id === data.id)
 	) {
-		dispatch({
-			type: ADD_MEETING,
-			payload: setMeeting(await getMeeting(data.id)),
-		})
+		const meeting = await getMeeting(data.id)
+
+		if (meeting)
+			dispatch({
+				type: ADD_MEETING,
+				payload: setMeeting(meeting),
+			})
 	}
 }
 
@@ -120,14 +124,19 @@ export const removeMeeting = (id) => (dispatch) => {
 		type: REMOVE_MEETING,
 		payload: id,
 	})
+
+	NotificationManager.info('Zaktualizowano kalendarz')
 }
 
 export const updateMeeting = (id) => async (dispatch, getState) => {
 	if (getState().meetings.data.some((meeting) => meeting.id === id)) {
-		dispatch({
-			type: UPDATE_MEETING,
-			payload: setMeeting(await getMeeting(id)),
-		})
+		const meeting = await getMeeting(id)
+
+		if (meeting)
+			dispatch({
+				type: UPDATE_MEETING,
+				payload: setMeeting(meeting),
+			})
 	}
 }
 
@@ -157,42 +166,33 @@ export const loadBarbers = () => async (dispatch) => {
 	}
 }
 
-export const loadCustomers =
-	(value, callback) => async (dispatch, getState) => {
-		try {
-			const res = await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
-			)
+export const loadCustomers = (value) => async (dispatch, getState) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
+		)
 
-			dispatch({
-				type: LOAD_CUSTOMERS,
-				payload: res.data,
-			})
+		dispatch({
+			type: LOAD_CUSTOMERS,
+			payload: res.data,
+		})
 
-			value = value.toLowerCase()
+		value = value.toLowerCase()
 
-			callback(
-				getState().meetings.customerChoiceList.filter(
-					(customer) =>
-						customer.label.toLowerCase().startsWith(value) ||
-						customer.label
-							.split(' ')[0]
-							.toLowerCase()
-							.startsWith(value) ||
-						customer.label
-							.split(' ')[1]
-							.toLowerCase()
-							.startsWith(value)
-				)
-			)
-		} catch (err) {
-			NotificationManager.error(
-				'Nie udało się załadować listy klientów',
-				'Błąd',
-				4000
-			)
-		}
+		return getState().meetings.customerChoiceList.filter(
+			(customer) =>
+				customer.label.toLowerCase().startsWith(value) ||
+				customer.label.split(' ')[0].toLowerCase().startsWith(value) ||
+				customer.label.split(' ')[1].toLowerCase().startsWith(value)
+		)
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się załadować listy klientów',
+			'Błąd',
+			4000
+		)
 	}
+}
 
 export const connectWebSocket = () => (dispatch) => {
 	const ws = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/meetings/`)

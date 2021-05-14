@@ -1,6 +1,8 @@
 // Data
 export const GET_DATA = 'GET_DATA'
 export const UPDATE_DATA = 'UPDATE_DATA'
+export const NOTIFICATIONS_LOADING = 'NOTIFICATIONS_LOADING'
+export const GET_NOTIFICATIONS = 'GET_NOTIFICATIONS'
 
 // Auth
 export const AUTH_LOADING = 'AUTH_LOADING'

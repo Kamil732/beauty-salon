@@ -13,6 +13,7 @@ function Button({
 	disabled,
 	small,
 	extraSmall,
+	rounded,
 	center,
 	loadingText,
 	...props
@@ -29,7 +30,7 @@ function Button({
 					small ? ' btn__small' : ''
 				}${extraSmall ? ' btn__extraSmall slide-floor' : ''}${
 					center ? ' center' : ''
-				}`}
+				}${rounded ? ' btn__rounded' : ''}`}
 				disabled={loading || disabled}
 				{...props}
 			>
@@ -46,7 +47,7 @@ function Button({
 				loading ? ' btn__loading' : ''
 			}${to ? ' btn__link' : ''}${small ? ' btn__small' : ''}${
 				extraSmall ? ' btn__extraSmall slide-floor' : ''
-			}${center ? ' center' : ''}`}
+			}${center ? ' center' : ''}${rounded ? ' btn__rounded' : ''}`}
 			disabled={loading || disabled}
 			{...props}
 		>
@@ -65,6 +66,7 @@ Button.prototype.propTypes = {
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	extraSmall: PropTypes.bool,
+	rounded: PropTypes.bool,
 	center: PropTypes.bool,
 	to: PropTypes.string,
 }

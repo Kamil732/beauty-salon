@@ -1,17 +1,24 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
 
+import { IoMdMegaphone, IoMdNotifications } from 'react-icons/io'
+
 import { logout } from '../../redux/actions/auth'
+import { NavLink } from 'react-router-dom'
+import Button from '../../layout/buttons/Button'
+import Dropdown from '../../layout/buttons/Dropdown'
+import { getNotifications } from '../../redux/actions/data'
 
 class Menu extends Component {
 	static propTypes = {
 		isAuthenticated: PropTypes.bool,
 		loading: PropTypes.bool,
 		isAdmin: PropTypes.bool,
+		notifications: PropTypes.array,
 		logout: PropTypes.func.isRequired,
 		closeNavigation: PropTypes.func.isRequired,
+		getNotifications: PropTypes.func.isRequired,
 	}
 
 	render() {
@@ -19,6 +26,7 @@ class Menu extends Component {
 			loading,
 			isAuthenticated,
 			isAdmin,
+			notifications,
 			logout,
 			closeNavigation,
 		} = this.props
@@ -63,13 +71,6 @@ class Menu extends Component {
 							{isAdmin ? (
 								<>
 									<NavLink
-										to="/communcation"
-										className="nav__link"
-										onClick={closeNavigation}
-									>
-										Czaty
-									</NavLink>
-									<NavLink
 										to="/meetings/calendar"
 										className="nav__link"
 										onClick={closeNavigation}
@@ -87,13 +88,6 @@ class Menu extends Component {
 							) : (
 								<>
 									<NavLink
-										to="/communcation"
-										className="nav__link"
-										onClick={closeNavigation}
-									>
-										Czat
-									</NavLink>
-									<NavLink
 										to="/meetings/calendar"
 										className="nav__link"
 										onClick={closeNavigation}
@@ -102,15 +96,31 @@ class Menu extends Component {
 									</NavLink>
 								</>
 							)}
-							<button
-								className="btn"
+							{window.innerWidth > 1024 && (
+								<Dropdown
+									btnContent={<IoMdNotifications size={25} />}
+									rounded
+									loadItems={getNotifications}
+									items={notifications}
+									noItemsContent={
+										<div style={{ textAlign: 'center' }}>
+											<IoMdMegaphone fontSize="80" />
+											<h3>
+												Nie masz żadnych powiadomień
+											</h3>
+										</div>
+									}
+								/>
+							)}
+							<Button
 								onClick={() => {
 									closeNavigation()
 									logout()
 								}}
+								rounded
 							>
 								Wyloguj się
-							</button>
+							</Button>
 						</>
 					)
 				) : null}
@@ -127,6 +137,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
 	logout,
+	getNotifications,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu)
