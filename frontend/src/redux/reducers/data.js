@@ -6,10 +6,14 @@ import {
 } from '../actions/types'
 
 const initialState = {
-	loadingData: true,
-	loadingNotifications: false,
-	data: {},
-	notifications: [],
+	serverData: {
+		loading: true,
+		data: {},
+	},
+	notifications: {
+		loading: false,
+		data: [],
+	},
 }
 
 // eslint-disable-next-line
@@ -19,22 +23,30 @@ export default function (state = initialState, action) {
 		case GET_DATA:
 			return {
 				...state,
-				loadingData: false,
-				data: {
-					...state.data,
-					...action.payload,
+				serverData: {
+					...state.serverData,
+					loading: false,
+					data: {
+						...state.data,
+						...action.payload,
+					},
 				},
 			}
 		case NOTIFICATIONS_LOADING:
 			return {
 				...state,
-				loadingNotifications: true,
+				notifications: {
+					...state.notifications,
+					loading: true,
+				},
 			}
 		case GET_NOTIFICATIONS:
 			return {
 				...state,
-				loadingNotifications: false,
-				notifications: [...action.payload, ...state.data],
+				notifications: {
+					loading: false,
+					data: [...action.payload, ...state.data],
+				},
 			}
 		default:
 			return state

@@ -15,6 +15,7 @@ class Menu extends Component {
 		isAuthenticated: PropTypes.bool,
 		loading: PropTypes.bool,
 		isAdmin: PropTypes.bool,
+		notificationLoading: PropTypes.bool,
 		notifications: PropTypes.array,
 		logout: PropTypes.func.isRequired,
 		closeNavigation: PropTypes.func.isRequired,
@@ -26,9 +27,11 @@ class Menu extends Component {
 			loading,
 			isAuthenticated,
 			isAdmin,
+			notificationLoading,
 			notifications,
 			logout,
 			closeNavigation,
+			getNotifications,
 		} = this.props
 
 		return (
@@ -96,15 +99,25 @@ class Menu extends Component {
 									</NavLink>
 								</>
 							)}
-							{window.innerWidth > 1024 && (
+							{window.innerWidth > 768 && (
 								<Dropdown
 									btnContent={<IoMdNotifications size={25} />}
 									rounded
+									loading={notificationLoading}
 									loadItems={getNotifications}
 									items={notifications}
 									noItemsContent={
-										<div style={{ textAlign: 'center' }}>
-											<IoMdMegaphone fontSize="80" />
+										<div
+											style={{
+												display: 'flex',
+												flexDirection: 'column',
+												justifyContent: 'center',
+												alignItems: 'center',
+												height: '100%',
+											}}
+										>
+											<IoMdMegaphone fontSize="100" />
+
 											<h3>
 												Nie masz żadnych powiadomień
 											</h3>
@@ -133,6 +146,8 @@ const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
 	loading: state.auth.loading,
 	isAdmin: state.auth.data.is_admin,
+	notificationLoading: state.data.notifications.loading,
+	notifications: state.data.notifications.data,
 })
 
 const mapDispatchToProps = {

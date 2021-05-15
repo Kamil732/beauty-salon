@@ -4,10 +4,18 @@ import moment from 'moment'
 
 import { BiLeftArrowAlt } from 'react-icons/bi'
 
+import BrickLoader from '../loaders/BrickLoader'
 import Truncate from 'react-truncate'
 import Button from './Button'
 
-function Dropdown({ btnContent, loadItems, items, noItemsContent, ...props }) {
+function Dropdown({
+	btnContent,
+	loading,
+	loadItems,
+	items,
+	noItemsContent,
+	...props
+}) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [selected, setSelected] = useState({
 		isOpen: false,
@@ -16,8 +24,6 @@ function Dropdown({ btnContent, loadItems, items, noItemsContent, ...props }) {
 	const container = useRef(null)
 
 	useEffect(() => {
-		if (loadItems && items.length === 0) loadItems()
-
 		const handleClickOutside = (e) => {
 			if (container.current && !container.current.contains(e.target)) {
 				setSelected({ ...selected, isOpen: false })
@@ -29,15 +35,17 @@ function Dropdown({ btnContent, loadItems, items, noItemsContent, ...props }) {
 
 		return () =>
 			document.removeEventListener('mousedown', handleClickOutside)
-	}, [selected, loadItems, items])
+	}, [selected, isOpen, loadItems, items])
 
 	return (
-		<div className="dropdown" ref={container}>
+		<div style={{ position: 'relative' }} ref={container}>
 			<Button
 				type="button"
 				onClick={() => {
 					setSelected({ ...selected, isOpen: false })
 					setIsOpen(!isOpen)
+
+					if (loadItems && !isOpen && items.length === 0) loadItems()
 				}}
 				{...props}
 			>
@@ -45,74 +53,95 @@ function Dropdown({ btnContent, loadItems, items, noItemsContent, ...props }) {
 			</Button>
 
 			{isOpen && (
-				<div className="dropdown__content">
-					{items.length > 0 ? (
-						<div
-							className={`dropdown__list${
-								selected.isOpen ? ' slide' : ''
-							}`}
-						>
-							<ul>
-								{items.map((item, idx) => (
-									<li
-										key={idx}
-										onClick={() =>
-											setSelected({
-												isOpen: true,
-												data: item,
-											})
-										}
-									>
+				<div className="dropdown">
+					<div className="dropdown__inner">
+						<div className="dropdown__content">
+							{loading ? (
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+										height: '100%',
+									}}
+								>
+									<BrickLoader />
+								</div>
+							) : items.length > 0 ? (
+								<div
+									className={`dropdown__list${
+										selected.isOpen ? ' slide' : ''
+									}`}
+								>
+									<ul>
+										{items.map((item, idx) => (
+											<li
+												key={idx}
+												onClick={() =>
+													setSelected({
+														isOpen: true,
+														data: item,
+													})
+												}
+											>
+												<div
+													style={{
+														marginBottom: '4px',
+													}}
+												>
+													<h4>
+														<Truncate lines={1}>
+															{item.label}
+														</Truncate>
+													</h4>
+													<span className="text-broken">
+														{moment(
+															item.date
+														).format(
+															'DD-MM-YYYY H:mm'
+														)}
+													</span>
+												</div>
+
+												<p>
+													<Truncate lines={2}>
+														{item.content}
+													</Truncate>
+												</p>
+											</li>
+										))}
+									</ul>
+
+									<div className="dropdown__selected">
+										<Button
+											rounded
+											onClick={() =>
+												setSelected({
+													...selected,
+													isOpen: false,
+												})
+											}
+										>
+											<BiLeftArrowAlt />
+										</Button>
+
 										<div style={{ marginBottom: '4px' }}>
-											<h4>
-												<Truncate lines={1}>
-													{item.label}
-												</Truncate>
-											</h4>
+											<h4>{selected.data?.label}</h4>
 											<span className="text-broken">
-												{moment(item.date).format(
-													'DD-MM-YYYY H:mm'
-												)}
+												{moment(
+													selected.data?.date
+												).format('DD-MM-YYYY H:mm')}
 											</span>
 										</div>
 
-										<p>
-											<Truncate lines={2}>
-												{item.content}
-											</Truncate>
-										</p>
-									</li>
-								))}
-							</ul>
-
-							<div className="dropdown__selected">
-								<Button
-									rounded
-									onClick={() =>
-										setSelected({
-											...selected,
-											isOpen: false,
-										})
-									}
-								>
-									<BiLeftArrowAlt />
-								</Button>
-
-								<div style={{ marginBottom: '4px' }}>
-									<h4>{selected.data?.label}</h4>
-									<span className="text-broken">
-										{moment(selected.data?.date).format(
-											'DD-MM-YYYY H:mm'
-										)}
-									</span>
+										<p>{selected.data?.content}</p>
+									</div>
 								</div>
-
-								<p>{selected.data?.content}</p>
-							</div>
+							) : (
+								noItemsContent
+							)}
 						</div>
-					) : (
-						noItemsContent
-					)}
+					</div>
 				</div>
 			)}
 		</div>
@@ -121,6 +150,7 @@ function Dropdown({ btnContent, loadItems, items, noItemsContent, ...props }) {
 
 Dropdown.prototype.propTypes = {
 	btnContent: PropTypes.any,
+	loading: PropTypes.bool,
 	loadItems: PropTypes.func,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({

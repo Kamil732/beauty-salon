@@ -62,11 +62,11 @@ function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 				<span>Liczba wolnych godzin</span>
 			</div>
 			{isAuthenticated &&
-				barbers.map((barber) => {
+				barbers.map((barber, idx) => {
 					if (!colors[barber.value] && !isAdmin) return null
 
 					return (
-						<div className="legend__item">
+						<div className="legend__item" key={idx}>
 							<EditBox
 								name={barber.value}
 								value={colors[barber.value]}
@@ -101,7 +101,7 @@ const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
 	isAdmin: state.auth.data.is_admin,
 	barbers: state.meetings.barberChoiceList,
-	colors: state.data.data.colors,
+	colors: state.data.serverData.data.colors,
 })
 
 const mapDispatchToProps = {

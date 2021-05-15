@@ -46,7 +46,7 @@ class Routes extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	loading: state.data.loading,
+	loading: state.data.loadingData,
 	ws: state.meetings.ws,
 })
 

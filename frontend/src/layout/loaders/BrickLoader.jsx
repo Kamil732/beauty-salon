@@ -1,8 +1,8 @@
 import React from 'react'
 
-function BrickLoader() {
+function BrickLoader(props) {
 	return (
-		<div className="brick-loader">
+		<div className="brick-loader" {...props}>
 			<div className="brick-loader__brick brick1"></div>
 			<div className="brick-loader__brick brick2"></div>
 			<div className="brick-loader__brick brick3"></div>

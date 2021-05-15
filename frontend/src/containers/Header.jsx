@@ -9,13 +9,13 @@ import { getNotifications } from '../redux/actions/data'
 
 import { default as NavigationMenu } from '../components/navigation/Menu'
 import { IoMdMegaphone, IoMdNotifications } from 'react-icons/io'
-import Button from '../layout/buttons/Button'
 import Dropdown from '../layout/buttons/Dropdown'
 
 class Header extends Component {
 	static propTypes = {
 		message: PropTypes.string,
 		isAuthenticated: PropTypes.bool,
+		notificationLoading: PropTypes.bool,
 		notifications: PropTypes.array,
 		getNotifications: PropTypes.func.isRequired,
 	}
@@ -25,8 +25,13 @@ class Header extends Component {
 	}
 
 	render() {
-		const { message, isAuthenticated, getNotifications, notifications } =
-			this.props
+		const {
+			message,
+			isAuthenticated,
+			getNotifications,
+			notifications,
+			notificationLoading,
+		} = this.props
 		const { isNavActive } = this.state
 
 		return (
@@ -41,15 +46,24 @@ class Header extends Component {
 							/>
 						</Link>
 
-						{window.innerWidth <= 1024 && isAuthenticated && (
+						{window.innerWidth <= 768 && isAuthenticated && (
 							<Dropdown
 								btnContent={<IoMdNotifications size={25} />}
 								rounded
+								loading={notificationLoading}
 								loadItems={getNotifications}
 								items={notifications}
 								noItemsContent={
-									<div style={{ textAlign: 'center' }}>
-										<IoMdMegaphone fontSize="80" />
+									<div
+										style={{
+											display: 'flex',
+											flexDirection: 'column',
+											justifyContent: 'center',
+											alignItems: 'center',
+											height: '100%',
+										}}
+									>
+										<IoMdMegaphone fontSize="100" />
 										<h3>Nie masz żadnych powiadomień</h3>
 									</div>
 								}
@@ -100,8 +114,9 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	message: state.data.data.message,
-	notifications: state.data.notifications,
+	message: state.data.serverData.data.message,
+	notificationLoading: state.data.notifications.loading,
+	notifications: state.data.notifications.data,
 	isAuthenticated: state.auth.isAuthenticated,
 })
 

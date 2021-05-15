@@ -143,12 +143,13 @@ class Contact extends Component {
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
 
-	contact_title: state.data.data.contact_title || '',
-	contact_content: state.data.data.contact_content || '',
-	contact_content_second: state.data.data.contact_content_second || '',
-	phone_number: state.data.data.phone_number || '',
-	location: state.data.data.location || 'BRAK LOKALIZACJI',
-	google_maps_url: state.data.data.google_maps_url || '',
+	contact_title: state.data.serverData.data.contact_title || '',
+	contact_content: state.data.serverData.data.contact_content || '',
+	contact_content_second:
+		state.data.serverData.data.contact_content_second || '',
+	phone_number: state.data.serverData.data.phone_number || '',
+	location: state.data.serverData.data.location || 'BRAK LOKALIZACJI',
+	google_maps_url: state.data.serverData.data.google_maps_url || '',
 })
 
 export default connect(mapStateToProps, null)(Contact)
