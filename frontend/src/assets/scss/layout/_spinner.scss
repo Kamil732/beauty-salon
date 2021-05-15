@@ -11,47 +11,47 @@
 		-webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
 		animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
 
-		&.brick1 {
+		&:nth-child(1) {
 			-webkit-animation-delay: 0.2s;
 			animation-delay: 0.2s;
 		}
 
-		&.brick2 {
+		&:nth-child(2) {
 			-webkit-animation-delay: 0.3s;
 			animation-delay: 0.3s;
 		}
 
-		&.brick3 {
+		&:nth-child(3) {
 			-webkit-animation-delay: 0.4s;
 			animation-delay: 0.4s;
 		}
 
-		&.brick4 {
+		&:nth-child(4) {
 			-webkit-animation-delay: 0.1s;
 			animation-delay: 0.1s;
 		}
 
-		&.brick5 {
+		&:nth-child(5) {
 			-webkit-animation-delay: 0.2s;
 			animation-delay: 0.2s;
 		}
 
-		&.brick6 {
+		&:nth-child(6) {
 			-webkit-animation-delay: 0.3s;
 			animation-delay: 0.3s;
 		}
 
-		&.brick7 {
+		&:nth-child(7) {
 			-webkit-animation-delay: 0s;
 			animation-delay: 0s;
 		}
 
-		&.brick8 {
+		&:nth-child(8) {
 			-webkit-animation-delay: 0.1s;
 			animation-delay: 0.1s;
 		}
 
-		&.brick9 {
+		&:nth-child(9) {
 			-webkit-animation-delay: 0.2s;
 			animation-delay: 0.2s;
 		}
@@ -81,5 +81,42 @@
 	35% {
 		-webkit-transform: scale3D(0, 0, 1);
 		transform: scale3D(0, 0, 1);
+	}
+}
+
+.circle-loader {
+	display: inline-block;
+	position: relative;
+	width: 80px;
+	height: 80px;
+
+	& > &__item {
+		box-sizing: border-box;
+		display: block;
+		position: absolute;
+		width: 64px;
+		height: 64px;
+		margin: 8px;
+		border: 8px solid $primary-color;
+		border-radius: 50%;
+		animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+		border-color: $primary-color transparent transparent transparent;
+
+		&:nth-child(2) {
+			animation-delay: -0.3s;
+		}
+
+		&:nth-child(3) {
+			animation-delay: -0.15s;
+		}
+	}
+}
+
+@keyframes lds-ring {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
 	}
 }
