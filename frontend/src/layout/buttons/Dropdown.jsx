@@ -4,9 +4,9 @@ import moment from 'moment'
 
 import { BiLeftArrowAlt } from 'react-icons/bi'
 
-import BrickLoader from '../loaders/BrickLoader'
 import Truncate from 'react-truncate'
 import Button from './Button'
+import CircleLoader from '../loaders/CircleLoader'
 
 function Dropdown({
 	btnContent,
@@ -65,7 +65,7 @@ function Dropdown({
 										height: '100%',
 									}}
 								>
-									<BrickLoader />
+									<CircleLoader />
 								</div>
 							) : items.length > 0 ? (
 								<div

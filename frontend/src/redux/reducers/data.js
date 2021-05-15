@@ -1,6 +1,7 @@
 import {
 	GET_DATA,
 	GET_NOTIFICATIONS,
+	GET_NOTIFICATIONS_ERROR,
 	NOTIFICATIONS_LOADING,
 	UPDATE_DATA,
 } from '../actions/types'
@@ -44,8 +45,17 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				notifications: {
+					...state.notifications,
 					loading: false,
 					data: [...action.payload, ...state.data],
+				},
+			}
+		case GET_NOTIFICATIONS_ERROR:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					loading: false,
 				},
 			}
 		default:

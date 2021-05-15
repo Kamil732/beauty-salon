@@ -1,4 +1,9 @@
-import { GET_DATA, GET_NOTIFICATIONS, NOTIFICATIONS_LOADING } from './types'
+import {
+	GET_DATA,
+	GET_NOTIFICATIONS,
+	NOTIFICATIONS_LOADING,
+	GET_NOTIFICATIONS_ERROR,
+} from './types'
 
 import { NotificationManager } from 'react-notifications'
 import axios from 'axios'
@@ -38,5 +43,9 @@ export const getNotifications = () => async (dispatch) => {
 			'Błąd',
 			10 ** 6
 		)
+
+		dispatch({
+			type: GET_NOTIFICATIONS_ERROR,
+		})
 	}
 }
