@@ -188,25 +188,10 @@ a {
 	}
 
 	.header {
-		margin-bottom: 0;
-
-		& > .nav {
-			& > .nav__link {
-				font-size: 1.6rem;
-			}
-		}
-	}
-}
-
-@include media-laptop {
-	.google_map {
-		width: 450px;
-	}
-
-	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-bottom: 0;
 
 		& > .mobile-nav > .nav-btn {
 			display: none;
@@ -231,6 +216,12 @@ a {
 				margin: 0 1.25rem;
 			}
 		}
+	}
+}
+
+@include media-laptop {
+	.google_map {
+		width: 450px;
 	}
 }
 

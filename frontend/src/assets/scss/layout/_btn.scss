@@ -158,7 +158,7 @@
 		content: ' ';
 		height: 33px;
 		width: 2px;
-		background-color: #333;
+		background-color: $primary-color;
 	}
 
 	&::before {
@@ -176,56 +176,74 @@
 }
 
 .dropdown {
-	position: relative;
+	background-color: $surface-color;
+	border-radius: 12px;
+	position: absolute;
+	top: 70px;
+	left: -6.5rem;
+	width: 250px;
+	height: 350px;
+	z-index: 2;
+	border: 1px solid rgba(0, 0, 0, 0.04);
+	box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
 
-	& > &__content {
-		overflow-x: hidden;
-		background-color: $surface-color;
-		border-radius: 12px;
+	& > &__inner {
 		padding: 1rem 0;
-		position: absolute;
-		top: 100%;
-		right: 0;
-		width: 300px;
-		max-height: 440px;
-		z-index: 2;
-		border: 1px solid rgba(0, 0, 0, 0.04);
-		box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
+		position: relative;
+		width: 100%;
+		height: 100%;
 
-		& > .dropdown__list {
-			display: flex;
-			width: 200%;
+		&::before {
+			content: '';
+			position: absolute;
+			left: 7.25rem;
+			top: -1.5rem;
+			width: 0;
+			height: 0;
+			border: 12px solid transparent;
+			border-bottom-color: $surface-color;
+		}
+
+		& > .dropdown__content {
+			overflow-x: hidden;
+			width: 100%;
 			height: 100%;
-			transition: transform 0.3s ease-in-out;
 
-			&.slide {
-				transform: translateX(-50%);
-			}
-
-			& > ul {
-				list-style: none;
-				width: 50%;
+			& > .dropdown__list {
+				display: flex;
+				width: 200%;
 				height: 100%;
-				overflow-y: auto;
-				flex-shrink: 0;
+				transition: transform 0.3s ease-in-out;
 
-				& > li {
-					padding: 10px 1rem;
-					cursor: pointer;
+				&.slide {
+					transform: translateX(-50%);
+				}
 
-					&:hover {
-						background-color: $secondary-color;
+				& > ul {
+					list-style: none;
+					width: 50%;
+					height: 100%;
+					overflow-y: auto;
+					flex-shrink: 0;
+
+					& > li {
+						padding: 10px 1rem;
+						cursor: pointer;
+
+						&:hover {
+							background-color: $secondary-color;
+						}
 					}
 				}
-			}
 
-			& > .dropdown__selected {
-				background-color: $surface-color;
-				padding: 1rem;
-				width: 50%;
-				height: 100%;
-				overflow-y: auto;
-				flex-shrink: 0;
+				& > .dropdown__selected {
+					background-color: $surface-color;
+					padding: 1rem;
+					width: 50%;
+					height: 100%;
+					overflow-y: auto;
+					flex-shrink: 0;
+				}
 			}
 		}
 	}
@@ -237,6 +255,18 @@
 
 		&__small {
 			padding: 0.5rem 1rem;
+		}
+	}
+
+	.dropdown {
+		width: 300px;
+		height: 400px;
+		left: auto;
+		right: -1rem;
+
+		& > &__inner::before {
+			left: auto;
+			right: 1.7rem;
 		}
 	}
 }

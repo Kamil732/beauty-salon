@@ -23,7 +23,7 @@
 	color: set-text-color($secondary-color);
 }
 
-@include media-laptop {
+@include media-tablet {
 	.d-md {
 		display: none;
 	}
