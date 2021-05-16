@@ -10,6 +10,7 @@ import { getNotifications } from '../redux/actions/data'
 import { default as NavigationMenu } from '../components/navigation/Menu'
 import { IoMdMegaphone, IoMdNotifications } from 'react-icons/io'
 import Dropdown from '../layout/buttons/Dropdown'
+import { CloseButton } from '../layout/buttons/Button'
 
 class Header extends Component {
 	static propTypes = {
@@ -64,7 +65,9 @@ class Header extends Component {
 										}}
 									>
 										<IoMdMegaphone fontSize="100" />
-										<h3>Nie masz żadnych powiadomień</h3>
+										<h3 style={{ textAlign: 'center' }}>
+											Nie masz żadnych powiadomień
+										</h3>
 									</div>
 								}
 							/>
@@ -89,12 +92,13 @@ class Header extends Component {
 					) : null}
 
 					<nav className={`nav${isNavActive ? ' active' : ''}`}>
-						<span
-							className="btn-close d-md"
-							onClick={() =>
-								this.setState({ isNavActive: false })
-							}
-						></span>
+						<span className="d-md">
+							<CloseButton
+								onClick={() =>
+									this.setState({ isNavActive: false })
+								}
+							/>
+						</span>
 
 						<NavigationMenu
 							closeNavigation={() =>
@@ -114,7 +118,7 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	message: state.data.serverData.data.message,
+	message: state.data.cms.data.message,
 	notificationLoading: state.data.notifications.loading,
 	notifications: state.data.notifications.data,
 	isAuthenticated: state.auth.isAuthenticated,

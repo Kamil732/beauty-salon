@@ -8,9 +8,11 @@ import {
 import { NotificationManager } from 'react-notifications'
 import axios from 'axios'
 
-export const getData = () => async (dispatch) => {
+export const getCMSData = () => async (dispatch) => {
 	try {
-		const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/`)
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/data/cms/`
+		)
 
 		dispatch({
 			type: GET_DATA,
@@ -30,7 +32,7 @@ export const getNotifications = () => async (dispatch) => {
 
 	try {
 		const res = await axios.get(
-			`${process.env.REACT_APP_API_URL}/notifications/`
+			`${process.env.REACT_APP_API_URL}/data/notifications/`
 		)
 
 		dispatch({

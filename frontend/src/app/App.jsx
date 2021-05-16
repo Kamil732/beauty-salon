@@ -14,12 +14,12 @@ import { NotificationContainer } from 'react-notifications'
 import { Provider } from 'react-redux'
 import store from '../redux/store'
 import { loadUser } from '../redux/actions/auth'
-import { getData } from '../redux/actions/data'
+import { getCMSData } from '../redux/actions/data'
 import { connectWebSocket } from '../redux/actions/meetings'
 
 class App extends Component {
 	componentDidMount() {
-		store.dispatch(getData())
+		store.dispatch(getCMSData())
 		store.dispatch(loadUser())
 		store.dispatch(connectWebSocket())
 

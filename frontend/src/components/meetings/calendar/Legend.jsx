@@ -101,7 +101,7 @@ const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
 	isAdmin: state.auth.data.is_admin,
 	barbers: state.meetings.barberChoiceList,
-	colors: state.data.serverData.data.colors,
+	colors: state.data.cms.data.colors,
 })
 
 const mapDispatchToProps = {

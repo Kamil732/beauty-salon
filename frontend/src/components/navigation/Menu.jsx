@@ -118,7 +118,7 @@ class Menu extends Component {
 										>
 											<IoMdMegaphone fontSize="100" />
 
-											<h3>
+											<h3 style={{ textAlign: 'center' }}>
 												Nie masz żadnych powiadomień
 											</h3>
 										</div>

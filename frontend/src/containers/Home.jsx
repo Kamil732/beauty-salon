@@ -147,11 +147,10 @@ Home.prototype.propTypes = {
 
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
-	home_content: state.data.serverData.data.home_content || '',
-	home_title: state.data.serverData.data.home_title || '',
-	phone_number: state.data.serverData.data.phone_number || '',
-	contact_content_second:
-		state.data.serverData.data.contact_content_second || '',
+	home_content: state.data.cms.data.home_content || '',
+	home_title: state.data.cms.data.home_title || '',
+	phone_number: state.data.cms.data.phone_number || '',
+	contact_content_second: state.data.cms.data.contact_content_second || '',
 })
 
 export default connect(mapStateToProps, null)(Home)

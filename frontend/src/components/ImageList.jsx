@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { CloseButton } from '../layout/buttons/Button'
 
 import BrickLoader from '../layout/loaders/BrickLoader'
 
@@ -14,12 +15,12 @@ function ImageList({ loading, images }) {
 		images = images.map((image) => {
 			if (zoom === image.id)
 				return (
-					<>
+					<React.Fragment key={image.id}>
 						<figure className="gallery__img-container zoom">
-							<span
-								className="btn-close rt-corner"
+							<CloseButton
+								trCorner
 								onClick={() => setZoom(null)}
-							></span>
+							/>
 
 							<img
 								src={image.image}
@@ -32,11 +33,11 @@ function ImageList({ loading, images }) {
 							<p className="gallery__img__title">{image.title}</p>
 						</figure>
 						<figure className="gallery__img-container"></figure>
-					</>
+					</React.Fragment>
 				)
 
 			return (
-				<>
+				<React.Fragment key={image.id}>
 					<figure className="gallery__img-container">
 						<img
 							src={image.image}
@@ -46,7 +47,7 @@ function ImageList({ loading, images }) {
 							data-aos="zoom-out"
 						/>
 					</figure>
-				</>
+				</React.Fragment>
 			)
 		})
 

@@ -71,4 +71,29 @@ Button.prototype.propTypes = {
 	to: PropTypes.string,
 }
 
+function CloseButton({ trCorner, ...props }) {
+	return (
+		<Button
+			rounded
+			style={
+				trCorner
+					? {
+							position: 'absolute',
+							top: '4px',
+							right: '4px',
+					  }
+					: null
+			}
+			{...props}
+		>
+			<span className="btn-close"></span>
+		</Button>
+	)
+}
+
+CloseButton.prototype.propTypes = {
+	trCorner: PropTypes.bool,
+}
+
+export { CloseButton }
 export default Button

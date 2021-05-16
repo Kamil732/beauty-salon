@@ -7,7 +7,7 @@ import {
 } from '../actions/types'
 
 const initialState = {
-	serverData: {
+	cms: {
 		loading: true,
 		data: {},
 	},
@@ -24,11 +24,11 @@ export default function (state = initialState, action) {
 		case GET_DATA:
 			return {
 				...state,
-				serverData: {
-					...state.serverData,
+				cms: {
+					...state.cms,
 					loading: false,
 					data: {
-						...state.data,
+						...state.cms.data,
 						...action.payload,
 					},
 				},
@@ -47,7 +47,7 @@ export default function (state = initialState, action) {
 				notifications: {
 					...state.notifications,
 					loading: false,
-					data: [...action.payload, ...state.data],
+					data: [...action.payload, ...state.notifications.data],
 				},
 			}
 		case GET_NOTIFICATIONS_ERROR:

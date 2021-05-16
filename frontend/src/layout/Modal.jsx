@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { CloseButton } from './buttons/Button'
 
 function Modal({ children, closeModal, ...props }) {
 	useEffect(() => {
@@ -13,10 +14,7 @@ function Modal({ children, closeModal, ...props }) {
 		<>
 			<div className="dark-bg" onClick={closeModal}></div>
 			<div className="modal show" {...props}>
-				<span
-					className="btn-close rt-corner"
-					onClick={closeModal}
-				></span>
+				<CloseButton trCorner onClick={closeModal} />
 				{children}
 			</div>
 		</>

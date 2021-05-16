@@ -49,8 +49,8 @@ class Pricing extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	hair_price: state.data.serverData.data.hair_price || '',
-	beard_price: state.data.serverData.data.beard_price || '',
+	hair_price: state.data.cms.data.hair_price || '',
+	beard_price: state.data.cms.data.beard_price || '',
 })
 
 export default connect(mapStateToProps, null)(Pricing)
