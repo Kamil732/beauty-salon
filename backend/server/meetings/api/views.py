@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework import viewsets, generics, permissions, status
+import rest_framework
 from rest_framework.response import Response
 
 from server.permissions import IsOwnerOrIsAdminOrReadOnly
@@ -21,6 +22,17 @@ class MeetingListAPIView(generics.ListCreateAPIView):
             return serializers.AdminMeetingSerializer
         return serializers.CustomerMeetingSerializer
 
+    def get_queryset(self):
+        # Get date start of week
+        today = datetime.date.today()
+        monday = today - datetime.timedelta(days=today.weekday())
+
+        from_ = self.request.query_params.get('from', monday)
+        to = self.request.query_params.get('to', monday + datetime.timedelta(days=8))
+        to = datetime.datetime.strptime(to, '%Y-%m-%d') + datetime.timedelta(days=1)
+
+        return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('barber', 'customer')
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         user = request.user
@@ -33,17 +45,6 @@ class MeetingListAPIView(generics.ListCreateAPIView):
                     data[i] = serializers.AdminMeetingSerializer(Meeting.objects.get(id=data[i]['id']), many=False).data
 
         return Response(data)
-
-    def get_queryset(self):
-        # Get date start of week
-        today = datetime.date.today()
-        monday = today - datetime.timedelta(days=today.weekday())
-
-        from_ = self.request.query_params.get('from', monday)
-        to = self.request.query_params.get('to', monday + datetime.timedelta(days=8))
-        to = datetime.datetime.strptime(to, '%Y-%m-%d') + datetime.timedelta(days=1)
-
-        return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('barber', 'customer')
 
 
 @method_decorator(csrf_protect, name='update')

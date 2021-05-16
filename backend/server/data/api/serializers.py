@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.models import Account
-from data.models import Data
+from data.models import Data, Notification
 
 
 class DataSerializer(serializers.ModelSerializer):
@@ -67,3 +67,9 @@ class DataSerializer(serializers.ModelSerializer):
             'end_work_monday': {'allow_null': True},
             'start_work_monday': {'allow_null': True},
         }
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        exclude = ('recivers',)

@@ -52,3 +52,11 @@ class Data(models.Model):
 
     def has_add_permission(self):
         return Data.objects.filter(id=self.id).exists()
+
+
+class Notification(models.Model):
+    recivers = models.ManyToManyField(Account, related_name='notifications')
+    date = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=80)
+    message = models.TextField()
+    read = models.BooleanField(default=False)

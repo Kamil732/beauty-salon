@@ -8,7 +8,7 @@ from rest_framework import serializers
 from server.utilities import get_working_hours
 from meetings.models import Meeting
 from accounts.models import Account
-from data.models import Data
+from data.models import Data, Notification
 from accounts.api.serializers import AccountSerializer
 
 
@@ -173,6 +173,12 @@ class AdminMeetingSerializer(MeetingSerializer):
         if (data['end'] - data['start']).days > 0 or data['end'].hour == 0:
             # If meeting should be allDay then add 1 day to it.
             data['end'] += timedelta(days=1)
+
+        if data.get('customer'):
+            notify = Notification.objects.create(
+                title='Została umówiona wizyta', message='Wizyta do salonu Damian Kwiecień została umówiona. Aby potwierdzić jej istnienie, kliknij `tutaj`')
+            notify.save()
+            notify.recivers.add(data['customer'])
 
         return super(AdminMeetingSerializer, self).create(data)
 
