@@ -18,6 +18,7 @@ class Header extends Component {
 		isAuthenticated: PropTypes.bool,
 		notificationLoading: PropTypes.bool,
 		notifications: PropTypes.array,
+		unReadNotificationsAmount: PropTypes.number,
 		getNotifications: PropTypes.func.isRequired,
 	}
 
@@ -31,6 +32,7 @@ class Header extends Component {
 			isAuthenticated,
 			getNotifications,
 			notifications,
+			unReadNotificationsAmount,
 			notificationLoading,
 		} = this.props
 		const { isNavActive } = this.state
@@ -54,6 +56,7 @@ class Header extends Component {
 								loading={notificationLoading}
 								loadItems={getNotifications}
 								items={notifications}
+								unReadItems={unReadNotificationsAmount}
 								noItemsContent={
 									<div
 										style={{
@@ -121,6 +124,7 @@ const mapStateToProps = (state) => ({
 	message: state.data.cms.data.message,
 	notificationLoading: state.data.notifications.loading,
 	notifications: state.data.notifications.data,
+	unReadNotificationsAmount: state.data.notifications.unRead,
 	isAuthenticated: state.auth.isAuthenticated,
 })
 

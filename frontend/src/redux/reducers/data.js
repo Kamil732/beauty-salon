@@ -2,6 +2,7 @@ import {
 	GET_DATA,
 	GET_NOTIFICATIONS,
 	GET_NOTIFICATIONS_ERROR,
+	GET_NOTIFICATIONS_UNREAD_AMOUNT,
 	NOTIFICATIONS_LOADING,
 	UPDATE_DATA,
 } from '../actions/types'
@@ -13,6 +14,7 @@ const initialState = {
 	},
 	notifications: {
 		loading: false,
+		unRead: 0,
 		data: [],
 	},
 }
@@ -39,6 +41,15 @@ export default function (state = initialState, action) {
 				notifications: {
 					...state.notifications,
 					loading: true,
+				},
+			}
+		case GET_NOTIFICATIONS_UNREAD_AMOUNT:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					loading: false,
+					unRead: action.payload,
 				},
 			}
 		case GET_NOTIFICATIONS:

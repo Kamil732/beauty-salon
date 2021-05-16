@@ -3,6 +3,7 @@ import {
 	GET_NOTIFICATIONS,
 	NOTIFICATIONS_LOADING,
 	GET_NOTIFICATIONS_ERROR,
+	GET_NOTIFICATIONS_UNREAD_AMOUNT,
 } from './types'
 
 import { NotificationManager } from 'react-notifications'
@@ -24,6 +25,30 @@ export const getCMSData = () => async (dispatch) => {
 			'Błąd',
 			10 ** 6
 		)
+	}
+}
+
+export const getUnreadNotificationsAmount = () => async (dispatch) => {
+	dispatch({ type: NOTIFICATIONS_LOADING })
+
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/data/notifications/unread-amount/`
+		)
+
+		dispatch({
+			type: GET_NOTIFICATIONS_UNREAD_AMOUNT,
+			payload: res.data,
+		})
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się wczytać liczby nieprzeczytanych powiadomień',
+			'Błąd'
+		)
+
+		dispatch({
+			type: GET_NOTIFICATIONS_ERROR,
+		})
 	}
 }
 

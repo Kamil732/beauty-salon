@@ -13,6 +13,7 @@ function Dropdown({
 	loading,
 	loadItems,
 	items,
+	unReadItems,
 	noItemsContent,
 	...props
 }) {
@@ -45,11 +46,15 @@ function Dropdown({
 					setSelected({ ...selected, isOpen: false })
 					setIsOpen(!isOpen)
 
-					if (loadItems && !isOpen && items.length === 0) loadItems()
+					if (loadItems && !isOpen && !loading && items.length === 0)
+						loadItems()
 				}}
 				{...props}
 			>
 				{btnContent}
+				{unReadItems > 0 && (
+					<span className="badge">{unReadItems}</span>
+				)}
 			</Button>
 
 			{isOpen && (
@@ -86,12 +91,12 @@ function Dropdown({
 											>
 												<div
 													style={{
-														marginBottom: '4px',
+														marginBottom: '6px',
 													}}
 												>
 													<h4>
 														<Truncate lines={1}>
-															{item.label}
+															{item.title}
 														</Truncate>
 													</h4>
 													<span className="text-broken">
@@ -105,7 +110,7 @@ function Dropdown({
 
 												<p>
 													<Truncate lines={2}>
-														{item.content}
+														{item.message}
 													</Truncate>
 												</p>
 											</li>
@@ -113,20 +118,18 @@ function Dropdown({
 									</ul>
 
 									<div className="dropdown__selected">
-										<Button
-											rounded
-											onClick={() =>
-												setSelected({
-													...selected,
-													isOpen: false,
-												})
-											}
-										>
-											<BiLeftArrowAlt />
-										</Button>
-
-										<div style={{ marginBottom: '4px' }}>
-											<h4>{selected.data?.label}</h4>
+										<div className="dropdown__selected__header">
+											<Button
+												rounded
+												onClick={() =>
+													setSelected({
+														...selected,
+														isOpen: false,
+													})
+												}
+											>
+												<BiLeftArrowAlt />
+											</Button>
 											<span className="text-broken">
 												{moment(
 													selected.data?.date
@@ -134,7 +137,13 @@ function Dropdown({
 											</span>
 										</div>
 
-										<p>{selected.data?.content}</p>
+										<h4 style={{ marginBottom: '1rem' }}>
+											{selected.data?.title}
+										</h4>
+
+										<p style={{ lineHeight: '1.3' }}>
+											{selected.data?.message}
+										</p>
 									</div>
 								</div>
 							) : (
@@ -155,11 +164,13 @@ Dropdown.prototype.propTypes = {
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
 			date: PropTypes.instanceOf(Date).isRequired,
-			label: PropTypes.string,
-			content: PropTypes.string,
+			title: PropTypes.string,
+			message: PropTypes.string,
+			read: PropTypes.bool,
 			redirect: PropTypes.string,
 		})
 	),
+	unReadItems: PropTypes.number,
 	noItemsContent: PropTypes.instanceOf(Element).isRequired,
 }
 

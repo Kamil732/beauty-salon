@@ -14,7 +14,7 @@ import { NotificationContainer } from 'react-notifications'
 import { Provider } from 'react-redux'
 import store from '../redux/store'
 import { loadUser } from '../redux/actions/auth'
-import { getCMSData } from '../redux/actions/data'
+import { getCMSData, getUnreadNotificationsAmount } from '../redux/actions/data'
 import { connectWebSocket } from '../redux/actions/meetings'
 
 class App extends Component {
@@ -22,6 +22,9 @@ class App extends Component {
 		store.dispatch(getCMSData())
 		store.dispatch(loadUser())
 		store.dispatch(connectWebSocket())
+
+		if (store.getState().auth.isAuthenticated)
+			store.dispatch(getUnreadNotificationsAmount())
 
 		AOS.init({
 			duration: 500,

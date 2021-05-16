@@ -17,6 +17,7 @@ class Menu extends Component {
 		isAdmin: PropTypes.bool,
 		notificationLoading: PropTypes.bool,
 		notifications: PropTypes.array,
+		unReadNotificationsAmount: PropTypes.number,
 		logout: PropTypes.func.isRequired,
 		closeNavigation: PropTypes.func.isRequired,
 		getNotifications: PropTypes.func.isRequired,
@@ -29,6 +30,7 @@ class Menu extends Component {
 			isAdmin,
 			notificationLoading,
 			notifications,
+			unReadNotificationsAmount,
 			logout,
 			closeNavigation,
 			getNotifications,
@@ -106,6 +108,7 @@ class Menu extends Component {
 									loading={notificationLoading}
 									loadItems={getNotifications}
 									items={notifications}
+									unReadItems={unReadNotificationsAmount}
 									noItemsContent={
 										<div
 											style={{
@@ -148,6 +151,7 @@ const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
 	notificationLoading: state.data.notifications.loading,
 	notifications: state.data.notifications.data,
+	unReadNotificationsAmount: state.data.notifications.unRead,
 })
 
 const mapDispatchToProps = {
