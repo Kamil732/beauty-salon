@@ -14,6 +14,7 @@ function Dropdown({
 	loadItems,
 	items,
 	unReadItems,
+	markRead,
 	noItemsContent,
 	...props
 }) {
@@ -36,7 +37,12 @@ function Dropdown({
 
 		return () =>
 			document.removeEventListener('mousedown', handleClickOutside)
-	}, [selected, isOpen, loadItems, items])
+	}, [selected, isOpen])
+
+	useEffect(() => {
+		if (selected.isOpen && !selected.data.read && markRead)
+			markRead(selected.data.id)
+	}, [selected, markRead])
 
 	return (
 		<div style={{ position: 'relative' }} ref={container}>
@@ -53,7 +59,11 @@ function Dropdown({
 			>
 				{btnContent}
 				{unReadItems > 0 && (
-					<span className="badge">{unReadItems}</span>
+					<div className="badge">
+						<div>
+							<div>{unReadItems}</div>
+						</div>
+					</div>
 				)}
 			</Button>
 
@@ -91,14 +101,30 @@ function Dropdown({
 											>
 												<div
 													style={{
-														marginBottom: '6px',
+														marginBottom: '0.5rem',
 													}}
 												>
-													<h4>
-														<Truncate lines={1}>
-															{item.title}
-														</Truncate>
-													</h4>
+													{item.read === false ? (
+														<div className="dropdown__header">
+															<h4>
+																<Truncate
+																	lines={1}
+																>
+																	{item.title}
+																</Truncate>
+															</h4>
+
+															<span className="text-broken info-text">
+																Nowe
+															</span>
+														</div>
+													) : (
+														<h4>
+															<Truncate lines={1}>
+																{item.title}
+															</Truncate>
+														</h4>
+													)}
 													<span className="text-broken">
 														{moment(
 															item.date
@@ -118,7 +144,10 @@ function Dropdown({
 									</ul>
 
 									<div className="dropdown__selected">
-										<div className="dropdown__selected__header">
+										<div
+											className="dropdown__header"
+											style={{ marginBottom: '1rem' }}
+										>
 											<Button
 												rounded
 												onClick={() =>
@@ -130,6 +159,7 @@ function Dropdown({
 											>
 												<BiLeftArrowAlt />
 											</Button>
+
 											<span className="text-broken">
 												{moment(
 													selected.data?.date
@@ -163,6 +193,7 @@ Dropdown.prototype.propTypes = {
 	loadItems: PropTypes.func,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
+			id: PropTypes.number.isRequired,
 			date: PropTypes.instanceOf(Date).isRequired,
 			title: PropTypes.string,
 			message: PropTypes.string,
@@ -171,6 +202,7 @@ Dropdown.prototype.propTypes = {
 		})
 	),
 	unReadItems: PropTypes.number,
+	markRead: PropTypes.func,
 	noItemsContent: PropTypes.instanceOf(Element).isRequired,
 }
 

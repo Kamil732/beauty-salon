@@ -40,6 +40,7 @@ import getWorkHours from '../../../helpers/getWorkHours'
 import MonthDateHeader from './tools/MonthDateHeader'
 import ThreeDaysView from './tools/ThreeDaysView'
 import EditMeetingForm from './EditMeetingForm'
+import getHexLight from '../../../helpers/getHexLight'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -612,10 +613,7 @@ class Calendar extends Component {
 			this.props
 
 		const hexcolor = `#${colors[event.barber]}`
-		const r = parseInt(hexcolor.substr(1, 2), 16)
-		const g = parseInt(hexcolor.substr(3, 2), 16)
-		const b = parseInt(hexcolor.substr(4, 2), 16)
-		const yiq = (r * 299 + g * 587 + b * 114) / 1000
+		const eventBglight = getHexLight(hexcolor)
 
 		return {
 			className: `${event.do_not_work ? 'doNotWork' : ''} ${
@@ -625,7 +623,7 @@ class Calendar extends Component {
 					!event.do_not_work)
 					? 'selectable'
 					: ''
-			} ${yiq < 40 ? 'white' : ''}`,
+			} ${eventBglight < 40 ? 'white' : ''}`,
 			style:
 				!event.do_not_work && colors[event.barber]
 					? {

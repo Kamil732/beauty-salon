@@ -1,10 +1,12 @@
 import {
+	CLEAR_NOTIFICATIONS,
 	GET_DATA,
 	GET_NOTIFICATIONS,
 	GET_NOTIFICATIONS_ERROR,
 	GET_NOTIFICATIONS_UNREAD_AMOUNT,
 	NOTIFICATIONS_LOADING,
 	UPDATE_DATA,
+	UPDATE_NOTIFICATION,
 } from '../actions/types'
 
 const initialState = {
@@ -35,6 +37,16 @@ export default function (state = initialState, action) {
 					},
 				},
 			}
+		case CLEAR_NOTIFICATIONS:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					data: initialState.notifications.data,
+					unRead: initialState.notifications.unRead,
+					loading: initialState.notifications.loading,
+				},
+			}
 		case NOTIFICATIONS_LOADING:
 			return {
 				...state,
@@ -48,7 +60,6 @@ export default function (state = initialState, action) {
 				...state,
 				notifications: {
 					...state.notifications,
-					loading: false,
 					unRead: action.payload,
 				},
 			}
@@ -67,6 +78,25 @@ export default function (state = initialState, action) {
 				notifications: {
 					...state.notifications,
 					loading: false,
+				},
+			}
+		case UPDATE_NOTIFICATION:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					unRead:
+						state.notifications.unRead -
+						(action.payload?.read ? 1 : 0),
+					data: state.notifications.data.map((notification) => {
+						if (notification.id !== action.payload.id)
+							return notification
+
+						return {
+							...notification,
+							...action.payload,
+						}
+					}),
 				},
 			}
 		default:
