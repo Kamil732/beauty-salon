@@ -29,6 +29,7 @@
 }
 
 .btn {
+	position: relative;
 	display: flex;
 	align-items: center;
 	outline: none;
@@ -64,7 +65,8 @@
 		border: none;
 		border-radius: 30px;
 
-		&:hover {
+		&:hover,
+		&:focus {
 			$color: $secondary-color;
 			background-color: $color;
 			color: set-text-color($color);
@@ -226,7 +228,8 @@
 						padding: 10px 1rem;
 						cursor: pointer;
 
-						&:hover {
+						&:hover,
+						&:focus {
 							background-color: $secondary-color;
 						}
 					}
@@ -239,6 +242,13 @@
 					height: 100%;
 					overflow-y: auto;
 					flex-shrink: 0;
+
+					& > .dropdown__selected__header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-bottom: 1rem;
+					}
 				}
 			}
 		}
