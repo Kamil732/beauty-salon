@@ -16,4 +16,4 @@ class DataAdmin(ModelAdmin):
 @admin.register(Notification)
 class NotificationAdmin(ModelAdmin):
     list_display = ('title', 'date', 'read',)
-    readonly_fields = ('read', 'date',)
+    readonly_fields = ('date',)
