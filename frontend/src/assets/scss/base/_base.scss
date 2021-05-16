@@ -64,12 +64,18 @@ a {
 
 .badge {
 	position: absolute;
-	top: -6px;
-	right: -2px;
-	padding: 2px 8px;
-	border-radius: 35px;
-	background: $info-color;
-	color: set-text-color($info-color);
+	top: 2px;
+	right: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	align-content: center;
+	background-color: $error-color;
+	padding: 0 4px;
+	color: set-text-color(set-text-color($error-color));
+	font-weight: 700;
+	font-size: 12px;
+	border-radius: 30px;
 }
 
 .dark-bg {
