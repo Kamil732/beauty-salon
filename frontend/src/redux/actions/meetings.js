@@ -194,7 +194,7 @@ export const loadCustomers = (value) => async (dispatch, getState) => {
 	}
 }
 
-export const connectWebSocket = () => (dispatch) => {
+export const connectMeetingWS = () => (dispatch) => {
 	const ws = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/meetings/`)
 	let connectInterval = null
 	let timeout = 250
@@ -202,12 +202,12 @@ export const connectWebSocket = () => (dispatch) => {
 	// Check if websocket instance is closed, if so call `connect` function.
 	const checkIsWebSocketClosed = () => {
 		if (!ws || ws.readyState === WebSocket.CLOSED)
-			dispatch(connectWebSocket())
+			dispatch(connectMeetingWS())
 	}
 
 	// websocket onopen event listener
 	ws.onopen = () => {
-		console.log('connected websocket')
+		console.log('Connected meeting websocket')
 		dispatch({
 			type: MEETINGS_CONNECT_WS,
 			payload: ws,
@@ -245,7 +245,7 @@ export const connectWebSocket = () => (dispatch) => {
 	ws.onclose = (e) => {
 		dispatch({ type: MEETINGS_LOADING })
 		console.log(
-			`Socket is closed. Reconnect will be attempted in ${Math.min(
+			`Meeting socket is closed. Reconnect will be attempted in ${Math.min(
 				10000 / 1000,
 				(timeout + timeout) / 1000
 			)} second.`,
@@ -262,7 +262,7 @@ export const connectWebSocket = () => (dispatch) => {
 	ws.onerror = (err) => {
 		dispatch({ type: MEETINGS_LOADING })
 		console.error(
-			'Socket encountered error: ',
+			'Meeting socket encountered error: ',
 			err.message,
 			'Closing socket'
 		)

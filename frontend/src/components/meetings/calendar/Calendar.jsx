@@ -15,7 +15,6 @@ import {
 } from '../../../redux/actions/types'
 import {
 	loadMeetings,
-	connectWebSocket,
 	changeVisibleMeetings,
 } from '../../../redux/actions/meetings'
 
@@ -56,7 +55,6 @@ class Calendar extends Component {
 		visibleMeetings: PropTypes.array,
 		changeVisibleMeetings: PropTypes.func.isRequired,
 		loadMeetings: PropTypes.func.isRequired,
-		connectWebSocket: PropTypes.func.isRequired,
 
 		colors: PropTypes.object,
 		one_slot_max_meetings: PropTypes.number.isRequired,
@@ -958,7 +956,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
 	loadMeetings,
-	connectWebSocket,
 	changeVisibleMeetings,
 }
 

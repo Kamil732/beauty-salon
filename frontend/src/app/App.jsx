@@ -1,7 +1,8 @@
-import React, { Component } from 'react'
+import React, { useEffect } from 'react'
 import 'react-notifications/lib/notifications.css'
 import 'aos/dist/aos.css'
 import '../assets/css/main.css'
+import notifySound from '../assets/sounds/pristine-609.mp3'
 
 import { BrowserRouter as Router } from 'react-router-dom'
 
@@ -15,40 +16,45 @@ import { Provider } from 'react-redux'
 import store from '../redux/store'
 import { loadUser } from '../redux/actions/auth'
 import { getCMSData } from '../redux/actions/data'
-import { connectWebSocket } from '../redux/actions/meetings'
+import { connectMeetingWS } from '../redux/actions/meetings'
 
-class App extends Component {
-	componentDidMount() {
-		store.dispatch(getCMSData())
-		store.dispatch(loadUser())
-		store.dispatch(connectWebSocket())
+function App() {
+	useEffect(() => {
+		const getDatas = async () => {
+			await store.dispatch(getCMSData())
+			await store.dispatch(loadUser())
+			await store.dispatch(connectMeetingWS())
 
-		AOS.init({
-			duration: 500,
-			once: true,
-		})
-	}
+			AOS.init({
+				duration: 500,
+				once: true,
+			})
+		}
 
-	// componentDidCatch() {
-	// 	window.location.reload()
-	// }
+		getDatas()
 
-	render() {
-		return (
-			<Provider store={store}>
-				<Router>
-					<Header />
+		// return () => window.location.reload()
+	}, [])
 
-					<div className="content-wrap">
-						<NotificationContainer />
-						<Routes />
-					</div>
+	return (
+		<Provider store={store}>
+			<Router>
+				<Header />
 
-					<Footer />
-				</Router>
-			</Provider>
-		)
-	}
+				<div className="content-wrap">
+					<NotificationContainer />
+
+					<audio id="audio">
+						<source src={notifySound}></source>
+					</audio>
+
+					<Routes />
+				</div>
+
+				<Footer />
+			</Router>
+		</Provider>
+	)
 }
 
 export default App

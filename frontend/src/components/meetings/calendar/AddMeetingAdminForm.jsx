@@ -46,8 +46,30 @@ class AddMeetingAdminForm extends Component {
 
 	onSubmit = async (e) => {
 		e.preventDefault()
+		const {
+			do_not_work,
+			customer,
+			customer_first_name,
+			customer_last_name,
+			customer_phone_number,
+			customer_fax_number,
+			barber,
+			type,
+		} = this.state
 
-		const phoneRegexValidation = /^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/
+		const payload = {
+			do_not_work,
+			customer,
+			customer_first_name,
+			customer_last_name,
+			customer_phone_number,
+			customer_fax_number,
+			barber,
+			type,
+		}
+
+		const phoneRegexValidation =
+			/^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/
 
 		if (
 			!this.state.do_not_work &&
@@ -62,7 +84,7 @@ class AddMeetingAdminForm extends Component {
 			return
 		}
 
-		await this.props.addMeeting(this.state, (state) =>
+		await this.props.addMeeting(payload, (state) =>
 			this.setState({ loading: state })
 		)
 	}

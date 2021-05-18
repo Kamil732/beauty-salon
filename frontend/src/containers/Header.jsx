@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import logo from '../assets/images/logo.png'
 
 import {
+	connectNotificationWS,
 	getNotifications,
 	getUnreadNotificationsAmount,
 	markNotificationAsRead,
@@ -19,6 +20,7 @@ import { useEffect } from 'react'
 
 function Header({
 	message,
+	ws,
 	isAuthenticated,
 	getUnreadNotificationsAmount,
 	getNotifications,
@@ -26,12 +28,17 @@ function Header({
 	notifications,
 	unReadNotificationsAmount,
 	notificationLoading,
+	connectNotificationWS,
 }) {
 	const [isOpen, setIsOpen] = useState(false)
 
 	useEffect(() => {
 		if (isAuthenticated) getUnreadNotificationsAmount()
 	}, [isAuthenticated, getUnreadNotificationsAmount])
+
+	useEffect(() => {
+		if (isAuthenticated && !ws) connectNotificationWS()
+	}, [isAuthenticated, ws, connectNotificationWS])
 
 	return (
 		<>
@@ -106,6 +113,7 @@ function Header({
 
 Header.prototype.propTypes = {
 	message: PropTypes.string,
+	ws: PropTypes.object,
 	isAuthenticated: PropTypes.bool,
 	notificationLoading: PropTypes.bool,
 	notifications: PropTypes.array,
@@ -113,10 +121,12 @@ Header.prototype.propTypes = {
 	getUnreadNotificationsAmount: PropTypes.func.isRequired,
 	getNotifications: PropTypes.func.isRequired,
 	markNotificationAsRead: PropTypes.func.isRequired,
+	connectNotificationWS: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
 	message: state.data.cms.data.message,
+	ws: state.data.notifications.ws,
 	notificationLoading: state.data.notifications.loading,
 	notifications: state.data.notifications.data,
 	unReadNotificationsAmount: state.data.notifications.unRead,
@@ -124,6 +134,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
+	connectNotificationWS,
 	getUnreadNotificationsAmount,
 	getNotifications,
 	markNotificationAsRead,

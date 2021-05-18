@@ -12,10 +12,10 @@ import ButtonContainer from '../buttons/ButtonContainer'
 import CSRFToken from '../../components/CSRFToken'
 
 function EditBox({
+	dispatch,
 	type,
 	children,
 	isAdmin,
-	ws,
 	regexValidation,
 	validationErrorMessage,
 	value,
@@ -60,13 +60,11 @@ function EditBox({
 				res = res.data
 			}
 
+			dispatch({
+				type: UPDATE_DATA,
+				payload: res,
+			})
 			setIsEditMode(false)
-			ws.send(
-				JSON.stringify({
-					event: UPDATE_DATA,
-					payload: res,
-				})
-			)
 
 			NotificationManager.success('Zapisano zmainę')
 		} catch (err) {
@@ -133,7 +131,6 @@ function EditBox({
 
 EditBox.prototype.propTypes = {
 	isAdmin: PropTypes.bool,
-	ws: PropTypes.object.isRequired,
 	type: PropTypes.string,
 	name: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
@@ -144,7 +141,6 @@ EditBox.prototype.propTypes = {
 
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
-	ws: state.meetings.ws,
 })
 
 export default connect(mapStateToProps, null)(EditBox)

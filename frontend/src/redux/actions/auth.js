@@ -110,7 +110,7 @@ export const signUp =
 		}
 	}
 
-export const logout = () => async (dispatch) => {
+export const logout = () => async (dispatch, getState) => {
 	const body = JSON.stringify({
 		withCredentials: true,
 	})

@@ -33,8 +33,9 @@ class AddMeetingForm extends Component {
 		e.preventDefault()
 
 		const { barber, type } = this.state
+		const payload = { barber, type }
 
-		this.props.addMeeting({ barber, type }, (state) =>
+		this.props.addMeeting(payload, (state) =>
 			this.setState({ loading: state })
 		)
 	}

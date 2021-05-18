@@ -5,6 +5,9 @@ import {
 	GET_NOTIFICATIONS_ERROR,
 	GET_NOTIFICATIONS_UNREAD_AMOUNT,
 	UPDATE_NOTIFICATION,
+	GET_NOTIFICATION,
+	NOTIFICATION_CONNECT_WS,
+	ADD_UNREAD_NOTIFICATIONS_AMOUNT,
 } from './types'
 
 import { NotificationManager } from 'react-notifications'
@@ -74,6 +77,27 @@ export const getNotifications = () => async (dispatch) => {
 	}
 }
 
+export const getNotification = (id) => async (dispatch) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/data/notifications/${id}/`
+		)
+
+		dispatch({
+			type: GET_NOTIFICATION,
+			payload: res.data,
+		})
+
+		const notifySoundElement = document.getElementById('audio')
+		notifySoundElement.play()
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się otrzymać powiadomienia',
+			'Błąd'
+		)
+	}
+}
+
 export const markNotificationAsRead = (id) => async (dispatch) => {
 	try {
 		const body = JSON.stringify({ read: true })
@@ -83,7 +107,6 @@ export const markNotificationAsRead = (id) => async (dispatch) => {
 			body,
 			getHeaders(true)
 		)
-		console.log(res.data)
 
 		dispatch({
 			type: UPDATE_NOTIFICATION,
@@ -97,9 +120,87 @@ export const markNotificationAsRead = (id) => async (dispatch) => {
 			'Nie udało zaznaczyć powiadomienia jako przeczytane',
 			'Błąd'
 		)
+	}
+}
 
+export const connectNotificationWS = () => (dispatch, getState) => {
+	const ws = new WebSocket(
+		`${process.env.REACT_APP_SOCKET_URL}/notifications/`
+	)
+	let connectInterval = null
+	let timeout = 250
+	let shouldAttemptReconnect = true
+
+	// Check if websocket instance is closed, if so call `connect` function.
+	const checkIsWebSocketClosed = () => {
+		if (!ws || ws.readyState === WebSocket.CLOSED)
+			dispatch(connectNotificationWS())
+	}
+
+	// websocket onopen event listener
+	ws.onopen = () => {
+		console.log('connected notification websocket')
 		dispatch({
-			type: GET_NOTIFICATIONS_ERROR,
+			type: NOTIFICATION_CONNECT_WS,
+			payload: ws,
 		})
+
+		timeout = 250 // reset timer to 250 on open of websocket connection
+		clearTimeout(connectInterval) // clear Interval on on open of websocket connection
+		connectInterval = null
+	}
+
+	ws.onmessage = (e) => {
+		const data = JSON.parse(e.data)
+
+		switch (data.event) {
+			case GET_NOTIFICATION:
+				dispatch({
+					type: ADD_UNREAD_NOTIFICATIONS_AMOUNT,
+					payload: 1,
+				})
+
+				if (getState().data.notifications.data.length > 0)
+					dispatch(getNotification(data.payload))
+
+				break
+			default:
+				break
+		}
+	}
+
+	ws.onclose = (e) => {
+		if (shouldAttemptReconnect) {
+			dispatch({ type: NOTIFICATIONS_LOADING })
+			console.log(
+				`Notification socket is closed. Reconnect will be attempted in ${Math.min(
+					10000 / 1000,
+					(timeout + timeout) / 1000
+				)} second.`,
+				e.reason
+			)
+
+			timeout += timeout //increment retry interval
+			connectInterval = setTimeout(
+				checkIsWebSocketClosed,
+				Math.min(10000, timeout)
+			) //call checkIsWebSocketClosed function after timeout
+		} else console.log('Closed notification websocket')
+	}
+
+	ws.destroy = () => {
+		shouldAttemptReconnect = false
+		ws.close()
+	}
+
+	ws.onerror = (err) => {
+		dispatch({ type: NOTIFICATIONS_LOADING })
+		console.error(
+			'Notification socket encountered error: ',
+			err.message,
+			'Closing socket'
+		)
+
+		ws.close()
 	}
 }

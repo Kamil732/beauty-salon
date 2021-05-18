@@ -1,10 +1,13 @@
 import {
+	ADD_UNREAD_NOTIFICATIONS_AMOUNT,
 	CLEAR_NOTIFICATIONS,
 	GET_DATA,
+	GET_NOTIFICATION,
 	GET_NOTIFICATIONS,
 	GET_NOTIFICATIONS_ERROR,
 	GET_NOTIFICATIONS_UNREAD_AMOUNT,
 	NOTIFICATIONS_LOADING,
+	NOTIFICATION_CONNECT_WS,
 	UPDATE_DATA,
 	UPDATE_NOTIFICATION,
 } from '../actions/types'
@@ -16,6 +19,7 @@ const initialState = {
 	},
 	notifications: {
 		loading: false,
+		ws: null,
 		unRead: 0,
 		data: [],
 	},
@@ -37,12 +41,24 @@ export default function (state = initialState, action) {
 					},
 				},
 			}
+		case NOTIFICATION_CONNECT_WS:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					ws: action.payload,
+					loading: false,
+				},
+			}
 		case CLEAR_NOTIFICATIONS:
+			if (state.notifications.ws) state.notifications.ws.destroy()
+
 			return {
 				...state,
 				notifications: {
 					...state.notifications,
 					data: initialState.notifications.data,
+					ws: initialState.notifications.ws,
 					unRead: initialState.notifications.unRead,
 					loading: initialState.notifications.loading,
 				},
@@ -63,13 +79,29 @@ export default function (state = initialState, action) {
 					unRead: action.payload,
 				},
 			}
+		case ADD_UNREAD_NOTIFICATIONS_AMOUNT:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					unRead: state.notifications.unRead + action.payload,
+				},
+			}
 		case GET_NOTIFICATIONS:
 			return {
 				...state,
 				notifications: {
 					...state.notifications,
-					loading: false,
-					data: [...action.payload, ...state.notifications.data],
+					loading: state.notifications.ws ? false : true,
+					data: action.payload,
+				},
+			}
+		case GET_NOTIFICATION:
+			return {
+				...state,
+				notifications: {
+					...state.notifications,
+					data: [action.payload, ...state.notifications.data],
 				},
 			}
 		case GET_NOTIFICATIONS_ERROR:
