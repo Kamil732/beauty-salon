@@ -1,15 +1,15 @@
-import pytz
 from datetime import timedelta
-
 from django.utils import timezone
 
 from rest_framework import serializers
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 from server.utilities import get_working_hours
 from meetings.models import Meeting
 from accounts.models import Account
 from data.models import Data, Notification
-from accounts.api.serializers import AccountSerializer
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class MeetingSerializer(serializers.ModelSerializer):
 
         # Get meetings in the same slot
         same_slot_meetings = Meeting.objects.filter(
-            start__lte=data['start'], end__gt=data['start']).select_related('barber')
+            start__lte=data['start'], end__gt=data['start']).exclude(id=self.context.get('meeting_id')).select_related('barber')
 
         working_hours = get_working_hours(data['start'].weekday())
         start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
@@ -51,7 +51,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
         # Validate if barber is occupied
-        if not(data['type'] == Meeting.TYPES[2][0]):
+        if not(data['type'] == Meeting.TYPES[2][0]) and not(data['barber'] == ''):
             for barber in same_slot_meetings.values_list('barber__slug', flat=True):
                 if barber == data['barber'].slug:
                     raise serializers.ValidationError({'detail': 'Nie umówić wizyty z nieczynnym fryzjerem'})
@@ -175,10 +175,19 @@ class AdminMeetingSerializer(MeetingSerializer):
             data['end'] += timedelta(days=1)
 
         if data.get('customer'):
+            channel_layer = get_channel_layer()
+
             notify = Notification.objects.create(
                 title='Została umówiona wizyta', message='Wizyta do salonu Damian Kwiecień została umówiona. Aby potwierdzić jej istnienie, kliknij `tutaj`')
             notify.save()
             notify.recivers.add(data['customer'])
+
+            for reciver in notify.recivers.all():
+                async_to_sync(channel_layer.group_send)(reciver.room_name, {
+                    'type': 'send_data',
+                    'event': 'GET_NOTIFICATION',
+                    'payload': notify.id,
+                })
 
         return super(AdminMeetingSerializer, self).create(data)
 

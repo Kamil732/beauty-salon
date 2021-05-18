@@ -60,6 +60,12 @@ class MeetingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             return serializers.AdminMeetingSerializer
         return serializers.CustomerMeetingSerializer
 
+    def get_serializer_context(self):
+        context = super(MeetingDetailAPIView, self).get_serializer_context()
+        context['meeting_id'] = self.kwargs.get('meeting_id')
+
+        return context
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
 

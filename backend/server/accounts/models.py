@@ -70,6 +70,10 @@ class Account(AbstractBaseUser):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    @property
+    def room_name(self):
+        return f'user_{self.id}'
+
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
 

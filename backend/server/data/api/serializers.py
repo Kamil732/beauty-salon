@@ -75,7 +75,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         exclude = ('recivers',)
 
 
-class NotificationUpdateSerializer(NotificationSerializer):
+class NotificationWriteSerializer(NotificationSerializer):
     class Meta(NotificationSerializer.Meta):
         exclude = ()
         fields = ('read',)

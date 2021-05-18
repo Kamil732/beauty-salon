@@ -17,3 +17,4 @@ class DataAdmin(ModelAdmin):
 class NotificationAdmin(ModelAdmin):
     list_display = ('title', 'date', 'read',)
     readonly_fields = ('date',)
+    list_editable = ('read',)
