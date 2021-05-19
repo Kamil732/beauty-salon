@@ -13,6 +13,8 @@ import { connect } from 'react-redux'
 import BrickLoader from '../layout/loaders/BrickLoader'
 import PageHero from '../layout/PageHero'
 import PrivateRoute from '../common/PrivateRoute'
+import PrivacyPolicy from '../containers/PrivacyPolicy'
+import TermsOfUse from '../containers/TermsOfUse'
 
 class Routes extends Component {
 	static propTypes = {
@@ -33,6 +35,8 @@ class Routes extends Component {
 		return (
 			<Switch>
 				<Route exact path="/" component={Home} />
+				<Route exact path="/privacy-policy" component={PrivacyPolicy} />
+				<Route exact path="/terms-of-use" component={TermsOfUse} />
 				<Route exact path="/gallery" component={Gallery} />
 				<Route exact path="/contact" component={Contact} />
 				<Route exact path="/login" component={Login} />
