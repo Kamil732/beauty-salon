@@ -87,9 +87,6 @@ export const getNotification = (id) => async (dispatch) => {
 			type: GET_NOTIFICATION,
 			payload: res.data,
 		})
-
-		const notifySoundElement = document.getElementById('audio')
-		notifySoundElement.play()
 	} catch (err) {
 		NotificationManager.error(
 			'Nie udało się otrzymać powiadomienia',

@@ -12,6 +12,8 @@ import {
 	UPDATE_NOTIFICATION,
 } from '../actions/types'
 
+import notifySound from '../../assets/sounds/pristine-609.mp3'
+
 const initialState = {
 	cms: {
 		loading: true,
@@ -80,6 +82,28 @@ export default function (state = initialState, action) {
 				},
 			}
 		case ADD_UNREAD_NOTIFICATIONS_AMOUNT:
+			window.AudioContext =
+				window.AudioContext || window.webkitAudioContext //fix up prefixing
+			var context = new AudioContext() //context
+			var source = context.createBufferSource() //source node
+			source.connect(context.destination) //connect source to speakers so we can hear it
+			var request = new XMLHttpRequest()
+			request.open('GET', notifySound, true)
+			request.responseType = 'arraybuffer' //the  response is an array of bits
+			request.onload = function () {
+				context.decodeAudioData(
+					request.response,
+					function (response) {
+						source.buffer = response
+						source.start(0) //play audio immediately
+					},
+					function () {
+						console.error('The request failed.')
+					}
+				)
+			}
+			request.send()
+
 			return {
 				...state,
 				notifications: {

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import 'react-notifications/lib/notifications.css'
 import 'aos/dist/aos.css'
 import '../assets/css/main.css'
-import notifySound from '../assets/sounds/pristine-609.mp3'
 
 import { BrowserRouter as Router } from 'react-router-dom'
 
@@ -43,10 +42,6 @@ function App() {
 
 				<div className="content-wrap">
 					<NotificationContainer />
-
-					<audio id="audio">
-						<source src={notifySound}></source>
-					</audio>
 
 					<Routes />
 				</div>
