@@ -53,7 +53,7 @@ function EditBox({
 				const body = JSON.stringify({ [name]: newValue })
 
 				res = await axios.patch(
-					`${process.env.REACT_APP_API_URL}/data/`,
+					`${process.env.REACT_APP_API_URL}/data/cms/`,
 					body,
 					headers
 				)

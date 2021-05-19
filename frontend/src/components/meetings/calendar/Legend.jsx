@@ -20,9 +20,12 @@ function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 			headers
 		)
 
-		colors[name] = newValue
-
-		return { colors }
+		return {
+			colors: {
+				...colors,
+				[name]: newValue,
+			},
+		}
 	}
 
 	return (

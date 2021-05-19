@@ -3,7 +3,6 @@ import {
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
-	UPDATE_DATA,
 	LOAD_MEETINGS,
 	ADD_LOADED_DATES,
 	CHANGE_VISIBLE_MEETINGS,
@@ -230,12 +229,6 @@ export const connectMeetingWS = () => (dispatch) => {
 				break
 			case UPDATE_MEETING:
 				dispatch(updateMeeting(data.payload))
-				break
-			case UPDATE_DATA:
-				dispatch({
-					type: data.event,
-					payload: data.payload,
-				})
 				break
 			default:
 				break
