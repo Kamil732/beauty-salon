@@ -21,7 +21,7 @@
 		background-color: transparent;
 		z-index: 2;
 
-		&:invalid {
+		&:required:invalid {
 			box-shadow: none;
 			border-color: $error-color;
 		}

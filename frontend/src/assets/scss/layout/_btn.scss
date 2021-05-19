@@ -67,9 +67,8 @@
 
 		&:hover,
 		&:focus {
-			$color: $secondary-color;
-			background-color: $color;
-			color: set-text-color($color);
+			background-color: $shadow-color;
+			color: set-text-color($shadow-color);
 		}
 	}
 
@@ -236,7 +235,7 @@
 
 						&:hover,
 						&:focus {
-							background-color: $secondary-color;
+							background-color: $shadow-color;
 						}
 					}
 				}

@@ -70,9 +70,9 @@ a {
 	align-items: center;
 	justify-content: center;
 	align-content: center;
-	background-color: $error-color;
+	background-color: $important-color;
 	padding: 0 4px;
-	color: set-text-color(set-text-color($error-color));
+	color: set-text-color(set-text-color($important-color));
 	font-weight: 700;
 	font-size: 12px;
 	border-radius: 30px;
