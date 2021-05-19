@@ -24,12 +24,15 @@ class MeetingListAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         # Get date start of week
-        today = datetime.date.today()
+        today = datetime.datetime.today()
         monday = today - datetime.timedelta(days=today.weekday())
 
-        from_ = self.request.query_params.get('from', monday)
-        to = self.request.query_params.get('to', monday + datetime.timedelta(days=8))
-        to = datetime.datetime.strptime(to, '%Y-%m-%d') + datetime.timedelta(days=1)
+        from_ = datetime.datetime.strptime(self.request.query_params.get('from', today), '%Y-%m-%d')
+        to = datetime.datetime.strptime(self.request.query_params.get(
+            'to', monday + datetime.timedelta(days=7)), '%Y-%m-%d') + datetime.timedelta(days=1)
+
+        if from_ < today:
+            from_ = today
 
         return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('barber', 'customer')
 
