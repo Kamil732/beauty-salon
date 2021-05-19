@@ -133,25 +133,27 @@ class Calendar extends Component {
 		let notWorkingHours = []
 		let eventsOnSlot = []
 
-		for (let i = 0; i < visibleMeetings.length; i++) {
-			if (
-				visibleMeetings[i].start <= date &&
-				visibleMeetings[i].end > date
-			) {
-				if (visibleMeetings[i].do_not_work)
-					notWorkingHours.push(visibleMeetings[i])
-				else if (!isAdminPanel && !visibleMeetings[i].do_not_work)
-					eventsOnSlot.push(visibleMeetings[i])
-			}
+		if (date < new Date()) isDisabled = true
+		else
+			for (let i = 0; i < visibleMeetings.length; i++) {
+				if (
+					visibleMeetings[i].start <= date &&
+					visibleMeetings[i].end > date
+				) {
+					if (visibleMeetings[i].do_not_work)
+						notWorkingHours.push(visibleMeetings[i])
+					else if (!isAdminPanel && !visibleMeetings[i].do_not_work)
+						eventsOnSlot.push(visibleMeetings[i])
+				}
 
-			if (
-				notWorkingHours.length > 0 ||
-				eventsOnSlot.length >= one_slot_max_meetings
-			) {
-				isDisabled = true
-				break
+				if (
+					notWorkingHours.length > 0 ||
+					eventsOnSlot.length >= one_slot_max_meetings
+				) {
+					isDisabled = true
+					break
+				}
 			}
-		}
 
 		if (!isDisabled) {
 			const convertedDate = date.getHours() * 60 + date.getMinutes()
@@ -621,7 +623,7 @@ class Calendar extends Component {
 					!event.do_not_work)
 					? 'selectable'
 					: ''
-			} ${eventBglight < 40 ? 'white' : ''}`,
+			} ${eventBglight > 60 ? 'white' : ''}`,
 			style:
 				!event.do_not_work && colors[event.barber]
 					? {
@@ -644,53 +646,12 @@ class Calendar extends Component {
 	}
 
 	onSelectSlot = (slot) => {
-		const workingHours = getWorkHours(moment(slot.start).isoWeekday())
-		const start = slot.start.getHours() * 60 + slot.start.getMinutes()
+		const isDisabled = this.getIsDisabledSlot(
+			this.props.isAdminPanel,
+			slot.start
+		)
 
-		let [eventsOnTheSlot, isNonWorkingDay] = [
-			false,
-			workingHours.isNonWorkingDay,
-		]
-
-		if (start !== 0) {
-			if (
-				// Check if slot is not between work hours
-				start < workingHours.start ||
-				start > workingHours.end - this.props.work_time ||
-				// Check if there is any do_not_work type of meeting
-				this.props.visibleMeetings.filter(
-					(meeting) =>
-						meeting.do_not_work &&
-						((meeting.start >= slot.start &&
-							meeting.end <= slot.end) ||
-							(meeting.start <= slot.start &&
-								meeting.end >= slot.end) ||
-							(meeting.start >= slot.start &&
-								slot.end > meeting.start) ||
-							(meeting.end <= slot.end &&
-								slot.start < meeting.end))
-				).length > 0
-			)
-				isNonWorkingDay = true
-
-			// Check if there are events on the slot
-			if (!isNonWorkingDay)
-				eventsOnTheSlot = this.props.visibleMeetings.filter(
-					(meeting) =>
-						meeting.start >= slot.start && meeting.end <= slot.end
-				).length
-		}
-
-		if (this.props.isAdminPanel) {
-			if (!isNonWorkingDay) this.openModal('slot', slot)
-		} else {
-			if (
-				eventsOnTheSlot < this.props.one_slot_max_meetings &&
-				!isNonWorkingDay &&
-				start !== 0
-			)
-				this.openModal('slot', slot)
-		}
+		if (!isDisabled) this.openModal('slot', slot)
 	}
 
 	render() {
