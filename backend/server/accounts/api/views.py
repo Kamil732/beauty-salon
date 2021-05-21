@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from . import serializers
 from . import pagination
 from server.permissions import IsAdminOrReadOnly, IsAdmin, IsOwnerOrIsAdminOrReadOnly
-from accounts.models import CustomerImage, Account
+from accounts.models import CustomerImage, Account, Barber
 
 
 class CurrentAccountAPIView(generics.RetrieveAPIView):
@@ -56,18 +56,12 @@ class LoginAPIView(APIView):
 
 
 @method_decorator(csrf_protect, name='dispatch')
-class UpdateAccountAPIView(generics.UpdateAPIView):
-    permission_classes = (IsOwnerOrIsAdminOrReadOnly,)
-    serializer_class = serializers.AccountSerializer
+class UpdateBarberAPIView(generics.UpdateAPIView):
+    permission_classes = (IsAdmin,)
+    serializer_class = serializers.BarberSerializer
+    queryset = Barber.objects.all()
     lookup_field = 'slug'
-    lookup_url_kwarg = 'account_slug'
-
-    def get_queryset(self):
-        user = self.request.user
-
-        if user.is_authenticated and user.is_admin:
-            return Account.objects.all()
-        return Account.objects.filter(id=user.id)
+    lookup_url_kwarg = 'barber_slug'
 
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -117,14 +111,14 @@ class CustomerListAPIView(APIView):
 
 class BarberListAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        accounts = Account.objects.filter(is_admin=True).values('slug', 'first_name', 'last_name').iterator()
+        barbers = Barber.objects.values('slug', 'first_name', 'last_name')
 
         res = [
             {
-                'label': f"{account['first_name']} {account['last_name']}",
-                'value': account['slug'],
+                'label': f"{barber['first_name']} {barber['last_name']}",
+                'value': barber['slug'],
             }
-            for account in accounts
+            for barber in barbers
         ]
 
         return Response(res)

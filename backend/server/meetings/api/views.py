@@ -1,16 +1,18 @@
-import datetime
+from datetime import datetime, timedelta
 
-from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
-from rest_framework import viewsets, generics, permissions, status
-import rest_framework
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 
 from server.permissions import IsOwnerOrIsAdminOrReadOnly
+from data.models import Notification
 from meetings.models import Meeting
-from meetings.api import serializers
+from accounts.models import Account
+from . import serializers
 
 
 @method_decorator(csrf_protect, name='create')
@@ -24,12 +26,12 @@ class MeetingListAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         # Get date start of week
-        today = datetime.datetime.today()
-        monday = today - datetime.timedelta(days=today.weekday())
+        today = datetime.today()
+        monday = today - timedelta(days=today.weekday())
 
-        from_ = datetime.datetime.strptime(self.request.query_params.get('from', today), '%Y-%m-%d')
-        to = datetime.datetime.strptime(self.request.query_params.get(
-            'to', monday + datetime.timedelta(days=7)), '%Y-%m-%d') + datetime.timedelta(days=1)
+        from_ = datetime.strptime(self.request.query_params.get('from', today), '%Y-%m-%d')
+        to = datetime.strptime(self.request.query_params.get(
+            'to', monday + timedelta(days=7)), '%Y-%m-%d') + timedelta(days=1)
 
         if from_ < today:
             from_ = today
@@ -78,3 +80,52 @@ class MeetingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             serializer = serializers.CustomerMeetingSerializer(instance)
 
         return Response(serializer.data)
+
+    def perform_destroy(self, instance):
+        user = self.request.user
+        customer = instance.customer
+        date = datetime.strftime(instance.start, '%d.%m.%Y')
+        time = datetime.strftime(instance.start, '%H:%M')
+
+        # Delete object
+        super().perform_destroy(instance)
+
+        if customer:
+            channel_layer = get_channel_layer()
+
+            if user.is_authenticated and user.is_admin:
+                notify = Notification.objects.create(
+                    title='Odmówiono wizytę',
+                    message=f"""
+                        Została odmówiona wizyta z dnia {date}
+                        o godzinie {time}.
+                        W celu uzyskania więcej informacji prosimy o kontakt
+                    """,
+                )
+                notify.save()
+                notify.recivers.add(customer)
+
+                async_to_sync(channel_layer.group_send)(customer.room_name, {
+                    'type': 'send_data',
+                    'event': 'GET_NOTIFICATION',
+                    'payload': notify.id,
+                })
+            elif customer == user:
+                admins = Account.objects.filter(is_admin=True)
+
+                notify = Notification.objects.create(
+                    title=f'{user} odmówił wizytę',
+                    message=f"""
+                        {user} odmówił wizytę z dnia {date}
+                        o godzinie {time}.
+                    """,
+                )
+                notify.save()
+                notify.recivers.add(*admins)
+
+                for admin in admins:
+                    async_to_sync(channel_layer.group_send)(admin.room_name, {
+                        'type': 'send_data',
+                        'event': 'GET_NOTIFICATION',
+                        'payload': notify.id,
+                    })

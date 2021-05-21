@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from phonenumber_field.modelfields import PhoneNumberField
 
-from accounts.models import Account
+from accounts.models import Account, Barber
 
 
 class Meeting(models.Model):
@@ -16,7 +16,7 @@ class Meeting(models.Model):
         ('do_not_work', 'NIE PRACUJE'),
     )
 
-    barber = models.ForeignKey(verbose_name='Fryzjer', to=Account, on_delete=models.CASCADE, blank=True, null=True)
+    barber = models.ForeignKey(verbose_name='Fryzjer', to=Barber, on_delete=models.CASCADE, blank=True, null=True)
     customer = models.ForeignKey(verbose_name='Konto klienta', to=Account, blank=True,
                                  null=True, on_delete=models.DO_NOTHING, related_name='meetings')
     customer_first_name = models.CharField(verbose_name='Imię klienta', blank=True, max_length=20)

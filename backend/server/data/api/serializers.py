@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.models import Account
+from accounts.models import Barber
 from data.models import Data, Notification
 
 
@@ -8,10 +8,9 @@ class DataSerializer(serializers.ModelSerializer):
     colors = serializers.SerializerMethodField('get_colors')
 
     def get_colors(self, obj):
-        # Set colors
         value = {}
 
-        for barber in Account.objects.filter(is_admin=True).values_list('slug', 'color'):
+        for barber in Barber.objects.values_list('slug', 'color'):
             value[barber[0]] = barber[1]
 
         return value

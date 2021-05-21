@@ -1,13 +1,19 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from accounts.models import Account, CustomerImage
+from accounts.models import Account, Barber, CustomerImage
 
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         exclude = ('password', 'is_superuser', 'is_staff',)
+
+
+class BarberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Barber
+        fields = ('first_name', 'last_name', 'color',)
 
 
 class RegisterSerializer(serializers.ModelSerializer):

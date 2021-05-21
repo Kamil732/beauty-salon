@@ -13,7 +13,7 @@ urlpatterns = [
     path('login/', views.LoginAPIView.as_view(), name='login'),
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
     path('current/', views.CurrentAccountAPIView.as_view(), name='current-account'),
-    path('<slug:account_slug>/', views.UpdateAccountAPIView.as_view(), name='update-account'),
+    path('barbers/<slug:barber_slug>/', views.UpdateBarberAPIView.as_view(), name='update-barber'),
     path('choice-list/', include([
         path('customers/', views.CustomerListAPIView.as_view(), name='customer-choice-list'),
         path('barbers/', views.BarberListAPIView.as_view(), name='barber-choice-list'),

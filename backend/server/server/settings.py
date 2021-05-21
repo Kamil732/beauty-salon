@@ -32,9 +32,9 @@ INSTALLED_APPS = [
 
     'phonenumber_field',
     'channels',
-    'data',
-    'accounts',
-    'meetings',
+    'data.apps.DataConfig',
+    'accounts.apps.AccountsConfig',
+    'meetings.apps.MeetingsConfig',
 ]
 
 MIDDLEWARE = [
@@ -174,21 +174,21 @@ REST_FRAMEWORK = {
     'TIME_INPUT_FORMATS': ['%H:%M'],
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'sql.log',
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'sql.log',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }

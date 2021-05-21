@@ -2,8 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.admin import ModelAdmin
 from django.forms import ModelForm
+from django.contrib.auth.hashers import make_password, check_password
 
-from .models import Account, CustomerImage
+from .models import Account, Barber, CustomerImage
+
 
 class UserCreationForm(ModelForm):
     class Meta:
@@ -19,6 +21,7 @@ class UserCreationForm(ModelForm):
 
         return user
 
+
 @admin.register(Account)
 class AccountAdmin(ModelAdmin):
     form = UserCreationForm
@@ -27,10 +30,13 @@ class AccountAdmin(ModelAdmin):
     search_fields = ('first_name', 'last_name', 'phone_number', 'fax_number')
     readonly_fields = ('id', 'slug',)
 
+
 @admin.register(CustomerImage)
 class CustomerImageAdmin(ModelAdmin):
     list_display = ('title',)
     search_fields = ('title',)
     readonly_fields = ('id',)
 
-admin.site.unregister(Group)
+
+# admin.site.unregister(Group)
+admin.site.register(Barber)

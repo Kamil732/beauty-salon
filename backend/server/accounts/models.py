@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields.related import OneToOneField
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
@@ -40,8 +41,10 @@ class AccountManager(BaseUserManager):
         user.is_admin = True
         user.is_superuser = True
         user.is_staff = True
-
         user.save(using=self._db)
+
+        Barber.objects.create(first_name=user.first_name, last_name=user.last_name)
+
         return user
 
 
@@ -54,11 +57,10 @@ class Account(AbstractBaseUser):
     bookings = models.PositiveIntegerField(default=0)
     no_shows = models.PositiveIntegerField(default=0)
     revenue = models.PositiveIntegerField(default=0)
-    trusted_customer = models.BooleanField(default=False)
+    trusted = models.BooleanField(default=False)
 
     is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=True)
     is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
-    color = models.CharField(max_length=6, default='212121')
     is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
     is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
     slug = AutoSlugField(populate_from='first_name', unique=True)
@@ -68,7 +70,7 @@ class Account(AbstractBaseUser):
     objects = AccountManager()
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return self.get_full_name()
 
     @property
     def room_name(self):
@@ -84,6 +86,19 @@ class Account(AbstractBaseUser):
         return self.is_superuser
 
 
+class Barber(models.Model):
+    first_name = models.CharField(verbose_name='Imię', max_length=20)
+    last_name = models.CharField(verbose_name='Nazwisko', max_length=20)
+    color = models.CharField(max_length=6, default='212121')
+    slug = AutoSlugField(populate_from='first_name', unique=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
+
 class CustomerImage(models.Model):
     image = models.ImageField(upload_to='customer_images/%Y/%m/%d/')
     title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title
