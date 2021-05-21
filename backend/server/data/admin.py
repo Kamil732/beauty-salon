@@ -6,6 +6,8 @@ from .models import Data, Notification
 
 @admin.register(Data)
 class DataAdmin(ModelAdmin):
+    readonly_fields = ('one_slot_max_meetings',)
+
     def has_add_permission(self, request, obj=None):
         return False
 

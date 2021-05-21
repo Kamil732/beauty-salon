@@ -1,9 +1,8 @@
-from datetime import timedelta
-
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from accounts.models import Account
+from meetings.models import Meeting
 
 
 class Data(models.Model):
@@ -20,7 +19,7 @@ class Data(models.Model):
     contact_title = models.CharField(max_length=100, blank=True)
     home_content = models.TextField(blank=True)
     home_title = models.CharField(max_length=100, blank=True)
-    one_slot_max_meetings = models.PositiveIntegerField(default=0, editable=False)
+    one_slot_max_meetings = models.PositiveIntegerField(default=0)
     work_time = models.PositiveIntegerField(default=30)
     end_work_sunday = models.TimeField(null=True, blank=True)
     start_work_sunday = models.TimeField(null=True, blank=True)
@@ -46,8 +45,6 @@ class Data(models.Model):
 
         # if there's more than two objects it will not save them in the database
         if Data.objects.all().count() < 2 or save_permission:
-            self.one_slot_max_meetings = Account.objects.filter(is_admin=True).count()
-
             return super(Data, self).save(*args, **kwargs)
 
     def has_add_permission(self):
@@ -60,3 +57,4 @@ class Notification(models.Model):
     title = models.CharField(max_length=80)
     message = models.TextField()
     read = models.BooleanField(default=False)
+    meeting = models.ForeignKey(Meeting, on_delete=models.SET_NULL, blank=True, null=True)
