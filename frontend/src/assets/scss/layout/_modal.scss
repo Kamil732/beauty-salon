@@ -1,20 +1,20 @@
 .modal {
+	$border-radius: 8px;
+
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
 	min-width: 90%;
 	max-height: 90vh;
 	background-color: $surface-color;
-	border-radius: 8px;
-	display: none;
+	border-radius: $border-radius;
 	overflow: auto;
 
 	& > &__header {
-		border-radius: 8px 8px 0 0;
+		border-radius: $border-radius $border-radius 0 0;
 		padding: 1rem;
-		background-color: darken($surface-color, 15%);
-		color: set-text-color(darken($surface-color, 15%));
+		background-color: $secondary-color;
+		color: set-text-color($secondary-color);
 		font-size: 1.4rem;
 	}
 
@@ -22,13 +22,9 @@
 		padding: 2rem;
 	}
 
-	&.show {
-		display: block;
-		opacity: 1;
-		z-index: 999;
-		animation: show 0.2s;
-		transform: scale(1) translate(-50%, -50%);
-	}
+	z-index: 999;
+	animation: show 0.3s;
+	transform: scale(1) translate(-50%, -50%);
 }
 
 @keyframes show {
