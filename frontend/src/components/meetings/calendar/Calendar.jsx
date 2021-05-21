@@ -646,6 +646,15 @@ class Calendar extends Component {
 	}
 
 	onSelectSlot = (slot) => {
+		if (
+			this.props.isAdminPanel &&
+			(moment(slot.end).diff(moment(slot.start), 'days') > 0 ||
+				parseInt(moment(slot.end).hours()) === 0)
+		) {
+			this.openModal('slot', slot)
+			return
+		}
+
 		const isDisabled = this.getIsDisabledSlot(
 			this.props.isAdminPanel,
 			slot.start
@@ -734,7 +743,7 @@ class Calendar extends Component {
 
 		return (
 			<>
-				{Object.keys(selected).length ? (
+				{Object.keys(selected).length > 0 && (
 					<Modal closeModal={() => this.setState({ selected: {} })}>
 						<Modal.Header>
 							{selected.do_not_work ? (
@@ -791,7 +800,7 @@ class Calendar extends Component {
 							)}
 						</Modal.Body>
 					</Modal>
-				) : null}
+				)}
 
 				<Card data-aos="zoom-out-up">
 					<Card.Body>

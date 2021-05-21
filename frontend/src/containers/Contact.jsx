@@ -41,6 +41,7 @@ class Contact extends Component {
 							<EditBox
 								name="contact_title"
 								value={contact_title}
+								label="Tytuł strony kontaktowej"
 								type="textarea"
 							>
 								{isAdmin && !contact_title
@@ -53,6 +54,7 @@ class Contact extends Component {
 							<EditBox
 								name="contact_content"
 								value={contact_content}
+								label="Treść strony kontaktowej"
 								type="textarea"
 							>
 								{isAdmin && !contact_content
@@ -64,30 +66,26 @@ class Contact extends Component {
 						<EditBox
 							name="phone_number"
 							value={phone_number}
+							label="Numer telefonu"
 							regexValidation={
 								/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/
 							}
 							validationErrorMessage="Nie poprawny numer telefonu"
 						>
-							{phone_number ? (
-								<a
-									href={`tel:${phone_number}`}
-									className="unique-text icon-container"
-								>
-									<FaPhoneAlt className="icon-container__icon" />
-									{phone_number}
-								</a>
-							) : isAdmin ? (
-								<div className="unique-text icon-container">
-									BRAK NUMERU TELEFONU
-								</div>
-							) : null}
+							<a
+								href={`tel:${phone_number}`}
+								className="unique-text icon-container"
+							>
+								<FaPhoneAlt className="icon-container__icon" />
+								{phone_number}
+							</a>
 						</EditBox>
 
 						<PageHero.Text>
 							<EditBox
 								name="contact_content_second"
 								value={contact_content_second}
+								label="Podtreść strony kontaktowej"
 								type="textarea"
 							>
 								{isAdmin && !contact_content_second
@@ -110,7 +108,11 @@ class Contact extends Component {
 							Nasz salon fryzjerski znajdziesz pod adresem:
 						</PageHero.Text>
 						<span className="unique-text" style={{ width: '100%' }}>
-							<EditBox name="location" value={location}>
+							<EditBox
+								name="location"
+								value={location}
+								label="Adres salonu"
+							>
 								{location}
 							</EditBox>
 						</span>
@@ -119,6 +121,7 @@ class Contact extends Component {
 						<EditBox
 							name="google_maps_url"
 							value={google_maps_url}
+							label="Google maps URL salonu"
 							type="url"
 							regexValidation={
 								/^(https|http):\/\/(www\.|)google\.[a-z]+\/maps/

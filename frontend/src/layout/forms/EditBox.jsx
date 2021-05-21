@@ -6,10 +6,14 @@ import { connect } from 'react-redux'
 import getHeaders from '../../helpers/getHeaders'
 import { UPDATE_DATA } from '../../redux/actions/types'
 
+import { FaRegEdit } from 'react-icons/fa'
+
 import { NotificationManager } from 'react-notifications'
+import Modal from '../Modal'
 import Button from '../buttons/Button'
 import ButtonContainer from '../buttons/ButtonContainer'
 import CSRFToken from '../../components/CSRFToken'
+import FormControl from './FormControl'
 
 function EditBox({
 	dispatch,
@@ -20,6 +24,7 @@ function EditBox({
 	validationErrorMessage,
 	value,
 	name,
+	label,
 	onSave,
 	...props
 }) {
@@ -75,57 +80,85 @@ function EditBox({
 	}
 
 	return (
-		<div className="edit-box">
-			{isEditMode ? (
-				<form onSubmit={save}>
-					<CSRFToken />
-					{type === 'textarea' ? (
-						<textarea
-							value={newValue}
-							onChange={(e) => setNewValue(e.target.value)}
-							{...props}
-						>
-							{value}
-						</textarea>
-					) : (
-						<input
-							type={type || 'text'}
-							value={newValue}
-							onChange={(e) => setNewValue(e.target.value)}
-							{...props}
-						/>
-					)}
-					<ButtonContainer style={{ marginTop: '1rem' }}>
-						<Button
-							type="submit"
-							small
-							success
-							loading={loading}
-							loadingText="Zapisywanie"
-							disabled={newValue === value}
-						>
-							Zapisz
-						</Button>
-						<Button
-							type="button"
-							small
-							primary
-							onClick={cancel}
-							disabled={loading}
-						>
-							Anuluj
-						</Button>
-					</ButtonContainer>
-				</form>
-			) : (
-				<>
-					{children}
-					<Button extraSmall onClick={() => setIsEditMode(true)}>
-						Edytuj
-					</Button>
-				</>
+		<>
+			{isEditMode && (
+				<Modal closeModal={() => setIsEditMode(false)}>
+					<Modal.Header>Edycja danych</Modal.Header>
+					<Modal.Body>
+						<form onSubmit={save}>
+							<CSRFToken />
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor={name}
+									inputValue={newValue}
+								>
+									{label}
+								</FormControl.Label>
+
+								{type === 'textarea' ? (
+									<FormControl.Textarea
+										id={name}
+										value={newValue}
+										onChange={(e) =>
+											setNewValue(e.target.value)
+										}
+										{...props}
+									>
+										{value}
+									</FormControl.Textarea>
+								) : (
+									<FormControl.Input
+										id={name}
+										type={type || 'text'}
+										value={newValue}
+										onChange={(e) =>
+											setNewValue(e.target.value)
+										}
+										{...props}
+									/>
+								)}
+							</FormControl>
+
+							<ButtonContainer
+								style={{
+									marginTop: '1rem',
+									justifyContent: 'space-between',
+								}}
+							>
+								<Button
+									type="submit"
+									small
+									success
+									loading={loading}
+									loadingText="Zapisywanie"
+									disabled={newValue === value}
+								>
+									Zapisz
+								</Button>
+								<Button
+									type="button"
+									small
+									primary
+									onClick={cancel}
+									disabled={loading}
+								>
+									Anuluj
+								</Button>
+							</ButtonContainer>
+						</form>
+					</Modal.Body>
+				</Modal>
 			)}
-		</div>
+
+			<div className="edit-box">
+				{children}
+
+				<Button rounded onClick={() => setIsEditMode(true)}>
+					<FaRegEdit />
+				</Button>
+			</div>
+		</>
 	)
 }
 
@@ -136,6 +169,7 @@ EditBox.prototype.propTypes = {
 	value: PropTypes.string.isRequired,
 	regexValidation: PropTypes.string,
 	validationErrorMessage: PropTypes.string,
+	label: PropTypes.string.isRequired,
 	onSave: PropTypes.func,
 }
 

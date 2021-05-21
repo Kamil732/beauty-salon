@@ -34,6 +34,18 @@ function Input(props) {
 	)
 }
 
+function Textarea({ value, ...props }) {
+	return (
+		<textarea
+			className="form-control__textarea"
+			title={props.required ? 'Proszę wypełnij to pole' : ''}
+			{...props}
+		>
+			{value}
+		</textarea>
+	)
+}
+
 function CheckBox({ name, checked, onChange, ...props }) {
 	return (
 		<>
@@ -217,6 +229,7 @@ ChoiceField.prototype.propTypes = {
 FormControl.Label = Label
 FormControl.CheckBoxLabel = CheckBoxLabel
 FormControl.Input = Input
+FormControl.Textarea = Textarea
 FormControl.CheckBox = CheckBox
 FormControl.ChoiceField = ChoiceField
 

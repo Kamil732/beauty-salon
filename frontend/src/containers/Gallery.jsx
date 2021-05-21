@@ -74,6 +74,7 @@ class Gallery extends Component {
 							<EditBox
 								name="gallery_title"
 								value={gallery_title}
+								label="Tytuł strony galeri"
 								type="textarea"
 							>
 								{isAdmin && !gallery_title
@@ -85,6 +86,7 @@ class Gallery extends Component {
 							<EditBox
 								name="gallery_content"
 								value={gallery_content}
+								label="Treść strony galeri"
 								type="textarea"
 							>
 								{isAdmin && !gallery_content

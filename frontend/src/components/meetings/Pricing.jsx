@@ -6,8 +6,8 @@ import EditBox from '../../layout/forms/EditBox'
 
 class Pricing extends Component {
 	static propTypes = {
-		hair_price: PropTypes.string.isRequired,
-		beard_price: PropTypes.string.isRequired,
+		hair_price: PropTypes.number.isRequired,
+		beard_price: PropTypes.number.isRequired,
 	}
 
 	render() {
@@ -22,10 +22,14 @@ class Pricing extends Component {
 							<EditBox
 								name="hair_price"
 								value={hair_price}
+								label="Cena za strzyżenie"
 								type="number"
-								step=".01"
+								step=".5"
+								min="0"
 							>
-								{hair_price ? `${hair_price} zł` : 'Za darmo'}
+								{hair_price > 0
+									? `${hair_price} zł`
+									: 'Za darmo'}
 							</EditBox>
 						</td>
 					</tr>
@@ -35,10 +39,14 @@ class Pricing extends Component {
 							<EditBox
 								name="beard_price"
 								value={beard_price}
+								label="Cena za brodę"
 								type="number"
-								step=".01"
+								step=".5"
+								min="0"
 							>
-								{beard_price ? `${beard_price} zł` : 'Za darmo'}
+								{beard_price > 0
+									? `${beard_price} zł`
+									: 'Za darmo'}
 							</EditBox>
 						</td>
 					</tr>
@@ -49,8 +57,8 @@ class Pricing extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	hair_price: state.data.cms.data.hair_price || '',
-	beard_price: state.data.cms.data.beard_price || '',
+	hair_price: state.data.cms.data.hair_price,
+	beard_price: state.data.cms.data.beard_price,
 })
 
 export default connect(mapStateToProps, null)(Pricing)

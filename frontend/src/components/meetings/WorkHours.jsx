@@ -42,6 +42,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_monday"
 									value={start_work_monday}
+									label="Start pracy w poniedziałek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -54,6 +55,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_monday"
 									value={end_work_monday}
+									label="Koniec pracy w poniedziałek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -75,6 +77,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_tuesday"
 									value={start_work_tuesday}
+									label="Start pracy w wtorek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -87,6 +90,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_tuesday"
 									value={end_work_tuesday}
+									label="Koniec pracy w wtorek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -108,6 +112,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_wednesday"
 									value={start_work_wednesday}
+									label="Start pracy w środę"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -120,6 +125,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_wednesday"
 									value={end_work_wednesday}
+									label="Koniec pracy w środę"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -141,6 +147,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_thursday"
 									value={start_work_thursday}
+									label="Start pracy w czwartek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -153,6 +160,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_thursday"
 									value={end_work_thursday}
+									label="Koniec pracy w czwartek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -174,6 +182,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_friday"
 									value={start_work_friday}
+									label="Start pracy w piątek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -186,6 +195,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_friday"
 									value={end_work_friday}
+									label="Koniec pracy w piątek"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -207,6 +217,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_saturday"
 									value={start_work_saturday}
+									label="Start pracy w sobotę"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -219,6 +230,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_saturday"
 									value={end_work_saturday}
+									label="Koniec pracy w sobotę"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -240,6 +252,7 @@ function WorkHours({
 								<EditBox
 									name="start_work_sunday"
 									value={start_work_sunday}
+									label="Start pracy w niedzielę"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage
@@ -252,6 +265,7 @@ function WorkHours({
 								<EditBox
 									name="end_work_sunday"
 									value={end_work_sunday}
+									label="Koniec pracy w niedzielę"
 									regexValidation={regexValidation}
 									validationErrorMessage={
 										validationErrorMessage

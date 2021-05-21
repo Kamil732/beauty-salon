@@ -15,7 +15,7 @@ function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 		const body = JSON.stringify({ color: newValue })
 
 		await axios.patch(
-			`${process.env.REACT_APP_API_URL}/accounts/${name}/`,
+			`${process.env.REACT_APP_API_URL}/accounts/barbers/${name}/`,
 			body,
 			headers
 		)
@@ -72,8 +72,11 @@ function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 						<div className="legend__item" key={idx}>
 							<EditBox
 								name={barber.value}
+								label={`${barber.label} HEX kolor`}
 								value={colors[barber.value]}
 								onSave={onSave}
+								regexValidation={/^([0-9a-f]{6})$/i}
+								validationErrorMessage="Nie poprawny HEX kolor"
 							>
 								<span
 									style={{

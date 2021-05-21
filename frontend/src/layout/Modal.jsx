@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { CloseButton } from './buttons/Button'
 
@@ -10,14 +11,15 @@ function Modal({ children, closeModal, ...props }) {
 		return () => (body.style.overflowY = 'auto')
 	}, [])
 
-	return (
+	return ReactDOM.createPortal(
 		<>
 			<div className="dark-bg" onClick={closeModal}></div>
-			<div className="modal show" {...props}>
+			<div className="modal" {...props}>
 				<CloseButton trCorner onClick={closeModal} />
 				{children}
 			</div>
-		</>
+		</>,
+		document.getElementById('root')
 	)
 }
 

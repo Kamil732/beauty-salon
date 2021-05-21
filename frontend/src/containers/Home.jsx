@@ -32,6 +32,7 @@ function Home({
 						<EditBox
 							name="home_title"
 							value={home_title}
+							label="Tytuł strony głównej"
 							type="textarea"
 						>
 							{isAdmin && !home_title
@@ -44,6 +45,7 @@ function Home({
 						<EditBox
 							name="home_content"
 							value={home_content}
+							label="Treść strony głównej"
 							type="textarea"
 						>
 							{isAdmin && !home_content
