@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
-from .models import Data, Notification
+from .models import Data, Notification, Service
 
 
 @admin.register(Data)
@@ -13,6 +13,11 @@ class DataAdmin(ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Service)
+class ServiceAdmin(ModelAdmin):
+    readonly_fields = ('id',)
 
 
 @admin.register(Notification)

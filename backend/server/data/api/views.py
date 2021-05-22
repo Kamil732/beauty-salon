@@ -1,14 +1,15 @@
+from django.db.models import query
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from rest_framework import fields, permissions
 
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView, GenericAPIView
+from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from server.permissions import IsAdminOrReadOnly
-from data.models import Data, Notification
+from server.permissions import IsAdminOrReadOnly, IsAdmin
+from data.models import Data, Service, Notification
 from . import serializers
 
 
@@ -28,6 +29,27 @@ class DataListAPIView(APIView):
         serializer.save()
 
         return Response(serializer.data)
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class ServiceDetailAPIView(UpdateModelMixin, DestroyModelMixin, GenericAPIView):
+    permission_classes = (IsAdmin,)
+    queryset = Service.objects.all()
+    serializer_class = serializers.ServiceSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'service_id'
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class ServiceCreateAPIView(CreateAPIView):
+    permission_classes = (IsAdmin,)
+    serializer_class = serializers.ServiceSerializer
+    queryset = Service.objects.all()
 
 
 class NotificationsUnreadAmountAPIView(APIView):

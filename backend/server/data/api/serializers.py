@@ -1,19 +1,29 @@
 from rest_framework import serializers
 
 from accounts.models import Barber
-from data.models import Data, Notification
+from data.models import Data, Service, Notification
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = '__all__'
 
 
 class DataSerializer(serializers.ModelSerializer):
+    services = serializers.SerializerMethodField('get_serivces')
     colors = serializers.SerializerMethodField('get_colors')
 
+    def get_serivces(self, obj):
+        return ServiceSerializer(Service.objects.all(), many=True).data
+
     def get_colors(self, obj):
-        value = {}
+        res = {}
 
         for barber in Barber.objects.values_list('slug', 'color'):
-            value[barber[0]] = barber[1]
+            res[barber[0]] = barber[1]
 
-        return value
+        return res
 
     def to_internal_value(self, data):
         if 'start_work_sunday' in data and not(data['start_work_sunday']):
