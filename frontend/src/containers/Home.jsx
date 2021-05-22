@@ -25,117 +25,132 @@ function Home({
 	contact_content_second,
 }) {
 	return (
-		<PageHero>
-			<PageHero.Body data-aos="zoom-in">
-				<PageHero.Content>
-					<PageHero.Title>
-						<EditBox
-							name="home_title"
-							value={home_title}
-							label="Tytuł strony głównej"
-							type="textarea"
-						>
-							{isAdmin && !home_title
-								? 'BRAK TREŚCI'
-								: home_title}
-						</EditBox>
-					</PageHero.Title>
-
-					<PageHero.Text>
-						<EditBox
-							name="home_content"
-							value={home_content}
-							label="Treść strony głównej"
-							type="textarea"
-						>
-							{isAdmin && !home_content
-								? 'BRAK TREŚCI'
-								: home_content}
-						</EditBox>
-					</PageHero.Text>
-
-					<ButtonContainer style={{ marginTop: '2rem' }}>
-						<Button primary to="/my-meetings">
-							Umów wizytę
-						</Button>
-						<Button secondary to="/contact">
-							Kontakt
-						</Button>
-					</ButtonContainer>
-				</PageHero.Content>
-
-				<PageHero.Img src={BarberIllustration} />
-			</PageHero.Body>
-
-			<PageHero.Body>
-				<PageHero.Img src={TimeIllustration} data-aos="fade-right" />
-				<PageHero.Content data-aos="fade-left">
-					<PageHero.Title>Godziny Pracy</PageHero.Title>
-					<Card>
-						<Card.Body>
-							<div style={{ overflow: 'auto' }}>
-								<WorkHours />
-							</div>
-						</Card.Body>
-					</Card>
-				</PageHero.Content>
-			</PageHero.Body>
-
-			<PageHero.Body
-				data-aos="zoom-out-up"
-				data-aos-anchor-placement="center-bottom"
-			>
-				<PageHero.Content>
-					<PageHero.Title>Cennik</PageHero.Title>
-
-					<Card>
-						<Card.Body>
-							<div style={{ overflow: 'auto' }}>
-								<Pricing />
-							</div>
-						</Card.Body>
-					</Card>
-				</PageHero.Content>
-
-				<PageHero.Img src={PaymentIllustration} />
-			</PageHero.Body>
-
-			{phone_number ? (
-				<PageHero.Body>
+		<>
+			<PageHero>
+				<PageHero.Body data-aos="zoom-in">
 					<PageHero.Content>
-						<div data-aos="fade-up">
-							<PageHero.Title>Jak umówić wizytę?</PageHero.Title>
-
-							<PageHero.Text>
-								Jeśli chcesz umówić wizytę, skonataktuj się ze
-								mną:
-							</PageHero.Text>
-
-							<a
-								href={`tel:+48-${phone_number}`}
-								className="unique-text icon-container"
+						<PageHero.Title>
+							<EditBox
+								name="home_title"
+								value={home_title}
+								label="Tytuł strony głównej"
+								type="textarea"
 							>
-								<FaPhoneAlt className="icon-container__icon" />
-								{phone_number}
-							</a>
-						</div>
-						{contact_content_second ? (
-							<PageHero.Text data-aos="flip-up">
-								{contact_content_second}
-							</PageHero.Text>
-						) : null}
+								{isAdmin && !home_title
+									? 'BRAK TREŚCI'
+									: home_title}
+							</EditBox>
+						</PageHero.Title>
+
+						<PageHero.Text>
+							<EditBox
+								name="home_content"
+								value={home_content}
+								label="Treść strony głównej"
+								type="textarea"
+							>
+								{isAdmin && !home_content
+									? 'BRAK TREŚCI'
+									: home_content}
+							</EditBox>
+						</PageHero.Text>
+
+						<ButtonContainer style={{ marginTop: '2rem' }}>
+							<Button primary to="/my-meetings">
+								Umów wizytę
+							</Button>
+							<Button secondary to="/contact">
+								Kontakt
+							</Button>
+						</ButtonContainer>
 					</PageHero.Content>
 
-					<PageHero.Img src={AppointmentIllustration} />
+					<PageHero.Img src={BarberIllustration} />
 				</PageHero.Body>
-			) : null}
 
-			<PageHero.Body vertical>
-				<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
+				<PageHero.Body>
+					<PageHero.Img
+						src={TimeIllustration}
+						data-aos="fade-right"
+					/>
+					<PageHero.Content data-aos="fade-left">
+						<PageHero.Title>Godziny Pracy</PageHero.Title>
+						<Card>
+							<Card.Body>
+								<div style={{ overflow: 'auto' }}>
+									<WorkHours />
+								</div>
+							</Card.Body>
+						</Card>
+					</PageHero.Content>
+				</PageHero.Body>
 
-				<Calendar />
-			</PageHero.Body>
-		</PageHero>
+				<PageHero.Body
+					data-aos="zoom-out-up"
+					data-aos-anchor-placement="center-bottom"
+				>
+					<PageHero.Content>
+						<PageHero.Title>Cennik</PageHero.Title>
+
+						<Card>
+							<Card.Body>
+								<div style={{ overflow: 'auto' }}>
+									<Pricing />
+								</div>
+							</Card.Body>
+						</Card>
+					</PageHero.Content>
+
+					<PageHero.Img src={PaymentIllustration} />
+				</PageHero.Body>
+
+				{phone_number ? (
+					<PageHero.Body>
+						<PageHero.Content>
+							<div data-aos="fade-up">
+								<PageHero.Title>
+									Jak umówić wizytę?
+								</PageHero.Title>
+
+								<PageHero.Text>
+									Jeśli chcesz umówić wizytę, skonataktuj się
+									ze mną:
+								</PageHero.Text>
+
+								<a
+									href={`tel:+48-${phone_number}`}
+									className="unique-text icon-container"
+								>
+									<FaPhoneAlt className="icon-container__icon" />
+									{phone_number}
+								</a>
+							</div>
+							{contact_content_second ? (
+								<PageHero.Text data-aos="flip-up">
+									{contact_content_second}
+								</PageHero.Text>
+							) : null}
+						</PageHero.Content>
+
+						<PageHero.Img src={AppointmentIllustration} />
+					</PageHero.Body>
+				) : null}
+
+				{window.innerWidth > 768 && (
+					<PageHero.Body vertical>
+						<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
+
+						<Calendar />
+					</PageHero.Body>
+				)}
+			</PageHero>
+			{window.innerWidth <= 768 && (
+				<>
+					<PageHero.Title style={{ textAlign: 'center' }}>Kalendarz z wizytami</PageHero.Title>
+					<Calendar />
+				</>
+			)}
+		</>
 	)
 }
 

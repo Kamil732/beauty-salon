@@ -127,6 +127,15 @@ function EditBox({
 								}}
 							>
 								<Button
+									type="button"
+									small
+									primary
+									onClick={cancel}
+									disabled={loading}
+								>
+									Anuluj
+								</Button>
+								<Button
 									type="submit"
 									small
 									success
@@ -135,15 +144,6 @@ function EditBox({
 									disabled={newValue === value}
 								>
 									Zapisz
-								</Button>
-								<Button
-									type="button"
-									small
-									primary
-									onClick={cancel}
-									disabled={loading}
-								>
-									Anuluj
 								</Button>
 							</ButtonContainer>
 						</form>

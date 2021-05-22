@@ -56,6 +56,7 @@ class Calendar extends Component {
 		changeVisibleMeetings: PropTypes.func.isRequired,
 		loadMeetings: PropTypes.func.isRequired,
 
+		serivces: PropTypes.array,
 		colors: PropTypes.object,
 		one_slot_max_meetings: PropTypes.number.isRequired,
 		work_time: PropTypes.number,
@@ -671,6 +672,7 @@ class Calendar extends Component {
 			isAuthenticated,
 			work_time,
 			visibleMeetings,
+			services,
 		} = this.props
 		const {
 			windowWidth,
@@ -687,6 +689,13 @@ class Calendar extends Component {
 			endOf3days,
 			freeSlots,
 		} = this.state
+
+		if (services.length === 0)
+			return (
+				<h1>
+					Nie obsługujemy narazie żadnej wizyty zapraszamy w krótce :)
+				</h1>
+			)
 
 		let meetings = []
 
@@ -905,6 +914,7 @@ const mapStateToProps = (state) => ({
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
 
+	services: state.data.cms.data.services,
 	colors: state.data.cms.data.colors,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,
 	work_time: state.data.cms.data.work_time || 30,

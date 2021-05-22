@@ -23,7 +23,9 @@ class Routes extends Component {
 	}
 
 	render() {
-		if (this.props.loading || !this.props.ws)
+		const { loading, ws } = this.props
+
+		if (loading || !ws)
 			return (
 				<PageHero>
 					<PageHero.Body>
