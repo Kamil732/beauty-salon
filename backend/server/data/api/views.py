@@ -46,6 +46,7 @@ class ServiceDetailAPIView(UpdateModelMixin, DestroyModelMixin, GenericAPIView):
         return self.destroy(request, *args, **kwargs)
 
 
+@method_decorator(csrf_protect, name='dispatch')
 class ServiceCreateAPIView(CreateAPIView):
     permission_classes = (IsAdmin,)
     serializer_class = serializers.ServiceSerializer
