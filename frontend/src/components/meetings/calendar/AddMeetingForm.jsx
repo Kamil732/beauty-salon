@@ -12,6 +12,7 @@ class AddMeetingForm extends Component {
 		isAuthenticated: PropTypes.bool,
 		data: PropTypes.object,
 		barberChoiceList: PropTypes.array,
+		services: PropTypes.array.isRequired,
 		loadBarbers: PropTypes.func.isRequired,
 	}
 
@@ -21,7 +22,7 @@ class AddMeetingForm extends Component {
 		this.state = {
 			loading: false,
 			barber: '',
-			type: '',
+			service: '',
 		}
 	}
 
@@ -32,8 +33,8 @@ class AddMeetingForm extends Component {
 	onSubmit = async (e) => {
 		e.preventDefault()
 
-		const { barber, type } = this.state
-		const payload = { barber, type }
+		const { barber, service } = this.state
+		const payload = { barber, service }
 
 		this.props.addMeeting(payload, (state) =>
 			this.setState({ loading: state })
@@ -41,8 +42,8 @@ class AddMeetingForm extends Component {
 	}
 
 	render() {
-		const { barberChoiceList } = this.props
-		const { loading, barber, type } = this.state
+		const { barberChoiceList, services } = this.props
+		const { loading, barber, service } = this.state
 
 		return (
 			<form onSubmit={this.onSubmit}>
@@ -56,31 +57,54 @@ class AddMeetingForm extends Component {
 						id="barber"
 						name="barber"
 						value={barber}
+						getValue={(choices) =>
+							choices.filter((choice) => choice.value === barber)
+						}
 						labelValue={barber}
-						onChange={(_, value) =>
+						onChange={(option) =>
 							this.setState({
-								barber: value,
+								barber: option?.value || '',
 							})
 						}
 						choices={barberChoiceList}
+						isNotClearable
 					/>
 				</FormControl>
 
 				<FormControl>
-					<FormControl.Label htmlFor="type" inputValue={type}>
-						Typ Wizyty
+					<FormControl.Label htmlFor="service" inputValue={service}>
+						Usługa
 					</FormControl.Label>
+
 					<FormControl.ChoiceField
 						required
-						id="type"
-						name="type"
-						onChange={(_, value) => this.setState({ type: value })}
-						value={type}
-						labelValue={type}
-						choices={[
-							{ value: 'hair', label: 'Włosy' },
-							{ value: 'beard', label: 'Broda' },
-						]}
+						id="service"
+						name="service"
+						onChange={(option) =>
+							this.setState({
+								service: option?.id || '',
+							})
+						}
+						value={service}
+						labelValue={service}
+						choices={services}
+						getValue={(choices) =>
+							choices.filter((choice) => choice.id === service)
+						}
+						getOptionLabel={(option) => option.name}
+						getOptionValue={(option) => option.id}
+						formatOptionLabel={({ name, price }) => (
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'space-between',
+								}}
+							>
+								<div>{name}</div>
+								<div className="text-broken">{price} zł</div>
+							</div>
+						)}
+						isNotClearable
 					/>
 				</FormControl>
 
@@ -101,6 +125,7 @@ const mapStateToProps = (state) => ({
 	isAuthenticated: state.auth.isAuthenticated,
 	data: state.auth.data,
 	barberChoiceList: state.meetings.barberChoiceList,
+	services: state.data.cms.data.services,
 })
 
 const mapDispatchToProps = {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import { GrFormAdd } from 'react-icons/gr'
-import { IoTrash } from 'react-icons/io5'
+import { FiTrash2 } from 'react-icons/fi'
 
 import getHeaders from '../../helpers/getHeaders'
 import axios from 'axios'
@@ -284,7 +284,7 @@ function Pricing({ dispatch, services, isAdmin }) {
 							})
 						}
 					>
-						<IoTrash size={18} />
+						<FiTrash2 />
 						Usuń
 					</Button>
 

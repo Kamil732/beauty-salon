@@ -56,24 +56,6 @@ class EditMeetingAdminForm extends Component {
 			service,
 		} = this.state
 
-		// const payload = this.props.selected.do_not_work
-		// 	? {
-		// 			start: this.props.selected.start,
-		// 			end: this.props.selected.end,
-		// 			barber,
-		// 			service,
-		// 	  }
-		// 	: {
-		// 			start: this.props.selected.start,
-		// 			end: this.props.selected.end,
-		// 			customer,
-		// 			customer_first_name,
-		// 			customer_last_name,
-		// 			customer_phone_number,
-		// 			customer_fax_number,
-		// 			barber,
-		// 			service,
-		// 	  }
 		const payload = {
 			start: this.props.selected.start,
 			end: this.props.selected.end,
@@ -214,6 +196,7 @@ class EditMeetingAdminForm extends Component {
 										})
 									}
 									choices={barberChoiceList}
+									isNotClearable
 								/>
 							</FormControl>
 						</FormGroup>
@@ -344,6 +327,7 @@ class EditMeetingAdminForm extends Component {
 										</div>
 									</div>
 								)}
+								isNotClearable
 							/>
 						</FormControl>
 					</>

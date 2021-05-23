@@ -202,6 +202,7 @@ class AddMeetingAdminForm extends Component {
 											})
 										}
 										choices={barberChoiceList}
+										isNotClearable
 									/>
 								</FormControl>
 							</FormGroup>
@@ -332,6 +333,7 @@ class AddMeetingAdminForm extends Component {
 											</div>
 										</div>
 									)}
+									isNotClearable
 								/>
 							</FormControl>
 						</div>

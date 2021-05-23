@@ -14,24 +14,19 @@ class EditMeetingForm extends Component {
 		selected: PropTypes.object.isRequired,
 		saveMeeting: PropTypes.func.isRequired,
 		barberChoiceList: PropTypes.array,
+		services: PropTypes.array.isRequired,
 		loadBarbers: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
 		super(props)
 
-		this.TYPES = [
-			{ value: 'hair', label: 'Włosy' },
-			{ value: 'beard', label: 'Broda' },
-		]
-
 		this.state = {
 			saveLoading: false,
 			deleteLoading: false,
 
 			barber: props.selected.barber,
-			type: this.TYPES.find((type) => type.label === props.selected.type)
-				.value,
+			service: props.selected.service,
 		}
 
 		this.onSubmit = this.onSubmit.bind(this)
@@ -40,13 +35,13 @@ class EditMeetingForm extends Component {
 	onSubmit = async (e) => {
 		e.preventDefault()
 
-		const { barber, type } = this.state
+		const { barber, service } = this.state
 
 		const payload = {
 			start: this.props.selected.start,
 			end: this.props.selected.end,
 			barber,
-			type,
+			service,
 		}
 
 		await this.props.saveMeeting(payload, (state) =>
@@ -59,8 +54,8 @@ class EditMeetingForm extends Component {
 	}
 
 	render() {
-		const { barberChoiceList, selected } = this.props
-		const { saveLoading, deleteLoading, barber, type } = this.state
+		const { barberChoiceList, selected, services } = this.props
+		const { saveLoading, deleteLoading, barber, service } = this.state
 
 		return (
 			<form onSubmit={this.onSubmit}>
@@ -76,29 +71,52 @@ class EditMeetingForm extends Component {
 						id="barber"
 						name="barber"
 						value={barber}
+						getValue={(choices) =>
+							choices.filter((choice) => choice.value === barber)
+						}
 						labelValue={barber}
-						isNotClearable
-						onChange={(_, value) =>
+						onChange={(option) =>
 							this.setState({
-								barber: value,
+								barber: option?.value || '',
 							})
 						}
 						choices={barberChoiceList}
+						isNotClearable
 					/>
 				</FormControl>
 				<FormControl>
-					<FormControl.Label htmlFor="type" inputValue={type}>
-						Typ Wizyty
+					<FormControl.Label htmlFor="type" inputValue={service}>
+						Usługa
 					</FormControl.Label>
 					<FormControl.ChoiceField
 						required
-						id="type"
-						name="type"
-						onChange={(_, value) => this.setState({ type: value })}
-						value={type}
-						labelValue={type}
+						id="service"
+						name="service"
+						onChange={(option) =>
+							this.setState({
+								service: option?.id || '',
+							})
+						}
+						value={service}
+						labelValue={service}
+						choices={services}
+						getValue={(choices) =>
+							choices.filter((choice) => choice.id === service)
+						}
+						getOptionLabel={(option) => option.name}
+						getOptionValue={(option) => option.id}
+						formatOptionLabel={({ name, price }) => (
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'space-between',
+								}}
+							>
+								<div>{name}</div>
+								<div className="text-broken">{price} zł</div>
+							</div>
+						)}
 						isNotClearable
-						choices={this.TYPES}
 					/>
 				</FormControl>
 
@@ -127,10 +145,7 @@ class EditMeetingForm extends Component {
 						disabled={
 							deleteLoading ||
 							(barber === selected.barber &&
-								type ===
-									this.TYPES.find(
-										(type) => type.label === selected.type
-									).value)
+								service === selected.service)
 						}
 					>
 						Zapisz
@@ -143,6 +158,7 @@ class EditMeetingForm extends Component {
 
 const mapStateToProps = (state) => ({
 	barberChoiceList: state.meetings.barberChoiceList,
+	services: state.data.cms.data.services,
 })
 
 const mapDispatchToProps = {
