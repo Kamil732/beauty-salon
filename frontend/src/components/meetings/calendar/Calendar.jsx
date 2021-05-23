@@ -460,12 +460,7 @@ class Calendar extends Component {
 		data.start = start
 		data.end = end
 
-		if (data.do_not_work) {
-			delete data.do_not_work
-			data.type = 'do_not_work'
-
-			if (data.barber === 'everyone') data.barber = ''
-		}
+		if (data.do_not_work && data.barber === 'everyone') data.barber = ''
 
 		if (loading) loading(true)
 

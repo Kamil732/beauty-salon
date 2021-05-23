@@ -98,7 +98,7 @@ function SelectSearchInput({
 function SelectSingleValue({ children, id, ...props }) {
 	return (
 		<components.SingleValue {...props}>
-			{id ? <div id={id}>{children}</div> : <div>{children}</div>}
+			<div id={id ? id : null}>{children}</div>
 		</components.SingleValue>
 	)
 }
@@ -112,9 +112,10 @@ function ChoiceField({
 	onChange,
 	labelValue,
 	id,
+	getValue,
 	...props
 }) {
-	const handleOnChange = (opt) => onChange(opt?.label || '', opt?.value || '')
+	const handleOnChange = (opt) => onChange(opt)
 
 	const styles = {
 		container: () => ({}),
@@ -135,6 +136,10 @@ function ChoiceField({
 		menu: (provided, _) => ({
 			...provided,
 			zIndex: 3,
+		}),
+		singleValue: (provided, _) => ({
+			...provided,
+			width: '100%',
 		}),
 	}
 
@@ -166,6 +171,7 @@ function ChoiceField({
 					isClearable={!isNotClearable}
 					hideSelectedOptions
 					defaultValue={value}
+					{...props}
 				/>
 				{props.required && (
 					<input
@@ -190,12 +196,9 @@ function ChoiceField({
 				onChange={handleOnChange}
 				isClearable={!isNotClearable}
 				hideSelectedOptions
-				value={
-					value
-						? choices.filter((choice) => choice.value === value)
-						: null
-				}
+				value={value ? getValue(choices) : null}
 				isLoading={choices.length === 0}
+				{...props}
 			/>
 			{props.required && (
 				<input
@@ -223,6 +226,7 @@ ChoiceField.prototype.propTypes = {
 	).isRequired,
 	labelValue: PropTypes.string.isRequired,
 	value: PropTypes.any,
+	getValue: PropTypes.func.isRequired,
 	onChange: PropTypes.func.isRequired,
 }
 

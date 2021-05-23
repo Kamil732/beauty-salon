@@ -16,18 +16,13 @@ class EditMeetingAdminForm extends Component {
 		saveMeeting: PropTypes.func.isRequired,
 		barberChoiceList: PropTypes.array,
 		customerChoiceList: PropTypes.array,
+		services: PropTypes.array.isRequired,
 		loadBarbers: PropTypes.func.isRequired,
 		loadCustomers: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
 		super(props)
-
-		this.TYPES = [
-			{ value: 'hair', label: 'Włosy' },
-			{ value: 'beard', label: 'Broda' },
-			{ value: 'do_not_work', label: 'NIE PRACUJE' },
-		]
 
 		this.state = {
 			saveLoading: false,
@@ -38,9 +33,8 @@ class EditMeetingAdminForm extends Component {
 			customer_last_name: props.selected.customer_last_name,
 			customer_phone_number: props.selected.customer_phone_number,
 			customer_fax_number: props.selected.customer_fax_number,
-			barber: props.selected.barber,
-			type: this.TYPES.find((type) => type.label === props.selected.type)
-				.value,
+			barber: props.selected.barber || 'everyone',
+			service: props.selected.service,
 		}
 
 		this.onChange = this.onChange.bind(this)
@@ -59,27 +53,39 @@ class EditMeetingAdminForm extends Component {
 			customer_phone_number,
 			customer_fax_number,
 			barber,
-			type,
+			service,
 		} = this.state
 
-		const payload = this.props.selected.do_not_work
-			? {
-					start: this.props.selected.start,
-					end: this.props.selected.end,
-					barber,
-					type,
-			  }
-			: {
-					start: this.props.selected.start,
-					end: this.props.selected.end,
-					customer,
-					customer_first_name,
-					customer_last_name,
-					customer_phone_number,
-					customer_fax_number,
-					barber,
-					type,
-			  }
+		// const payload = this.props.selected.do_not_work
+		// 	? {
+		// 			start: this.props.selected.start,
+		// 			end: this.props.selected.end,
+		// 			barber,
+		// 			service,
+		// 	  }
+		// 	: {
+		// 			start: this.props.selected.start,
+		// 			end: this.props.selected.end,
+		// 			customer,
+		// 			customer_first_name,
+		// 			customer_last_name,
+		// 			customer_phone_number,
+		// 			customer_fax_number,
+		// 			barber,
+		// 			service,
+		// 	  }
+		const payload = {
+			start: this.props.selected.start,
+			end: this.props.selected.end,
+			do_not_work: this.props.selected.do_not_work,
+			customer,
+			customer_first_name,
+			customer_last_name,
+			customer_phone_number,
+			customer_fax_number,
+			barber,
+			service,
+		}
 
 		await this.props.saveMeeting(payload, (state) =>
 			this.setState({ saveLoading: state })
@@ -91,7 +97,8 @@ class EditMeetingAdminForm extends Component {
 	}
 
 	render() {
-		const { selected, barberChoiceList, customerChoiceList } = this.props
+		const { selected, barberChoiceList, customerChoiceList, services } =
+			this.props
 		const {
 			saveLoading,
 			deleteLoading,
@@ -101,7 +108,7 @@ class EditMeetingAdminForm extends Component {
 			customer_phone_number,
 			customer_fax_number,
 			barber,
-			type,
+			service,
 		} = this.state
 
 		return (
@@ -110,10 +117,7 @@ class EditMeetingAdminForm extends Component {
 
 				{selected.do_not_work ? (
 					<FormControl>
-						<FormControl.Label
-							htmlFor="barber"
-							inputValue={barber || 'everyone'}
-						>
+						<FormControl.Label htmlFor="barber" inputValue={barber}>
 							Urlop dla
 						</FormControl.Label>
 
@@ -121,14 +125,18 @@ class EditMeetingAdminForm extends Component {
 							required
 							id="barber"
 							name="barber"
-							labelValue={barber || 'everyone'}
-							value={barber || 'everyone'}
-							onChange={(_, value) =>
+							value={barber}
+							getValue={(choices) =>
+								choices.filter(
+									(choice) => choice.value === barber
+								)
+							}
+							labelValue={barber}
+							onChange={(option) =>
 								this.setState({
-									barber: value,
+									barber: option?.value || '',
 								})
 							}
-							isNotClearable
 							choices={[
 								{
 									label: 'Wszystkich',
@@ -160,17 +168,19 @@ class EditMeetingAdminForm extends Component {
 											  }
 											: null
 									}
-									onChange={(_, value) =>
+									labelValue={customer}
+									onChange={(option) =>
 										this.setState({
-											customer: value.slug || '',
+											customer: option?.value.slug || '',
 											customer_first_name:
-												value.first_name || '',
+												option?.value.first_name || '',
 											customer_last_name:
-												value.last_name || '',
+												option?.value.last_name || '',
 											customer_phone_number:
-												value.phone_number || '',
+												option?.value.phone_number ||
+												'',
 											customer_fax_number:
-												value.fax_number || '',
+												option?.value.fax_number || '',
 										})
 									}
 									searchAsync
@@ -192,11 +202,15 @@ class EditMeetingAdminForm extends Component {
 									id="barber"
 									name="barber"
 									value={barber}
+									getValue={(choices) =>
+										choices.filter(
+											(choice) => choice.value === barber
+										)
+									}
 									labelValue={barber}
-									isNotClearable
-									onChange={(_, value) =>
+									onChange={(option) =>
 										this.setState({
-											barber: value,
+											barber: option?.value || '',
 										})
 									}
 									choices={barberChoiceList}
@@ -292,23 +306,44 @@ class EditMeetingAdminForm extends Component {
 						</FormGroup>
 
 						<FormControl>
-							<FormControl.Label htmlFor="type" inputValue={type}>
-								Typ Wizyty
+							<FormControl.Label
+								htmlFor="type"
+								inputValue={service}
+							>
+								Usługa
 							</FormControl.Label>
 							<FormControl.ChoiceField
 								required
-								id="type"
-								name="type"
-								onChange={(_, value) =>
-									this.setState({ type: value })
+								id="service"
+								name="service"
+								onChange={(option) =>
+									this.setState({
+										service: option?.id || '',
+									})
 								}
-								value={type}
-								labelValue={type}
-								isNotClearable
-								choices={[
-									{ value: 'hair', label: 'Włosy' },
-									{ value: 'beard', label: 'Broda' },
-								]}
+								value={service}
+								labelValue={service}
+								choices={services}
+								getValue={(choices) =>
+									choices.filter(
+										(choice) => choice.id === service
+									)
+								}
+								getOptionLabel={(option) => option.name}
+								getOptionValue={(option) => option.id}
+								formatOptionLabel={({ name, price }) => (
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+										}}
+									>
+										<div>{name}</div>
+										<div className="text-broken">
+											{price} zł
+										</div>
+									</div>
+								)}
 							/>
 						</FormControl>
 					</>
@@ -338,7 +373,7 @@ class EditMeetingAdminForm extends Component {
 						loadingText="Zapisywanie"
 						disabled={
 							deleteLoading ||
-							(barber === selected.barber &&
+							(barber === (selected.barber || 'everyone') &&
 								customer === selected.customer &&
 								customer_first_name ===
 									selected.customer_first_name &&
@@ -348,10 +383,7 @@ class EditMeetingAdminForm extends Component {
 									selected.customer_phone_number &&
 								customer_fax_number ===
 									selected.customer_fax_number &&
-								type ===
-									this.TYPES.find(
-										(type) => type.label === selected.type
-									).value)
+								service === selected.service)
 						}
 					>
 						Zapisz
@@ -365,6 +397,7 @@ class EditMeetingAdminForm extends Component {
 const mapStateToProps = (state) => ({
 	barberChoiceList: state.meetings.barberChoiceList,
 	customerChoiceList: state.meetings.customerChoiceList,
+	services: state.data.cms.data.services,
 })
 
 const mapDispatchToProps = {

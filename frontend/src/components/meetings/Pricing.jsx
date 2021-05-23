@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import { GrFormAdd } from 'react-icons/gr'
-import { IoMdRemove } from 'react-icons/io'
+import { IoTrash } from 'react-icons/io5'
 
 import getHeaders from '../../helpers/getHeaders'
 import axios from 'axios'
@@ -122,7 +122,11 @@ function Pricing({ dispatch, services, isAdmin }) {
 		<>
 			{modalData.isOpen && (
 				<Modal closeModal={resetForm}>
-					<Modal.Header>Edycja danych</Modal.Header>
+					<Modal.Header>
+						{modalData.type === 'create'
+							? 'Edycja danych'
+							: 'Usuń ostanią usługę'}
+					</Modal.Header>
 					<Modal.Body>
 						<form
 							onSubmit={
@@ -171,14 +175,20 @@ function Pricing({ dispatch, services, isAdmin }) {
 									</FormControl>
 								</>
 							) : (
-								<h3>
+								<p
+									style={{
+										letterSpacing: '1px',
+										textAlign: 'center',
+										fontWeight: '500',
+									}}
+								>
 									Czy na pewno chcesz usunąć ostatnią usługę?
-								</h3>
+								</p>
 							)}
 
 							<ButtonContainer
 								style={{
-									marginTop: '1rem',
+									marginTop: '2rem',
 									justifyContent: 'space-between',
 								}}
 							>
@@ -274,7 +284,7 @@ function Pricing({ dispatch, services, isAdmin }) {
 							})
 						}
 					>
-						<IoMdRemove size={25} />
+						<IoTrash size={18} />
 						Usuń
 					</Button>
 

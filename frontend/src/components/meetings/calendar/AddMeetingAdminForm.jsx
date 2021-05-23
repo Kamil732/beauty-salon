@@ -16,6 +16,7 @@ class AddMeetingAdminForm extends Component {
 		doNotWork: PropTypes.bool,
 		barberChoiceList: PropTypes.array,
 		customerChoiceList: PropTypes.array,
+		services: PropTypes.array.isRequired,
 		loadBarbers: PropTypes.func.isRequired,
 		loadCustomers: PropTypes.func.isRequired,
 	}
@@ -33,7 +34,7 @@ class AddMeetingAdminForm extends Component {
 			customer_phone_number: '',
 			customer_fax_number: '',
 			barber: '',
-			type: '',
+			service: '',
 		}
 
 		this.onChange = this.onChange.bind(this)
@@ -42,6 +43,14 @@ class AddMeetingAdminForm extends Component {
 
 	componentDidMount = () => {
 		if (this.props.barberChoiceList.length === 0) this.props.loadBarbers()
+	}
+
+	componentDidUpdate(_, prevState) {
+		if (
+			prevState.do_not_work !== this.state.do_not_work &&
+			this.state.barber === 'everyone'
+		)
+			this.setState({ barber: '' })
 	}
 
 	onSubmit = async (e) => {
@@ -54,7 +63,7 @@ class AddMeetingAdminForm extends Component {
 			customer_phone_number,
 			customer_fax_number,
 			barber,
-			type,
+			service,
 		} = this.state
 
 		const payload = {
@@ -65,7 +74,7 @@ class AddMeetingAdminForm extends Component {
 			customer_phone_number,
 			customer_fax_number,
 			barber,
-			type,
+			service,
 		}
 
 		const phoneRegexValidation =
@@ -97,7 +106,7 @@ class AddMeetingAdminForm extends Component {
 	}
 
 	render() {
-		const { barberChoiceList, customerChoiceList } = this.props
+		const { barberChoiceList, customerChoiceList, services } = this.props
 		const {
 			loading,
 			do_not_work,
@@ -107,7 +116,7 @@ class AddMeetingAdminForm extends Component {
 			customer_phone_number,
 			customer_fax_number,
 			barber,
-			type,
+			service,
 		} = this.state
 
 		return (
@@ -143,17 +152,22 @@ class AddMeetingAdminForm extends Component {
 										id="customer"
 										name="customer"
 										labelValue={customer}
-										onChange={(_, value) =>
+										onChange={(option) =>
 											this.setState({
-												customer: value.slug || '',
+												customer:
+													option?.value.slug || '',
 												customer_first_name:
-													value.first_name || '',
+													option?.value.first_name ||
+													'',
 												customer_last_name:
-													value.last_name || '',
+													option?.value.last_name ||
+													'',
 												customer_phone_number:
-													value.phone_number || '',
+													option?.value
+														.phone_number || '',
 												customer_fax_number:
-													value.fax_number || '',
+													option?.value.fax_number ||
+													'',
 											})
 										}
 										searchAsync
@@ -175,10 +189,16 @@ class AddMeetingAdminForm extends Component {
 										id="barber"
 										name="barber"
 										value={barber}
+										getValue={(choices) =>
+											choices.filter(
+												(choice) =>
+													choice.value === barber
+											)
+										}
 										labelValue={barber}
-										onChange={(_, value) =>
+										onChange={(option) =>
 											this.setState({
-												barber: value,
+												barber: option?.value || '',
 											})
 										}
 										choices={barberChoiceList}
@@ -275,24 +295,43 @@ class AddMeetingAdminForm extends Component {
 
 							<FormControl>
 								<FormControl.Label
-									htmlFor="type"
-									inputValue={type}
+									htmlFor="service"
+									inputValue={service}
 								>
-									Typ Wizyty
+									Usługa
 								</FormControl.Label>
 								<FormControl.ChoiceField
 									required={!do_not_work}
-									id="type"
-									name="type"
-									onChange={(_, value) =>
-										this.setState({ type: value })
+									id="service"
+									name="service"
+									onChange={(option) =>
+										this.setState({
+											service: option?.id || '',
+										})
 									}
-									value={type}
-									labelValue={type}
-									choices={[
-										{ value: 'hair', label: 'Włosy' },
-										{ value: 'beard', label: 'Broda' },
-									]}
+									value={service}
+									labelValue={service}
+									choices={services}
+									getValue={(choices) =>
+										choices.filter(
+											(choice) => choice.id === service
+										)
+									}
+									getOptionLabel={(option) => option.name}
+									getOptionValue={(option) => option.id}
+									formatOptionLabel={({ name, price }) => (
+										<div
+											style={{
+												display: 'flex',
+												justifyContent: 'space-between',
+											}}
+										>
+											<div>{name}</div>
+											<div className="text-broken">
+												{price} zł
+											</div>
+										</div>
+									)}
 								/>
 							</FormControl>
 						</div>
@@ -313,11 +352,16 @@ class AddMeetingAdminForm extends Component {
 								required={do_not_work}
 								id="barber"
 								name="barber"
-								labelValue={barber}
 								value={barber}
-								onChange={(_, value) =>
+								getValue={(choices) =>
+									choices.filter(
+										(choice) => choice.value === barber
+									)
+								}
+								labelValue={barber}
+								onChange={(option) =>
 									this.setState({
-										barber: value,
+										barber: option?.value || '',
 									})
 								}
 								choices={[
@@ -357,6 +401,7 @@ class AddMeetingAdminForm extends Component {
 const mapStateToProps = (state) => ({
 	barberChoiceList: state.meetings.barberChoiceList,
 	customerChoiceList: state.meetings.customerChoiceList,
+	services: state.data.cms.data.services,
 })
 
 const mapDispatchToProps = {
