@@ -31,7 +31,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         working_hours = get_working_hours(data['start'].weekday())
         start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
 
-        if not(data['do_not_work']) and not(data['barber']):
+        if not(data.get('do_not_work')) and not(data['barber']):
             raise serializers.ValidationError({'detail': 'Fryzjer jest wymagany'})
 
         if (data['end'] < data['start']):
@@ -43,11 +43,11 @@ class MeetingSerializer(serializers.ModelSerializer):
                 {'detail': 'Nie można umówić wizyty krócej niż 15min przed jej rozpoczęciem'})
 
         # Validate if meeting is NOT between work hours and validate meeting work_time
-        if not(data['do_not_work']) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < cms_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - cms_data.work_time):
+        if not(data.get('do_not_work')) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < cms_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - cms_data.work_time):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
         # Validate if barber is occupied
-        if not(data['do_not_work']) and not(data['barber'] == ''):
+        if not(data.get('do_not_work')) and not(data['barber'] == ''):
             for barber in same_slot_meetings.values_list('barber__slug', flat=True):
                 if barber == data['barber'].slug:
                     raise serializers.ValidationError({'detail': 'Nie umówić wizyty z nieczynnym fryzjerem'})
@@ -169,7 +169,7 @@ class AdminMeetingSerializer(MeetingSerializer):
     def validate(self, data):
         data = super(AdminMeetingSerializer, self).validate(data, True)
 
-        if not(data['do_not_work']):
+        if not(data.get('do_not_work')):
             if not(data['service']):
                 raise serializers.ValidationError({'detail': 'Musisz wybrać usługę'})
             if len(data['customer_first_name']) < 3:
@@ -180,8 +180,8 @@ class AdminMeetingSerializer(MeetingSerializer):
                 raise serializers.ValidationError({'detail': 'Numer telefonu jest wymagany'})
 
         # Validate same slot meeting count
-        if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data['do_not_work'])) or \
-                (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data['do_not_work']):
+        if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data.get('do_not_work'))) or \
+                (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data.get('do_not_work')):
             raise serializers.ValidationError({'detail': 'Nie porawna ilość wizyt w jednym czasie'})
 
         del data['same_slot_meeting_count']
