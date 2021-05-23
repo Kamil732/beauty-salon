@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from typing import SupportsRound
 from django.utils import timezone
 
 from channels.layers import get_channel_layer
@@ -9,21 +10,18 @@ from rest_framework import serializers
 from server.utilities import get_working_hours
 from meetings.models import Meeting
 from accounts.models import Account, Barber
-from data.models import Data, Notification
+from data.models import Data, Service, Notification
+from data.api.serializers import ServiceSerializer
 
 
 class MeetingSerializer(serializers.ModelSerializer):
     barber = serializers.SlugRelatedField(queryset=Barber.objects.all(), slug_field='slug', allow_null=True)
     barber_first_name = serializers.ReadOnlyField(source='barber.first_name')
     barber_last_name = serializers.ReadOnlyField(source='barber.last_name')
-    do_not_work = serializers.SerializerMethodField('get_do_not_work')
-
-    def get_do_not_work(self, obj):
-        return obj.type == Meeting.TYPES[2][0]
+    service = serializers.PrimaryKeyRelatedField(queryset=Service.objects.all(), allow_null=True)
 
     def validate(self, data, pass_cached_data=False):
         # Cannot create meeting WHEN it's not between 2 slots, but maybe in the middle of them []
-
         cms_data = Data.objects.first()
 
         # Get meetings in the same slot
@@ -33,9 +31,8 @@ class MeetingSerializer(serializers.ModelSerializer):
         working_hours = get_working_hours(data['start'].weekday())
         start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
 
-        if not(data['type'] == Meeting.TYPES[2][0]):
-            if not(data['barber']):
-                raise serializers.ValidationError('Fryzjer jest wymagany')
+        if not(data['do_not_work']) and not(data['barber']):
+            raise serializers.ValidationError({'detail': 'Fryzjer jest wymagany'})
 
         if (data['end'] < data['start']):
             raise serializers.ValidationError('Nie poprawna data wizyty')
@@ -46,11 +43,11 @@ class MeetingSerializer(serializers.ModelSerializer):
                 {'detail': 'Nie można umówić wizyty krócej niż 15min przed jej rozpoczęciem'})
 
         # Validate if meeting is NOT between work hours and validate meeting work_time
-        if not(data['type'] == Meeting.TYPES[2][0]) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < cms_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - cms_data.work_time):
+        if not(data['do_not_work']) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < cms_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - cms_data.work_time):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
         # Validate if barber is occupied
-        if not(data['type'] == Meeting.TYPES[2][0]) and not(data['barber'] == ''):
+        if not(data['do_not_work']) and not(data['barber'] == ''):
             for barber in same_slot_meetings.values_list('barber__slug', flat=True):
                 if barber == data['barber'].slug:
                     raise serializers.ValidationError({'detail': 'Nie umówić wizyty z nieczynnym fryzjerem'})
@@ -71,7 +68,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             'customer',
             'start',
             'end',
-            'type',
+            'service',
             'do_not_work',
             'customer_first_name',
             'customer_last_name',
@@ -79,12 +76,11 @@ class MeetingSerializer(serializers.ModelSerializer):
             'customer_fax_number',
             'confirmed'
         )
-        read_only_fields = ('id', 'do_not_work',)
+        read_only_fields = ('id',)
 
 
 class CustomerMeetingSerializer(MeetingSerializer):
     customer = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    type = serializers.ChoiceField(choices=Meeting.TYPES[:2], write_only=True, allow_null=True)
 
     def validate(self, data):
         data = super(CustomerMeetingSerializer, self).validate(data, True)
@@ -100,7 +96,6 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
     def create(self, validated_data):
         user = self.context.get('request').user
-        cms_data = Data.objects.first()
 
         validated_data['customer_first_name'] = user.first_name
         validated_data['customer_last_name'] = user.last_name
@@ -109,7 +104,7 @@ class CustomerMeetingSerializer(MeetingSerializer):
         validated_data['confirmed'] = True
 
         user.bookings += 1
-        user.revenue += round(getattr(cms_data, f"{validated_data['type']}_price"))
+        user.revenue += round(validated_data['service'].price)
         user.save()
 
         # Send notfiy
@@ -142,12 +137,11 @@ class CustomerMeetingSerializer(MeetingSerializer):
         confirmed = instance.confirmed
         instance = super(CustomerMeetingSerializer, self).update(instance, validated_data)
 
-        if not(instance.type == Meeting.TYPES[2][0]) and not(confirmed) and validated_data.get('confirmed'):
+        if not(instance.do_not_work) and not(confirmed) and validated_data.get('confirmed'):
             user = instance.customer
-            cms_data = Data.objects.first()
 
             user.bookings += 1
-            user.revenue += round(getattr(cms_data, f"{validated_data['type']}_price"))
+            user.revenue += round(validated_data['service'].price)
             user.save()
 
         return instance
@@ -159,6 +153,8 @@ class CustomerMeetingSerializer(MeetingSerializer):
         )
 
         extra_kwargs = {
+            'do_not_work': {'read_only': True},
+            'service': {'allow_null': False},
             'customer_first_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_last_name': {'write_only': True, 'required': False, 'allow_blank': True},
             'customer_phone_number': {'write_only': True, 'required': False, 'allow_blank': True},
@@ -169,22 +165,23 @@ class CustomerMeetingSerializer(MeetingSerializer):
 class AdminMeetingSerializer(MeetingSerializer):
     customer = serializers.SlugRelatedField(queryset=Account.objects.filter(
         is_admin=False), slug_field='slug', allow_null=True)
-    type = serializers.ChoiceField(choices=Meeting.TYPES, write_only=True, allow_null=True)
 
     def validate(self, data):
         data = super(AdminMeetingSerializer, self).validate(data, True)
 
-        if not(data['type'] == Meeting.TYPES[2][0]):
+        if not(data['do_not_work']):
+            if not(data['service']):
+                raise serializers.ValidationError({'detail': 'Musisz wybrać usługę'})
             if len(data['customer_first_name']) < 3:
-                raise serializers.ValidationError('Imię musi mieć conajmniej 3 znaki')
+                raise serializers.ValidationError({'detail': 'Imię musi mieć conajmniej 3 znaki'})
             if len(data['customer_last_name']) < 3:
-                raise serializers.ValidationError('Nazwisko musi mieć conajmniej 3 znaki')
+                raise serializers.ValidationError({'detail': 'Nazwisko musi mieć conajmniej 3 znaki'})
             if not(data['customer_phone_number']):
-                raise serializers.ValidationError('Numer telefonu jest wymagany')
+                raise serializers.ValidationError({'detail': 'Numer telefonu jest wymagany'})
 
         # Validate same slot meeting count
-        if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data['type'] == Meeting.TYPES[2][0])) or \
-                (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data['type'] == Meeting.TYPES[2][0]):
+        if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data['do_not_work'])) or \
+                (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data['do_not_work']):
             raise serializers.ValidationError({'detail': 'Nie porawna ilość wizyt w jednym czasie'})
 
         del data['same_slot_meeting_count']
@@ -269,10 +266,10 @@ class AdminMeetingSerializer(MeetingSerializer):
 
         return super().update(instance, validated_data)
 
-    def to_representation(self, instance):
-        data = super(AdminMeetingSerializer, self).to_representation(instance)
-        data['type'] = instance.get_type_display()
-        return data
+    # def to_representation(self, instance):
+    #     data = super(AdminMeetingSerializer, self).to_representation(instance)
+    #     data['service'] = ServiceSerializer(instance.service).data
+    #     return data
 
     class Meta(MeetingSerializer.Meta):
         extra_kwargs = {
