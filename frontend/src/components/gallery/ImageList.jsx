@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { CloseButton } from '../layout/buttons/Button'
+import { CloseButton } from '../../layout/buttons/Button'
 
-import BrickLoader from '../layout/loaders/BrickLoader'
+import BrickLoader from '../../layout/loaders/BrickLoader'
 
 function ImageList({ loading, images }) {
 	const [zoom, setZoom] = useState(null)

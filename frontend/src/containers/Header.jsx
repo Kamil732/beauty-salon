@@ -13,7 +13,8 @@ import {
 } from '../redux/actions/data'
 
 import { default as NavigationMenu } from '../components/navigation/Menu'
-import { IoMdMegaphone, IoMdNotifications } from 'react-icons/io'
+import { IoMdNotifications } from 'react-icons/io'
+import { GoMegaphone } from 'react-icons/go'
 import Dropdown from '../layout/buttons/Dropdown'
 import { CloseButton } from '../layout/buttons/Button'
 import { useEffect } from 'react'
@@ -71,7 +72,7 @@ function Header({
 										height: '100%',
 									}}
 								>
-									<IoMdMegaphone fontSize="100" />
+									<GoMegaphone fontSize="100" />
 									<h3 style={{ textAlign: 'center' }}>
 										Nie masz żadnych powiadomień
 									</h3>

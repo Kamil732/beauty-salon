@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import axios from 'axios'
 
 import { IoMdPhotos } from 'react-icons/io'
 import GalleryIllustration from '../assets/images/gallery-illustration.svg'
-
 import { NotificationManager } from 'react-notifications'
+
 import PageHero from '../layout/PageHero'
-import ImageList from '../components/ImageList'
+import ImageList from '../components/gallery/ImageList'
+import UploadImage from '../components/gallery/UploadImage'
 import Button from '../layout/buttons/Button'
-import { connect } from 'react-redux'
 import EditBox from '../layout/forms/EditBox'
 
 class Gallery extends Component {
@@ -107,6 +108,11 @@ class Gallery extends Component {
 							Zdjęcia klientów
 						</div>
 					</PageHero.Title>
+					{isAdmin && (
+						<UploadImage>
+							<Button primary>Dodaj zdjęcie</Button>
+						</UploadImage>
+					)}
 
 					<ImageList images={data.results} loading={loading} />
 					{data.next ? (
