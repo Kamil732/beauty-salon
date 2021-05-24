@@ -14,6 +14,7 @@
     "react-big-calendar": "^0.33.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
+    "react-images-uploading": "^3.1.2",
     "react-notifications": "^1.7.2",
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
