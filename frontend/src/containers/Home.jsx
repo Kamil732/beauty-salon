@@ -56,10 +56,16 @@ function Home({
 						</PageHero.Text>
 
 						<ButtonContainer style={{ marginTop: '2rem' }}>
-							<Button primary to="/my-meetings">
+							<Button
+								primary
+								to={process.env.REACT_APP_CALENDAR_URL}
+							>
 								Umów wizytę
 							</Button>
-							<Button secondary to="/contact">
+							<Button
+								secondary
+								to={process.env.REACT_APP_CONTACT_URL}
+							>
 								Kontakt
 							</Button>
 						</ButtonContainer>
@@ -76,11 +82,9 @@ function Home({
 					<PageHero.Content data-aos="fade-left">
 						<PageHero.Title>Godziny Pracy</PageHero.Title>
 						<Card>
-							<Card.Body>
-								<div style={{ overflow: 'auto' }}>
-									<WorkHours />
-								</div>
-							</Card.Body>
+							<div style={{ overflow: 'auto' }}>
+								<WorkHours />
+							</div>
 						</Card>
 					</PageHero.Content>
 				</PageHero.Body>
@@ -89,15 +93,13 @@ function Home({
 					data-aos="zoom-out-up"
 					data-aos-anchor-placement="center-bottom"
 				>
-					<PageHero.Content>
+					<PageHero.Content style={{ maxWidth: '80%' }}>
 						<PageHero.Title>Cennik</PageHero.Title>
 
 						<Card>
-							<Card.Body>
-								<div style={{ overflow: 'auto' }}>
-									<Pricing />
-								</div>
-							</Card.Body>
+							<div style={{ overflow: 'auto' }}>
+								<Pricing />
+							</div>
 						</Card>
 					</PageHero.Content>
 
@@ -146,7 +148,9 @@ function Home({
 			</PageHero>
 			{window.innerWidth <= 768 && (
 				<>
-					<PageHero.Title style={{ textAlign: 'center' }}>Kalendarz z wizytami</PageHero.Title>
+					<PageHero.Title style={{ textAlign: 'center' }}>
+						Kalendarz z wizytami
+					</PageHero.Title>
 					<Calendar />
 				</>
 			)}

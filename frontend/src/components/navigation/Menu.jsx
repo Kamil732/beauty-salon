@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { IoMdMegaphone, IoMdNotifications } from 'react-icons/io'
+import { IoMdNotifications } from 'react-icons/io'
+import { GoMegaphone } from 'react-icons/go'
 
 import { logout } from '../../redux/actions/auth'
 import { NavLink } from 'react-router-dom'
@@ -36,14 +37,14 @@ function Menu({
 				Home
 			</NavLink>
 			<NavLink
-				to="/contact"
+				to={process.env.REACT_APP_CONTACT_URL}
 				className="nav__link"
 				onClick={closeNavigation}
 			>
 				Kontakt
 			</NavLink>
 			<NavLink
-				to="/gallery"
+				to={process.env.REACT_APP_GALLERY_URL}
 				className="nav__link"
 				onClick={closeNavigation}
 			>
@@ -53,7 +54,7 @@ function Menu({
 				!isAuthenticated ? (
 					<>
 						<NavLink
-							to="/login"
+							to={process.env.REACT_APP_LOGIN_URL}
 							className="nav__link"
 							onClick={closeNavigation}
 						>
@@ -65,7 +66,7 @@ function Menu({
 						{isAdmin ? (
 							<>
 								<NavLink
-									to="/meetings/calendar"
+									to={process.env.REACT_APP_CALENDAR_URL}
 									className="nav__link"
 									onClick={closeNavigation}
 								>
@@ -82,7 +83,7 @@ function Menu({
 						) : (
 							<>
 								<NavLink
-									to="/meetings/calendar"
+									to={process.env.REACT_APP_CALENDAR_URL}
 									className="nav__link"
 									onClick={closeNavigation}
 								>
@@ -109,7 +110,7 @@ function Menu({
 											height: '100%',
 										}}
 									>
-										<IoMdMegaphone fontSize="100" />
+										<GoMegaphone fontSize="100" />
 
 										<h3 style={{ textAlign: 'center' }}>
 											Nie masz żadnych powiadomień

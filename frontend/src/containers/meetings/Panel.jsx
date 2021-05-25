@@ -1,33 +1,79 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React from 'react'
+import { NavLink } from 'react-router-dom'
 import Calendar from '../../components/meetings/calendar/Calendar'
-import PageHero from '../../layout/PageHero'
-import Card from '../../layout/cards/Card'
+import LeftSideNav from '../../layout/LeftSideNav'
 
-class Panel extends Component {
-	static propTypes = {
-		prop: PropTypes,
-	}
+import { FaCalendarAlt, FaChartPie } from 'react-icons/fa'
+import { IoChatbubbles, IoSettingsSharp } from 'react-icons/io5'
+import { ImUsers } from 'react-icons/im'
 
-	render() {
-		return (
-			<PageHero>
-				<PageHero.Body vertical>
-					<Card>
-						<Card.Title>Edycja Danych</Card.Title>
-						<Card.Body>xd</Card.Body>
-					</Card>
+function Panel() {
+	return (
+		<LeftSideNav>
+			<LeftSideNav.Menu>
+				<LeftSideNav.Nav>
+					<NavLink
+						to={process.env.REACT_APP_CALENDAR_URL}
+						className="left-side-nav__btn"
+					>
+						<span className="left-side-nav__btn__icon">
+							<FaCalendarAlt />
+						</span>
+						Kalendarz
+					</NavLink>
+					<NavLink
+						to={process.env.REACT_APP_CALENDAR_CUSTOMERS_URL}
+						className="left-side-nav__btn"
+					>
+						<span className="left-side-nav__btn__icon">
+							<ImUsers />
+						</span>
+						Klienci
+					</NavLink>
+					<NavLink
+						to={process.env.REACT_APP_CALENDAR_STATISTICS_URL}
+						className="left-side-nav__btn"
+					>
+						<span className="left-side-nav__btn__icon">
+							<FaChartPie />
+						</span>
+						Statystki
+					</NavLink>
+					<NavLink
+						to={process.env.REACT_APP_CALENDAR_COMMUNICATION_URL}
+						className="left-side-nav__btn"
+					>
+						<span className="left-side-nav__btn__icon">
+							<IoChatbubbles />
+						</span>
+						Komunikacja
+					</NavLink>
+					<NavLink
+						to={process.env.REACT_APP_CALENDAR_SERVICES_URL}
+						className="left-side-nav__btn"
+					>
+						<span className="left-side-nav__btn__icon">
+							<FaCalendarAlt />
+						</span>
+						Usługi
+					</NavLink>
+					<NavLink
+						to={process.env.REACT_APP_CALENDAR_SETTINGS_URL}
+						className="left-side-nav__btn"
+					>
+						<span className="left-side-nav__btn__icon">
+							<IoSettingsSharp />
+						</span>
+						Ustawienia
+					</NavLink>
+				</LeftSideNav.Nav>
+			</LeftSideNav.Menu>
 
-					<Calendar isAdminPanel />
-				</PageHero.Body>
-			</PageHero>
-		)
-	}
+			<LeftSideNav.Body>
+				<Calendar isAdminPanel />
+			</LeftSideNav.Body>
+		</LeftSideNav>
+	)
 }
 
-const mapStateToProps = (state) => ({})
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Panel)
+export default Panel

@@ -7,7 +7,6 @@ import Contact from '../containers/Contact'
 import Gallery from '../containers/Gallery'
 import Home from '../containers/Home'
 
-import { default as MeetingsRoutes } from '../components/meetings/Routes'
 import NotFound from '../containers/NotFound'
 import { connect } from 'react-redux'
 import BrickLoader from '../layout/loaders/BrickLoader'
@@ -15,9 +14,12 @@ import PageHero from '../layout/PageHero'
 import PrivateRoute from '../common/PrivateRoute'
 import PrivacyPolicy from '../containers/PrivacyPolicy'
 import TermsOfUse from '../containers/TermsOfUse'
+import Panel from '../containers/meetings/Panel'
+import MyMeetings from '../containers/meetings/MyMeetings'
 
 class Routes extends Component {
 	static propTypes = {
+		isAdmin: PropTypes.bool,
 		loading: PropTypes.bool,
 		ws: PropTypes.object,
 	}
@@ -37,13 +39,37 @@ class Routes extends Component {
 		return (
 			<Switch>
 				<Route exact path="/" component={Home} />
-				<Route exact path="/privacy-policy" component={PrivacyPolicy} />
-				<Route exact path="/terms-of-use" component={TermsOfUse} />
-				<Route exact path="/gallery" component={Gallery} />
-				<Route exact path="/contact" component={Contact} />
-				<Route exact path="/login" component={Login} />
+				<Route
+					exact
+					path={process.env.REACT_APP_PRIVACY_POLICY_URL}
+					component={PrivacyPolicy}
+				/>
+				<Route
+					exact
+					path={process.env.REACT_APP_TERMS_OF_USE_URL}
+					component={TermsOfUse}
+				/>
+				<Route
+					exact
+					path={process.env.REACT_APP_GALLERY_URL}
+					component={Gallery}
+				/>
+				<Route
+					exact
+					path={process.env.REACT_APP_CONTACT_URL}
+					component={Contact}
+				/>
+				<Route
+					exact
+					path={process.env.REACT_APP_LOGIN_URL}
+					component={Login}
+				/>
 
-				<PrivateRoute path="/meetings" component={MeetingsRoutes} />
+				<PrivateRoute
+					exact
+					path={process.env.REACT_APP_CALENDAR_URL}
+					component={this.props.isAdmin ? Panel : MyMeetings}
+				/>
 
 				<Route path="*" component={NotFound} />
 			</Switch>
@@ -52,6 +78,7 @@ class Routes extends Component {
 }
 
 const mapStateToProps = (state) => ({
+	isAdmin: state.auth.data.is_admin,
 	loading: state.data.cms.loading,
 	ws: state.meetings.ws,
 })

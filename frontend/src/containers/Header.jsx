@@ -87,12 +87,12 @@ function Header({
 					</div>
 				</div>
 
-				{isOpen ? (
+				{isOpen && (
 					<div
 						className="dark-bg"
 						onClick={() => setIsOpen(false)}
 					></div>
-				) : null}
+				)}
 
 				<nav className={`nav${isOpen ? ' active' : ''}`}>
 					<span className="d-md">

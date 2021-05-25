@@ -110,7 +110,7 @@ class Gallery extends Component {
 					</PageHero.Title>
 					{isAdmin && (
 						<UploadImage>
-							<Button primary>Dodaj zdjęcie</Button>
+							<Button primary>Dodaj zdjęcia</Button>
 						</UploadImage>
 					)}
 
