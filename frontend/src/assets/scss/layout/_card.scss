@@ -32,7 +32,7 @@
 
 	& > &__body {
 		font-size: 1.2rem;
-		padding: 2rem 3rem;
+		padding: 1rem 1.5rem;
 	}
 }
 
@@ -43,5 +43,9 @@
 		&.vertical {
 			flex-direction: column;
 		}
+	}
+
+	.card > .card__body {
+		padding: 2rem 3rem;
 	}
 }

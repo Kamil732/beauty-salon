@@ -1,0 +1,120 @@
+.left-side-nav {
+	display: flex;
+	gap: 2rem;
+	position: relative;
+
+	& > &__open-btn {
+		border: 1px solid #ccc;
+		cursor: pointer;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: fixed;
+		z-index: 5;
+		top: 150px;
+		left: -50px;
+		opacity: 0.7;
+		background-color: $secondary-color;
+		border-radius: 0 0 8px 8px;
+		padding: 1rem 1.5rem;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		width: 150px;
+		transform: rotate(-90deg);
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	& > &__menu {
+		position: fixed;
+		left: 3.5rem;
+		top: 100px;
+		background-color: $surface-color;
+		z-index: 999;
+		min-width: 60vw;
+		box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
+		border-radius: 0 10px 10px;
+		display: none;
+
+		&.open {
+			display: block;
+		}
+	}
+
+	& > &__body {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding-left: 5rem;
+		padding-right: 1rem;
+	}
+
+	&__nav {
+		display: grid;
+		place-items: center;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		background-color: $primary-color;
+		color: set-text-color($primary-color);
+		border-radius: 0 10px 0 0;
+		padding-bottom: 1rem;
+	}
+
+	&__btn {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		background-color: transparent;
+		font-size: 12px;
+		width: 62px;
+		height: 57px;
+		text-align: center;
+		color: set-text-color($primary-color);
+		opacity: 0.5;
+
+		&:hover,
+		&.active {
+			opacity: 1;
+		}
+
+		&__icon {
+			font-size: 1.5rem;
+			margin-bottom: -8px;
+		}
+	}
+}
+
+@include media-tablet {
+	.left-side-nav {
+		& > &__open-btn {
+			display: none;
+		}
+
+		& > &__menu {
+			display: block;
+			position: static;
+			background-color: $surface-color;
+			padding: 0;
+			height: auto;
+			min-width: auto;
+		}
+
+		&__nav {
+			display: flex;
+			flex-direction: column;
+			padding: 0 6px;
+		}
+
+		& > &__body {
+			width: max-content;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0;
+		}
+	}
+}

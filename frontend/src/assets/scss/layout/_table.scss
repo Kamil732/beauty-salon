@@ -8,11 +8,19 @@
 		color: set-text-color($primary-color);
 	}
 
+	tr {
+		border-bottom: 1px solid #ccc;
+		border-top: 1px solid #ccc;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
 	td,
 	th {
 		text-align: center;
-		border-bottom: 1px solid #ccc;
-		border-top: 1px solid #ccc;
+
 		padding: 8px;
 	}
 }
