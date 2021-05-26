@@ -3,7 +3,7 @@ import 'react-notifications/lib/notifications.css'
 import 'aos/dist/aos.css'
 import '../assets/css/main.css'
 
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import AOS from 'aos'
 import Header from '../containers/Header'
@@ -38,15 +38,29 @@ function App() {
 	return (
 		<Provider store={store}>
 			<Router>
-				<Header />
+				<Switch>
+					<Route path={process.env.REACT_APP_PANEL_URL}>
+						<Header isDashboardMode />
 
-				<div className="content-wrap">
-					<NotificationContainer />
+						<div className="content-wrap">
+							<NotificationContainer />
 
-					<Routes />
-				</div>
+							<Routes />
+						</div>
+					</Route>
 
-				<Footer />
+					<div>
+						<Header />
+
+						<div className="content-wrap">
+							<NotificationContainer />
+
+							<Routes />
+						</div>
+
+						<Footer />
+					</div>
+				</Switch>
 			</Router>
 		</Provider>
 	)

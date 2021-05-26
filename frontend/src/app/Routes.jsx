@@ -20,14 +20,15 @@ import MyMeetings from '../containers/meetings/MyMeetings'
 class Routes extends Component {
 	static propTypes = {
 		isAdmin: PropTypes.bool,
-		loading: PropTypes.bool,
+		loadingCMSData: PropTypes.bool,
+		loadingMeetings: PropTypes.bool,
 		ws: PropTypes.object,
 	}
 
 	render() {
-		const { loading, ws } = this.props
+		const { loadingCMSData, loadingMeetings } = this.props
 
-		if (loading || !ws)
+		if (loadingCMSData || loadingMeetings)
 			return (
 				<PageHero>
 					<PageHero.Body>
@@ -66,8 +67,7 @@ class Routes extends Component {
 				/>
 
 				<PrivateRoute
-					exact
-					path={process.env.REACT_APP_CALENDAR_URL}
+					path={process.env.REACT_APP_PANEL_URL}
 					component={this.props.isAdmin ? Panel : MyMeetings}
 				/>
 
@@ -79,8 +79,8 @@ class Routes extends Component {
 
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
-	loading: state.data.cms.loading,
-	ws: state.meetings.ws,
+	loadingCMSData: state.data.cms.loading,
+	loadingMeetings: state.meetings.loading,
 })
 
 export default connect(mapStateToProps, null)(Routes)

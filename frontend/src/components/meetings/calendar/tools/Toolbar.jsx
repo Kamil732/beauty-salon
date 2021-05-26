@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
+
 import { Views } from 'react-big-calendar'
 import ButtonContainer from '../../../../layout/buttons/ButtonContainer'
 import Button from '../../../../layout/buttons/Button'
@@ -28,14 +30,17 @@ const Toolbar = ({
 	return (
 		<div className="toolbar-container">
 			<ButtonContainer>
-				<Button primary small onClick={goToBack}>
-					&#8249;
-				</Button>
+				<ButtonContainer.Group>
+					<Button primary small onClick={goToBack}>
+						<IoIosArrowBack />
+					</Button>
+
+					<Button primary small onClick={goToNext}>
+						<IoIosArrowForward />
+					</Button>
+				</ButtonContainer.Group>
 				<Button primary small onClick={goToCurrent}>
 					Dzisiaj
-				</Button>
-				<Button primary small onClick={goToNext}>
-					&#8250;
 				</Button>
 			</ButtonContainer>
 

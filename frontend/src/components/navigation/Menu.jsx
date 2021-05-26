@@ -19,6 +19,7 @@ function Menu({
 	isAuthenticated,
 	isAdmin,
 	notificationLoading,
+	notificationLoaded,
 	notifications,
 	unReadNotificationsAmount,
 	logout,
@@ -66,7 +67,9 @@ function Menu({
 						{isAdmin ? (
 							<>
 								<NavLink
-									to={process.env.REACT_APP_CALENDAR_URL}
+									to={
+										process.env.REACT_APP_PANEL_CALENDAR_URL
+									}
 									className="nav__link"
 									onClick={closeNavigation}
 								>
@@ -83,7 +86,9 @@ function Menu({
 						) : (
 							<>
 								<NavLink
-									to={process.env.REACT_APP_CALENDAR_URL}
+									to={
+										process.env.REACT_APP_PANEL_CALENDAR_URL
+									}
 									className="nav__link"
 									onClick={closeNavigation}
 								>
@@ -96,6 +101,7 @@ function Menu({
 								btnContent={<IoMdNotifications size={25} />}
 								rounded
 								loading={notificationLoading}
+								loaded={notificationLoaded}
 								loadItems={getNotifications}
 								items={notifications}
 								unReadItems={unReadNotificationsAmount}
@@ -140,6 +146,7 @@ Menu.prototype.propTypes = {
 	loading: PropTypes.bool,
 	isAdmin: PropTypes.bool,
 	notificationLoading: PropTypes.bool,
+	notificationLoaded: PropTypes.bool,
 	notifications: PropTypes.array,
 	unReadNotificationsAmount: PropTypes.number,
 	logout: PropTypes.func.isRequired,
@@ -153,6 +160,7 @@ const mapStateToProps = (state) => ({
 	loading: state.auth.loading,
 	isAdmin: state.auth.data.is_admin,
 	notificationLoading: state.data.notifications.loading,
+	notificationLoaded: state.data.notifications.loaded,
 	notifications: state.data.notifications.data,
 	unReadNotificationsAmount: state.data.notifications.unRead,
 })

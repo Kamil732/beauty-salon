@@ -11,6 +11,7 @@ import CircleLoader from '../loaders/CircleLoader'
 function Dropdown({
 	btnContent,
 	loading,
+	loaded,
 	loadItems,
 	items,
 	unReadItems,
@@ -52,7 +53,13 @@ function Dropdown({
 					setSelected({ ...selected, isOpen: false })
 					setIsOpen(!isOpen)
 
-					if (loadItems && !isOpen && !loading && items.length === 0)
+					if (
+						loadItems &&
+						!isOpen &&
+						!loading &&
+						!loaded &&
+						items.length === 0
+					)
 						loadItems()
 				}}
 				{...props}
@@ -190,6 +197,7 @@ function Dropdown({
 Dropdown.prototype.propTypes = {
 	btnContent: PropTypes.any,
 	loading: PropTypes.bool,
+	loaded: PropTypes.bool,
 	loadItems: PropTypes.func,
 	items: PropTypes.arrayOf(
 		PropTypes.shape({

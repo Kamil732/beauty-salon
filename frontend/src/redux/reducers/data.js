@@ -22,7 +22,8 @@ const initialState = {
 	notifications: {
 		loading: false,
 		ws: null,
-		unRead: 0,
+		unRead: null,
+		loaded: false,
 		data: [],
 	},
 }
@@ -63,6 +64,7 @@ export default function (state = initialState, action) {
 					ws: initialState.notifications.ws,
 					unRead: initialState.notifications.unRead,
 					loading: initialState.notifications.loading,
+					loaded: initialState.notifications.loaded,
 				},
 			}
 		case NOTIFICATIONS_LOADING:
@@ -118,6 +120,7 @@ export default function (state = initialState, action) {
 					...state.notifications,
 					loading: state.notifications.ws ? false : true,
 					data: action.payload,
+					loaded: true,
 				},
 			}
 		case GET_NOTIFICATION:

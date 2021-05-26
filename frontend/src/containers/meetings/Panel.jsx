@@ -1,78 +1,97 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Redirect, Switch } from 'react-router-dom'
 import Calendar from '../../components/meetings/calendar/Calendar'
-import LeftSideNav from '../../layout/LeftSideNav'
+import Dashboard from '../../layout/Dashboard'
 
 import { FaCalendarAlt, FaChartPie } from 'react-icons/fa'
 import { IoChatbubbles, IoSettingsSharp } from 'react-icons/io5'
 import { ImUsers } from 'react-icons/im'
+import PrivateRoute from '../../common/PrivateRoute'
+import Legend from '../../components/meetings/calendar/Legend'
 
 function Panel() {
 	return (
-		<LeftSideNav>
-			<LeftSideNav.Menu>
-				<LeftSideNav.Nav>
-					<NavLink
-						to={process.env.REACT_APP_CALENDAR_URL}
-						className="left-side-nav__btn"
-					>
-						<span className="left-side-nav__btn__icon">
-							<FaCalendarAlt />
-						</span>
-						Kalendarz
-					</NavLink>
-					<NavLink
-						to={process.env.REACT_APP_CALENDAR_CUSTOMERS_URL}
-						className="left-side-nav__btn"
-					>
-						<span className="left-side-nav__btn__icon">
-							<ImUsers />
-						</span>
-						Klienci
-					</NavLink>
-					<NavLink
-						to={process.env.REACT_APP_CALENDAR_STATISTICS_URL}
-						className="left-side-nav__btn"
-					>
-						<span className="left-side-nav__btn__icon">
-							<FaChartPie />
-						</span>
-						Statystki
-					</NavLink>
-					<NavLink
-						to={process.env.REACT_APP_CALENDAR_COMMUNICATION_URL}
-						className="left-side-nav__btn"
-					>
-						<span className="left-side-nav__btn__icon">
-							<IoChatbubbles />
-						</span>
-						Komunikacja
-					</NavLink>
-					<NavLink
-						to={process.env.REACT_APP_CALENDAR_SERVICES_URL}
-						className="left-side-nav__btn"
-					>
-						<span className="left-side-nav__btn__icon">
-							<FaCalendarAlt />
-						</span>
-						Usługi
-					</NavLink>
-					<NavLink
-						to={process.env.REACT_APP_CALENDAR_SETTINGS_URL}
-						className="left-side-nav__btn"
-					>
-						<span className="left-side-nav__btn__icon">
-							<IoSettingsSharp />
-						</span>
-						Ustawienia
-					</NavLink>
-				</LeftSideNav.Nav>
-			</LeftSideNav.Menu>
+		<Dashboard>
+			<Dashboard.Nav>
+				<NavLink
+					to={process.env.REACT_APP_PANEL_CALENDAR_URL}
+					className="dashboard__btn"
+				>
+					<span className="dashboard__btn__icon">
+						<FaCalendarAlt />
+					</span>
+					Kalendarz
+				</NavLink>
+				<NavLink
+					to={process.env.REACT_APP_PANEL_CUSTOMERS_URL}
+					className="dashboard__btn"
+				>
+					<span className="dashboard__btn__icon">
+						<ImUsers />
+					</span>
+					Klienci
+				</NavLink>
+				<NavLink
+					to={process.env.REACT_APP_PANEL_STATISTICS_URL}
+					className="dashboard__btn"
+				>
+					<span className="dashboard__btn__icon">
+						<FaChartPie />
+					</span>
+					Statystki
+				</NavLink>
+				<NavLink
+					to={process.env.REACT_APP_PANEL_COMMUNICATION_URL}
+					className="dashboard__btn"
+				>
+					<span className="dashboard__btn__icon">
+						<IoChatbubbles />
+					</span>
+					Komunikacja
+				</NavLink>
+				<NavLink
+					to={process.env.REACT_APP_PANEL_SERVICES_URL}
+					className="dashboard__btn"
+				>
+					<span className="dashboard__btn__icon">
+						<FaCalendarAlt />
+					</span>
+					Usługi
+				</NavLink>
+				<NavLink
+					to={process.env.REACT_APP_PANEL_SETTINGS_URL}
+					className="dashboard__btn"
+				>
+					<span className="dashboard__btn__icon">
+						<IoSettingsSharp />
+					</span>
+					Ustawienia
+				</NavLink>
+			</Dashboard.Nav>
 
-			<LeftSideNav.Body>
-				<Calendar isAdminPanel />
-			</LeftSideNav.Body>
-		</LeftSideNav>
+			<Dashboard.Menu>
+				<Switch>
+					<PrivateRoute
+						exact
+						path={process.env.REACT_APP_PANEL_CALENDAR_URL}
+					>
+						<Legend />
+					</PrivateRoute>
+				</Switch>
+			</Dashboard.Menu>
+
+			<Dashboard.Body>
+				<Switch>
+					<PrivateRoute
+						exact
+						path={process.env.REACT_APP_PANEL_CALENDAR_URL}
+						component={() => <Calendar isAdminPanel />}
+					/>
+
+					<Redirect to={process.env.REACT_APP_PANEL_CALENDAR_URL} />
+				</Switch>
+			</Dashboard.Body>
+		</Dashboard>
 	)
 }
 

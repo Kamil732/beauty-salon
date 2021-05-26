@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function LeftSideNav({ children, ...props }) {
+function Dashboard({ children, ...props }) {
 	return (
-		<div className="left-side-nav" {...props}>
+		<div className="dashboard" {...props}>
 			{children}
 		</div>
 	)
@@ -25,28 +25,19 @@ function Menu({ children, ...props }) {
 	}, [isOpen])
 
 	return (
-		<>
-			<button
-				className="left-side-nav__open-btn"
-				onClick={() => setIsOpen(true)}
-			>
-				panel
-			</button>
-
-			<div
-				className={`left-side-nav__menu${isOpen ? ' open' : ''}`}
-				ref={container}
-				{...props}
-			>
-				{children}
-			</div>
-		</>
+		<div
+			className={`dashboard__menu${isOpen ? ' open' : ''}`}
+			ref={container}
+			{...props}
+		>
+			{children}
+		</div>
 	)
 }
 
 function Nav({ children, ...props }) {
 	return (
-		<div className="left-side-nav__nav" {...props}>
+		<div className="dashboard__nav" {...props}>
 			{children}
 		</div>
 	)
@@ -54,14 +45,14 @@ function Nav({ children, ...props }) {
 
 function Body({ children, ...props }) {
 	return (
-		<div className="left-side-nav__body" {...props}>
+		<div className="dashboard__body" {...props}>
 			{children}
 		</div>
 	)
 }
 
-LeftSideNav.Menu = Menu
-LeftSideNav.Nav = Nav
-LeftSideNav.Body = Body
+Dashboard.Menu = Menu
+Dashboard.Nav = Nav
+Dashboard.Body = Body
 
-export default LeftSideNav
+export default Dashboard

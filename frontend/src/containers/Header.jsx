@@ -22,6 +22,8 @@ import { useEffect } from 'react'
 function Header({
 	message,
 	ws,
+	loadingMeetings,
+	loadingCMSData,
 	isAuthenticated,
 	getUnreadNotificationsAmount,
 	getNotifications,
@@ -29,21 +31,34 @@ function Header({
 	notifications,
 	unReadNotificationsAmount,
 	notificationLoading,
+	notificationLoaded,
 	connectNotificationWS,
+	isDashboardMode,
+	...props
 }) {
 	const [isOpen, setIsOpen] = useState(false)
 
 	useEffect(() => {
-		if (isAuthenticated) getUnreadNotificationsAmount()
-	}, [isAuthenticated, getUnreadNotificationsAmount])
+		if (isAuthenticated && unReadNotificationsAmount === null)
+			getUnreadNotificationsAmount()
+	}, [
+		isAuthenticated,
+		getUnreadNotificationsAmount,
+		unReadNotificationsAmount,
+	])
 
 	useEffect(() => {
 		if (isAuthenticated && !ws) connectNotificationWS()
 	}, [isAuthenticated, ws, connectNotificationWS])
 
+	if (loadingCMSData || loadingMeetings) return null
+
 	return (
 		<>
-			<div className="header">
+			<div
+				className={`header${isDashboardMode ? ' dashboard-mode' : ''}`}
+				{...props}
+			>
 				<div className="mobile-nav">
 					<Link to="/">
 						<img
@@ -58,6 +73,7 @@ function Header({
 							btnContent={<IoMdNotifications size={25} />}
 							rounded
 							loading={notificationLoading}
+							loaded={notificationLoaded}
 							loadItems={getNotifications}
 							items={notifications}
 							unReadItems={unReadNotificationsAmount}
@@ -113,10 +129,14 @@ function Header({
 }
 
 Header.prototype.propTypes = {
+	isDashboardMode: PropTypes.bool,
 	message: PropTypes.string,
 	ws: PropTypes.object,
+	loadingCMSData: PropTypes.bool,
+	loadingMeetings: PropTypes.bool,
 	isAuthenticated: PropTypes.bool,
 	notificationLoading: PropTypes.bool,
+	notificationLoaded: PropTypes.bool,
 	notifications: PropTypes.array,
 	unReadNotificationsAmount: PropTypes.number,
 	getUnreadNotificationsAmount: PropTypes.func.isRequired,
@@ -128,7 +148,10 @@ Header.prototype.propTypes = {
 const mapStateToProps = (state) => ({
 	message: state.data.cms.data.message,
 	ws: state.data.notifications.ws,
+	loadingCMSData: state.data.cms.loading,
+	loadingMeetings: state.meetings.loading,
 	notificationLoading: state.data.notifications.loading,
+	notificationLoaded: state.data.notifications.loaded,
 	notifications: state.data.notifications.data,
 	unReadNotificationsAmount: state.data.notifications.unRead,
 	isAuthenticated: state.auth.isAuthenticated,

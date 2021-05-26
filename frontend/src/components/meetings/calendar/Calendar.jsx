@@ -18,7 +18,6 @@ import {
 	changeVisibleMeetings,
 } from '../../../redux/actions/meetings'
 
-import Card from '../../../layout/cards/Card'
 import BrickLoader from '../../../layout/loaders/BrickLoader'
 import Modal from '../../../layout/Modal'
 
@@ -32,7 +31,6 @@ import TouchCellWrapper from './tools/TouchCellWrapper'
 import WeekHeader from './tools/WeekHeader'
 
 import AddMeetingAdminForm from './AddMeetingAdminForm'
-import Legend from './Legend'
 import AddMeetingForm from './AddMeetingForm'
 import EditMeetingAdminForm from './EditMeetingAdminForm'
 import getWorkHours from '../../../helpers/getWorkHours'
@@ -598,9 +596,6 @@ class Calendar extends Component {
 
 		return {
 			className: isDisabled ? 'disabled' : '',
-			style: {
-				minHeight: isAdminPanel ? '110px' : 'auto',
-			},
 		}
 	}
 
@@ -806,95 +801,91 @@ class Calendar extends Component {
 					</Modal>
 				)}
 
-				<Card data-aos="zoom-out-up">
-					<Card.Body>
-						<Legend />
-					</Card.Body>
-					<Card.Body>
-						<div style={{ display: loading ? 'none' : 'block' }}>
-							<BigCalendar
-								onNavigate={this.onNavigate}
-								onView={this.onView}
-								onRangeChange={this.onRangeChange}
-								localizer={localizer}
-								events={meetings}
-								step={work_time}
-								timeslots={1}
-								views={{
-									week: true,
-									month: true,
-									threedays: ThreeDaysView,
-									day: true,
-								}}
-								view={view}
-								date={currentDate}
-								min={minDate}
-								max={maxDate}
-								dayLayoutAlgorithm="no-overlap"
-								slotPropGetter={this.slotPropGetter}
-								eventPropGetter={this.eventPropGetter}
-								dayPropGetter={this.dayPropGetter}
-								selectable={true}
-								selected={selected}
-								onSelecting={this.onSelecting}
-								onSelectSlot={this.onSelectSlot}
-								onSelectEvent={this.onSelectEvent}
-								getDrilldownView={this.getDrilldownView}
-								onDrillDown={this.onDrillDown}
-								components={{
-									toolbar: (props) => (
-										<Toolbar
-											windowWidth={windowWidth}
-											{...props}
-										/>
-									),
-									timeSlotWrapper: (props) => (
-										<TouchCellWrapper
-											{...props}
-											onSelectSlot={this.onSelectSlot}
-										/>
-									),
-									week: {
-										header: (props) => (
-											<WeekHeader
-												{...props}
-												freeSlots={freeSlots}
-											/>
-										),
-									},
-									threedays: {
-										header: (props) => (
-											<WeekHeader
-												{...props}
-												freeSlots={freeSlots}
-											/>
-										),
-									},
-									month: {
-										dateHeader: (props) => (
-											<MonthDateHeader
-												{...props}
-												freeSlots={freeSlots}
-											/>
-										),
-									},
-								}}
-								titleAccessor={getTitle}
-								tooltipAccessor={getTitle}
-								messages={{
-									month: 'Miesiąc',
-									week: 'Tydzień',
-									day: 'Dzień',
-									date: 'Data',
-									event: 'Spotkanie',
-									threedays: '3 Dni',
-									showMore: (amount) => `+${amount} więcej`,
-								}}
-							/>
-						</div>
-						{loading && <BrickLoader />}
-					</Card.Body>
-				</Card>
+				<div
+					style={{
+						display: loading ? 'none' : 'block',
+						width: '100%',
+						height: '100%',
+					}}
+				>
+					<BigCalendar
+						onNavigate={this.onNavigate}
+						onView={this.onView}
+						onRangeChange={this.onRangeChange}
+						localizer={localizer}
+						events={meetings}
+						step={work_time}
+						timeslots={1}
+						views={{
+							week: true,
+							month: true,
+							threedays: ThreeDaysView,
+							day: true,
+						}}
+						view={view}
+						date={currentDate}
+						min={minDate}
+						max={maxDate}
+						dayLayoutAlgorithm="no-overlap"
+						slotPropGetter={this.slotPropGetter}
+						eventPropGetter={this.eventPropGetter}
+						dayPropGetter={this.dayPropGetter}
+						selectable={true}
+						selected={selected}
+						onSelecting={this.onSelecting}
+						onSelectSlot={this.onSelectSlot}
+						onSelectEvent={this.onSelectEvent}
+						getDrilldownView={this.getDrilldownView}
+						onDrillDown={this.onDrillDown}
+						components={{
+							toolbar: (props) => (
+								<Toolbar windowWidth={windowWidth} {...props} />
+							),
+							timeSlotWrapper: (props) => (
+								<TouchCellWrapper
+									{...props}
+									onSelectSlot={this.onSelectSlot}
+								/>
+							),
+							week: {
+								header: (props) => (
+									<WeekHeader
+										{...props}
+										freeSlots={freeSlots}
+									/>
+								),
+							},
+							threedays: {
+								header: (props) => (
+									<WeekHeader
+										{...props}
+										freeSlots={freeSlots}
+									/>
+								),
+							},
+							month: {
+								dateHeader: (props) => (
+									<MonthDateHeader
+										{...props}
+										freeSlots={freeSlots}
+									/>
+								),
+							},
+						}}
+						titleAccessor={getTitle}
+						tooltipAccessor={getTitle}
+						messages={{
+							month: 'Miesiąc',
+							week: 'Tydzień',
+							day: 'Dzień',
+							date: 'Data',
+							event: 'Spotkanie',
+							threedays: '3 Dni',
+							showMore: (amount) => `+${amount} więcej`,
+						}}
+					/>
+				</div>
+				{loading && <BrickLoader />}
 			</>
 		)
 	}

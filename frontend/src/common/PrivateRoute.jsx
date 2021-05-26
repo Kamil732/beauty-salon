@@ -12,7 +12,7 @@ class PrivateRoute extends Component {
 	render() {
 		if (this.props.userLoading !== false) return <></>
 		else if (!this.props.userLoading && !this.props.isAuthenticated) {
-			return <Redirect to="/login" />
+			return <Redirect to={process.env.REACT_APP_LOGIN_URL} />
 		}
 
 		return <Route {...this.props}>{this.props.children}</Route>

@@ -29,70 +29,75 @@ function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 	}
 
 	return (
-		<div className="legend">
-			<div className="legend__item">
-				<span
-					style={{
-						width: '2rem',
-						height: '1rem',
-					}}
-					className="rbc-today"
-				></span>
-				<span>Obecna data</span>
+		<>
+			<div className="legend">
+				<div className="legend__item">
+					<span
+						style={{
+							width: '2rem',
+							height: '1rem',
+						}}
+						className="rbc-today"
+					></span>
+					<span>Obecna data</span>
+				</div>
+				<div className="legend__item">
+					<span
+						className="rbc-current-time-indicator"
+						style={{ width: '2rem' }}
+					></span>
+					<span>Obecny czas</span>
+				</div>
+				<div className="legend__item">
+					<span
+						className="rbc-time-slot disabled"
+						style={{
+							width: '2rem',
+							height: '1rem',
+							flex: 'none',
+						}}
+					></span>
+					<span>Nie można umówić wizyty</span>
+				</div>
+				<div className="legend__item">
+					<span>
+						<h5>(1)</h5>
+					</span>
+					<span>Liczba wolnych godzin</span>
+				</div>
 			</div>
-			<div className="legend__item">
-				<span
-					className="rbc-current-time-indicator"
-					style={{ width: '2rem' }}
-				></span>
-				<span>Obecny czas</span>
-			</div>
-			<div className="legend__item">
-				<span
-					className="rbc-time-slot disabled"
-					style={{
-						width: '2rem',
-						height: '1rem',
-						flex: 'none',
-					}}
-				></span>
-				<span>Nie można umówić wizyty</span>
-			</div>
-			<div className="legend__item">
-				<span>
-					<h5>(1)</h5>
-				</span>
-				<span>Liczba wolnych godzin</span>
-			</div>
-			{isAuthenticated &&
-				barbers.map((barber, idx) => {
-					if (!colors[barber.value] && !isAdmin) return null
 
-					return (
-						<div className="legend__item" key={idx}>
-							<EditBox
-								name={barber.value}
-								label={`${barber.label} HEX kolor`}
-								value={colors[barber.value]}
-								onSave={onSave}
-								regexValidation={/^([0-9a-f]{6})$/i}
-								validationErrorMessage="Nie poprawny HEX kolor"
-							>
-								<span
-									style={{
-										width: '2rem',
-										height: '1rem',
-										backgroundColor: `#${
-											colors[barber.value]
-										}`,
-									}}
-								></span>
-								<span>{barber.label}</span>
-							</EditBox>
-						</div>
-					)
-				})}
-		</div>
+			{/* <div>
+				{isAuthenticated &&
+					barbers.map((barber, idx) => {
+						if (!colors[barber.value] && !isAdmin) return null
+
+						return (
+							<div className="legend__item" key={idx}>
+								<EditBox
+									name={barber.value}
+									label={`${barber.label} HEX kolor`}
+									value={colors[barber.value]}
+									onSave={onSave}
+									regexValidation={/^([0-9a-f]{6})$/i}
+									validationErrorMessage="Nie poprawny HEX kolor"
+								>
+									<span
+										style={{
+											width: '2rem',
+											height: '1rem',
+											backgroundColor: `#${
+												colors[barber.value]
+											}`,
+										}}
+									></span>
+									<span>{barber.label}</span>
+								</EditBox>
+							</div>
+						)
+					})}
+			</div> */}
+		</>
 	)
 }
 

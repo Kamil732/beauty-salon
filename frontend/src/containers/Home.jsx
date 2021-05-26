@@ -12,6 +12,7 @@ import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
 import Calendar from '../components/meetings/calendar/Calendar'
+import Legend from '../components/meetings/calendar/Legend'
 import WorkHours from '../components/meetings/WorkHours'
 import Card from '../layout/cards/Card'
 import Pricing from '../components/meetings/Pricing'
@@ -142,7 +143,14 @@ function Home({
 					<PageHero.Body vertical>
 						<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
-						<Calendar />
+						<Card data-aos="zoom-out-up">
+							<Card.Body>
+								<Legend />
+							</Card.Body>
+							<Card.Body>
+								<Calendar />
+							</Card.Body>
+						</Card>
 					</PageHero.Body>
 				)}
 			</PageHero>
@@ -151,7 +159,15 @@ function Home({
 					<PageHero.Title style={{ textAlign: 'center' }}>
 						Kalendarz z wizytami
 					</PageHero.Title>
-					<Calendar />
+
+					<Card data-aos="zoom-out-up">
+						<Card.Body>
+							<Legend />
+						</Card.Body>
+						<Card.Body>
+							<Calendar />
+						</Card.Body>
+					</Card>
 				</>
 			)}
 		</>
