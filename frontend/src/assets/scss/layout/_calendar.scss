@@ -15,7 +15,7 @@ $rbc-css-prefix: calendar;
 @import '../../../../node_modules/react-big-calendar/lib/sass/styles.scss';
 
 .legend {
-	font-size: 1rem;
+	font-size: 0.9rem;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 1rem;
@@ -33,11 +33,12 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-calendar {
+	background-color: $surface-color;
 	margin: 0 auto;
 	max-width: 100%;
 	overflow-x: auto;
 
-	height: 130vh;
+	height: 100%;
 }
 
 .rbc-time-view {
@@ -116,10 +117,15 @@ $rbc-css-prefix: calendar;
 	color: set-text-color($doNotWork-bg-color);
 }
 
+.rbc-timeslot-group {
+	min-height: auto;
+}
+
 .rbc-time-slot {
 	cursor: pointer;
 	z-index: 1;
 	opacity: 0.7;
+	min-height: 25px;
 
 	&:hover {
 		background-color: rgba(darken(#fff, 20%), 0.6);
@@ -142,10 +148,10 @@ $rbc-css-prefix: calendar;
 }
 
 @include media-tablet {
-	.rbc-time-view,
-	.rbc-time-header {
-		min-width: 1000px;
-	}
+	// .rbc-time-view,
+	// .rbc-time-header {
+	// 	min-width: 1000px;
+	// }
 
 	.toolbar-container {
 		flex-direction: row;
@@ -153,11 +159,11 @@ $rbc-css-prefix: calendar;
 	}
 }
 
-@include media-laptop {
-	.legend {
-		grid-template-columns: repeat(3, 1fr);
-	}
-}
+// @include media-laptop {
+// 	.legend {
+// 		grid-template-columns: repeat(3, 1fr);
+// 	}
+// }
 
 @include media-laptop-lg-extra {
 	.legend {

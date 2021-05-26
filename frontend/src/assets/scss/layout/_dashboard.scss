@@ -1,9 +1,13 @@
-.left-side-nav {
+.dashboard {
 	display: flex;
-	gap: 2rem;
-	position: relative;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	// bottom: 0;
+	height: 100vh;
 
-	& > &__open-btn {
+	&__open-btn {
 		border: 1px solid #ccc;
 		cursor: pointer;
 		display: flex;
@@ -27,7 +31,7 @@
 		}
 	}
 
-	& > &__menu {
+	&__menu {
 		position: fixed;
 		left: 3.5rem;
 		top: 100px;
@@ -43,24 +47,31 @@
 		}
 	}
 
+	& > &__nav {
+		gap: 1rem;
+		background-color: $primary-color;
+		color: set-text-color($primary-color);
+
+		position: fixed;
+		top: 0;
+		left: 0;
+		display: flex;
+		flex-direction: column;
+		padding: 0 6px;
+		height: 100%;
+		border-radius: 0;
+		border-right: 1px solid #000;
+	}
+
 	& > &__body {
+		background-color: $surface-color;
 		width: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding-left: 5rem;
-		padding-right: 1rem;
-	}
-
-	&__nav {
-		display: grid;
-		place-items: center;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1rem;
-		background-color: $primary-color;
-		color: set-text-color($primary-color);
-		border-radius: 0 10px 0 0;
-		padding-bottom: 1rem;
+		border-top: 1px solid #ccc;
+		margin-top: 4.5rem;
+		padding: 1rem 1rem 0 4.7rem;
 	}
 
 	&__btn {
@@ -89,32 +100,24 @@
 }
 
 @include media-tablet {
-	.left-side-nav {
-		& > &__open-btn {
-			display: none;
-		}
-
-		& > &__menu {
-			display: block;
-			position: static;
-			background-color: $surface-color;
-			padding: 0;
-			height: auto;
-			min-width: auto;
-		}
-
-		&__nav {
+	.dashboard {
+		&__menu {
 			display: flex;
-			flex-direction: column;
-			padding: 0 6px;
+			align-items: flex-start;
+			position: static;
+			padding: 0 1rem;
+			min-width: auto;
+			width: min-content;
+			box-shadow: none;
+			margin-top: 4.5rem;
+			margin-left: 75px;
+			border-top: 1px solid #ccc;
+			border-right: 1px solid #ccc;
+			border-radius: 0;
 		}
 
 		& > &__body {
-			width: max-content;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 0;
+			padding-left: 1.5rem;
 		}
 	}
 }

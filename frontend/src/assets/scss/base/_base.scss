@@ -12,7 +12,7 @@ body {
 	font-family: 'Source Sans Pro', sans-serif;
 	background-color: $background-color;
 	color: set-text-color($background-color);
-	min-height: 115vh;
+	min-height: 100vh;
 	overflow-x: hidden;
 	position: relative;
 
@@ -90,10 +90,10 @@ a {
 }
 
 .header {
-	z-index: 999;
 	width: 100%;
-	padding: 25px;
+	padding: 1rem 2rem;
 	margin-bottom: 3rem;
+	display: flex;
 
 	&__logo {
 		margin: 0 auto;
@@ -101,7 +101,16 @@ a {
 		width: auto;
 	}
 
+	&.dashboard-mode {
+		background-color: $surface-color;
+
+		margin-left: 60px;
+		padding-right: 5.7rem;
+	}
+
 	& > .mobile-nav {
+		width: 100%;
+		z-index: 999;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -204,7 +213,6 @@ a {
 	}
 
 	.header {
-		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 0;
@@ -214,7 +222,6 @@ a {
 		}
 
 		& > .nav {
-			gap: 0rem;
 			height: auto;
 			width: max-content;
 			transform: translate3d(0vw, 0, 0);
@@ -222,8 +229,9 @@ a {
 			align-items: center;
 			background-color: inherit;
 			position: static;
-			gap: 1rem;
+			gap: 0;
 			padding: 0;
+			white-space: nowrap;
 
 			& > .nav__link {
 				text-transform: uppercase;
@@ -236,6 +244,9 @@ a {
 }
 
 @include media-laptop {
+	.header > .nav {
+		gap: 1rem;
+	}
 	.google_map {
 		width: 450px;
 	}
