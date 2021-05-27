@@ -20,7 +20,7 @@ class Data(models.Model):
     home_content = models.TextField(blank=True)
     home_title = models.CharField(max_length=100, blank=True)
     one_slot_max_meetings = models.PositiveIntegerField(default=0)
-    work_time = models.PositiveIntegerField(default=30)
+    # work_time = models.PositiveIntegerField(default=30)
     end_work_sunday = models.TimeField(null=True, blank=True)
     start_work_sunday = models.TimeField(null=True, blank=True)
     end_work_saturday = models.TimeField(null=True, blank=True)
@@ -52,11 +52,14 @@ class Data(models.Model):
 
 
 class Service(models.Model):
-    name = models.CharField(max_length=25, unique=True)
-    price = models.DecimalField(decimal_places=2, max_digits=4)
+    barbers = models.ManyToManyField('accounts.Barber', blank=True, related_name='services')
+    time = models.PositiveIntegerField(default=0)
+    name = models.CharField(max_length=25)
+    price = models.DecimalField(decimal_places=2, max_digits=5)
+    choosen_times = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.price} zł'
 
 
 class Notification(models.Model):

@@ -46,13 +46,3 @@ class CustomerImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerImage
         fields = ('image', 'title', 'id',)
-
-    # def create(self, validated_data):
-    #     result = [self.child.create(attrs) for attrs in validated_data]
-
-    #     try:
-    #         self.child.Meta.model.objects.bulk_create(result)
-    #     except IntegrityError as e:
-    #         raise serializers.ValidationError(e)
-
-    #     return result

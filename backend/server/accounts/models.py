@@ -87,9 +87,22 @@ class Account(AbstractBaseUser):
 
 
 class Barber(models.Model):
+    COLORS = (
+        ('black', 'Czarny'),
+        ('light-blue', 'Jasny niebieski'),
+        ('blue', 'Niebieski'),
+        ('light-green', 'Jasny Zielony'),
+        ('green', 'Zielony'),
+        ('pink', 'Różowy'),
+        ('purple', 'Fioletowy'),
+        ('brown', 'Brązowy'),
+        ('yellow', 'Żółty'),
+        ('orange', 'Pomarańczowy'),
+    )
+
     first_name = models.CharField(verbose_name='Imię', max_length=20)
     last_name = models.CharField(verbose_name='Nazwisko', max_length=20)
-    color = models.CharField(max_length=6, default='212121')
+    color = models.CharField(max_length=15, choices=COLORS, default=COLORS[0][1])
     slug = AutoSlugField(populate_from='first_name', unique=True)
 
     def __str__(self):

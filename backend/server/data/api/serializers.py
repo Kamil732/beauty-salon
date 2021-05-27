@@ -1,3 +1,6 @@
+from datetime import date, datetime
+import re
+
 from rest_framework import serializers
 
 from accounts.models import Barber
@@ -5,6 +8,17 @@ from data.models import Data, Service, Notification
 
 
 class ServiceSerializer(serializers.ModelSerializer):
+    barbers = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
+    time = serializers.SerializerMethodField('get_time')
+
+    def get_time(self, obj):
+        hours = obj.time // 60
+        minutes = obj.time % 60
+
+        if hours:
+            return f'{hours}h {minutes}min'
+        return f'{minutes}min'
+
     class Meta:
         model = Service
         fields = '__all__'
