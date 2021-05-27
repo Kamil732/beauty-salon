@@ -67,9 +67,7 @@ function Menu({
 						{isAdmin ? (
 							<>
 								<NavLink
-									to={
-										process.env.REACT_APP_PANEL_CALENDAR_URL
-									}
+									to={process.env.REACT_APP_PANEL_URL}
 									className="nav__link"
 									onClick={closeNavigation}
 								>

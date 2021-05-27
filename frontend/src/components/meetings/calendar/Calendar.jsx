@@ -603,9 +603,6 @@ class Calendar extends Component {
 		const { colors, isAdminPanel, isAuthenticated, user_phone_number } =
 			this.props
 
-		const hexcolor = `#${colors[event.barber]}`
-		const eventBglight = getHexLight(hexcolor)
-
 		return {
 			className: `${event.do_not_work ? 'doNotWork' : ''} ${
 				isAdminPanel ||
@@ -614,13 +611,7 @@ class Calendar extends Component {
 					!event.do_not_work)
 					? 'selectable'
 					: ''
-			} ${eventBglight > 60 ? 'white' : ''}`,
-			style:
-				!event.do_not_work && colors[event.barber]
-					? {
-							backgroundColor: hexcolor,
-					  }
-					: null,
+			} ${!event.do_not_work ? colors[event.barber] : ''}`,
 		}
 	}
 
@@ -814,8 +805,8 @@ class Calendar extends Component {
 						onRangeChange={this.onRangeChange}
 						localizer={localizer}
 						events={meetings}
-						step={work_time}
-						timeslots={1}
+						step={15}
+						timeslots={4}
 						views={{
 							week: true,
 							month: true,

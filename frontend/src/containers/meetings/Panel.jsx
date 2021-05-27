@@ -3,11 +3,14 @@ import { NavLink, Redirect, Switch } from 'react-router-dom'
 import Calendar from '../../components/meetings/calendar/Calendar'
 import Dashboard from '../../layout/Dashboard'
 
+import CalendarMenu from './dashboard/menu/CalendarMenu'
+import SettingsMenu from './dashboard/menu/SettingsMenu'
+import Settings from './dashboard/Settings'
+
 import { FaCalendarAlt, FaChartPie } from 'react-icons/fa'
 import { IoChatbubbles, IoSettingsSharp } from 'react-icons/io5'
 import { ImUsers } from 'react-icons/im'
 import PrivateRoute from '../../common/PrivateRoute'
-import Legend from '../../components/meetings/calendar/Legend'
 
 function Panel() {
 	return (
@@ -74,9 +77,13 @@ function Panel() {
 					<PrivateRoute
 						exact
 						path={process.env.REACT_APP_PANEL_CALENDAR_URL}
-					>
-						<Legend />
-					</PrivateRoute>
+						component={CalendarMenu}
+					/>
+					<PrivateRoute
+						exact
+						path={process.env.REACT_APP_PANEL_SETTINGS_URL}
+						component={SettingsMenu}
+					/>
 				</Switch>
 			</Dashboard.Menu>
 
@@ -86,6 +93,11 @@ function Panel() {
 						exact
 						path={process.env.REACT_APP_PANEL_CALENDAR_URL}
 						component={() => <Calendar isAdminPanel />}
+					/>
+					<PrivateRoute
+						exact
+						path={process.env.REACT_APP_PANEL_SETTINGS_URL}
+						component={Settings}
 					/>
 
 					<Redirect to={process.env.REACT_APP_PANEL_CALENDAR_URL} />
