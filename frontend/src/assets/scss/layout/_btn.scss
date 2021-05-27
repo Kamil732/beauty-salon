@@ -68,7 +68,6 @@
 		&:hover,
 		&:focus {
 			background-color: $shadow-color;
-			color: set-text-color($shadow-color);
 		}
 	}
 
@@ -182,7 +181,10 @@
 	height: 350px;
 	z-index: 2;
 	border: 1px solid rgba(0, 0, 0, 0.04);
-	box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
+	box-shadow: 0 4.6px 22.7px -5px rgba(0, 0, 0, 0.2),
+		0 11.8px 39.3px -5px rgba(0, 0, 0, 0.135),
+		0 22px 68px -5px rgba(0, 0, 0, 0.106);
+	white-space: normal;
 
 	&__header {
 		display: flex;
@@ -199,11 +201,11 @@
 		&::before {
 			content: '';
 			position: absolute;
-			left: 7.25rem;
-			top: -1.5rem;
+			left: 6.9rem;
+			top: -2rem;
 			width: 0;
 			height: 0;
-			border: 12px solid transparent;
+			border: 16px solid transparent;
 			border-bottom-color: $surface-color;
 		}
 
@@ -266,7 +268,7 @@
 		width: 300px;
 		height: 400px;
 		left: auto;
-		right: -1rem;
+		right: -1.2rem;
 
 		& > &__inner::before {
 			left: auto;

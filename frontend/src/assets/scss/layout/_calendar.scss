@@ -2,8 +2,6 @@ $current-time-color: green;
 $today-highlight-bg: rgba($secondary-color, 0.3);
 
 $event-bg: rgba($primary-color, 0.8);
-$event-border: none;
-$event-outline: none;
 $event-color: set-text-color($event-bg);
 $event-border-radius: 8px;
 $event-padding: 0;
@@ -55,26 +53,23 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-event {
-	color: #000;
 	cursor: default;
 	text-align: center;
-	font-size: 0.9em;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
+	border-radius: 6px;
 	z-index: 2;
-	margin-right: 0;
-	padding: 0.5rem;
 	opacity: 0.8;
 
-	&.white {
-		color: #fff;
+	&.brown {
+		@include barber-color($barber-brown-color);
 	}
 
-	&-label {
-		display: none;
+	&.green {
+		@include barber-color($barber-green-color);
 	}
+
+	// &-label {
+	// 	color:rgba(255, 255, 255, 0.5)
+	// }
 
 	&-content {
 		margin: 5px 0 5px;
@@ -82,6 +77,7 @@ $rbc-css-prefix: calendar;
 		width: 100%;
 		flex: 0 1;
 		white-space: pre-line;
+		background-color: rgba(255, 255, 255, 0.8);
 	}
 
 	&.selectable {
@@ -89,25 +85,19 @@ $rbc-css-prefix: calendar;
 
 		&:hover {
 			opacity: 1;
-			color: #000;
-
-			&.white {
-				color: #fff;
-			}
 		}
 	}
 }
 
 .doNotWork {
-	background-color: $doNotWork-bg-color;
-	color: set-text-color($doNotWork-bg-color);
+	@include barber-color($doNotWork-bg-color);
+	opacity: 0.8;
 
 	&.selectable {
 		cursor: pointer;
 
 		&:hover {
-			background-color: darken($doNotWork-bg-color, 15%);
-			color: set-text-color(darken($doNotWork-bg-color, 15%));
+			opacity: 1;
 		}
 	}
 }
