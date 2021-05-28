@@ -50,7 +50,7 @@ function Panel() {
 					<span className="dashboard__btn__icon">
 						<IoChatbubbles />
 					</span>
-					Komunikacja
+					Łączność
 				</NavLink>
 				<NavLink
 					to={process.env.REACT_APP_PANEL_SERVICES_URL}

@@ -21,14 +21,13 @@ class Routes extends Component {
 	static propTypes = {
 		isAdmin: PropTypes.bool,
 		loadingCMSData: PropTypes.bool,
-		loadingMeetings: PropTypes.bool,
 		ws: PropTypes.object,
 	}
 
 	render() {
-		const { loadingCMSData, loadingMeetings } = this.props
+		const { loadingCMSData, ws } = this.props
 
-		if (loadingCMSData || loadingMeetings)
+		if (loadingCMSData || !ws)
 			return (
 				<PageHero>
 					<PageHero.Body>
@@ -80,7 +79,7 @@ class Routes extends Component {
 const mapStateToProps = (state) => ({
 	isAdmin: state.auth.data.is_admin,
 	loadingCMSData: state.data.cms.loading,
-	loadingMeetings: state.meetings.loading,
+	ws: state.meetings.ws,
 })
 
 export default connect(mapStateToProps, null)(Routes)

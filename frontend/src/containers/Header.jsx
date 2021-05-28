@@ -22,7 +22,7 @@ import { useEffect } from 'react'
 function Header({
 	message,
 	ws,
-	loadingMeetings,
+	meetingsWS,
 	loadingCMSData,
 	isAuthenticated,
 	getUnreadNotificationsAmount,
@@ -51,7 +51,7 @@ function Header({
 		if (isAuthenticated && !ws) connectNotificationWS()
 	}, [isAuthenticated, ws, connectNotificationWS])
 
-	if (loadingCMSData || loadingMeetings) return null
+	if (loadingCMSData || !meetingsWS) return null
 
 	return (
 		<>
@@ -149,7 +149,7 @@ const mapStateToProps = (state) => ({
 	message: state.data.cms.data.message,
 	ws: state.data.notifications.ws,
 	loadingCMSData: state.data.cms.loading,
-	loadingMeetings: state.meetings.loading,
+	meetingsWS: state.meetings.ws,
 	notificationLoading: state.data.notifications.loading,
 	notificationLoaded: state.data.notifications.loaded,
 	notifications: state.data.notifications.data,

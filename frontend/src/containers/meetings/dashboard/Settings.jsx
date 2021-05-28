@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { HiCursorClick } from 'react-icons/hi'
+import SettingsIllustration from '../../../assets/images/settings-illustration.svg'
 
 function Settings(props) {
 	return (
@@ -10,14 +10,16 @@ function Settings(props) {
 				display: 'flex',
 				flexDirection: 'column',
 				alignItems: 'center',
-				fontSize: '1.6em',
+				fontSize: '1.7em',
 				userSelect: 'none',
 				textAlign: 'center',
 			}}
 		>
-			<span style={{ fontSize: '4em' }}>
-				<HiCursorClick />
-			</span>
+			<img
+				src={SettingsIllustration}
+				alt=""
+				style={{ width: '60%', marginBottom: '1em' }}
+			/>
 			Wybierz interesujące cię ustawienie w nawigacji po lewej stronie
 		</div>
 	)
