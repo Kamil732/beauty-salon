@@ -42,14 +42,12 @@ function App() {
 					<Route path={process.env.REACT_APP_PANEL_URL}>
 						<Header isDashboardMode />
 
-						<div className="content-wrap">
-							<NotificationContainer />
+						<NotificationContainer />
 
-							<Routes />
-						</div>
+						<Routes />
 					</Route>
 
-					<div>
+					<>
 						<Header />
 
 						<div className="content-wrap">
@@ -59,7 +57,7 @@ function App() {
 						</div>
 
 						<Footer />
-					</div>
+					</>
 				</Switch>
 			</Router>
 		</Provider>

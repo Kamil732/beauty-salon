@@ -51,6 +51,12 @@ function Header({
 		if (isAuthenticated && !ws) connectNotificationWS()
 	}, [isAuthenticated, ws, connectNotificationWS])
 
+	useEffect(() => {
+		const body = document.querySelector('body')
+
+		body.style.overflow = isOpen ? 'hidden' : 'auto'
+	}, [isOpen])
+
 	if (loadingCMSData || !meetingsWS) return null
 
 	return (
