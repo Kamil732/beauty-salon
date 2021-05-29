@@ -12,6 +12,12 @@
 	border: 1px solid $color !important;
 }
 
+@mixin box-shadow {
+	box-shadow: 0 4px 25.2px rgba(0, 0, 0, 0.029),
+		0 9.3px 37.6px rgba(0, 0, 0, 0.075),
+		0 11.4px 49.4px rgba(0, 0, 0, 0.114), 0 12px 79px rgba(0, 0, 0, 0.14);
+}
+
 @mixin sliding-floor {
 	position: relative;
 

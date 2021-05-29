@@ -10,8 +10,8 @@
 		height: 100%;
 		object-fit: cover;
 		border-radius: 10px;
-		box-shadow: 0 0 5px grey;
 		background-color: $surface-color;
+		@include box-shadow;
 
 		&:hover {
 			transition: transform 0.15s ease, box-shadow 0.15s ease !important;
@@ -46,7 +46,7 @@
 
 				&:hover {
 					transform: none !important;
-					box-shadow: 0 0 5px grey;
+					@include box-shadow;
 				}
 
 				&__title {

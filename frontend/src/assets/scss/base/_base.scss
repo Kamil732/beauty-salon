@@ -28,6 +28,7 @@ body {
 
 .content-wrap {
 	padding-bottom: 250px;
+	overflow-x: hidden;
 }
 
 a {
@@ -104,13 +105,12 @@ a {
 	&.dashboard-mode {
 		background-color: $surface-color;
 
-		margin-left: 60px;
-		padding-right: 5.7rem;
+		padding-left: 5rem;
 	}
 
 	& > .mobile-nav {
 		width: 100%;
-		z-index: 999;
+		z-index: 2;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -125,7 +125,7 @@ a {
 
 			& > .nav-btn__burger {
 				position: absolute;
-				left: 0;
+				left: 0.5rem;
 				top: 0.7rem;
 				width: 29px;
 				height: 3px;
@@ -163,9 +163,11 @@ a {
 		top: 0;
 		right: 0;
 		width: 70vw;
+		height: 100%;
 		padding: 2rem 0;
 		transform: translate3d(100vw, 0, 0);
 		transition: transform 0.3s cubic-bezier(0, 0.52, 0, 1);
+		overflow-y: auto;
 
 		&.active {
 			transform: translate3d(0vw, 0, 0);
@@ -217,6 +219,10 @@ a {
 		align-items: center;
 		margin-bottom: 0;
 
+		&.dashboard-mode {
+			padding-left: 5.5rem;
+		}
+
 		& > .mobile-nav > .nav-btn {
 			display: none;
 		}
@@ -232,6 +238,7 @@ a {
 			gap: 0;
 			padding: 0;
 			white-space: nowrap;
+			overflow-y: unset;
 
 			& > .nav__link {
 				text-transform: uppercase;

@@ -4,74 +4,37 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	// bottom: 0;
 	height: 100vh;
-
-	&__open-btn {
-		border: 1px solid #ccc;
-		cursor: pointer;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		position: fixed;
-		z-index: 5;
-		top: 150px;
-		left: -50px;
-		opacity: 0.7;
-		background-color: $secondary-color;
-		border-radius: 0 0 8px 8px;
-		padding: 1rem 1.5rem;
-		text-transform: uppercase;
-		letter-spacing: 2px;
-		width: 150px;
-		transform: rotate(-90deg);
-
-		&:hover {
-			opacity: 1;
-		}
-	}
+	overflow: hidden;
+	width: 100vw;
 
 	&__menu {
 		overflow: auto;
 		position: fixed;
-		left: 3.5rem;
-		top: 100px;
+		left: 4rem;
+		top: 1rem;
 		background-color: $surface-color;
-		z-index: 999;
-		box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14);
+		z-index: 5;
 		border-radius: 0 10px 10px;
 		display: none;
+		@include box-shadow;
 
 		&.open {
 			display: block;
 		}
 	}
 
-	& > &__nav {
-		gap: 1rem;
+	&__nav {
+		overflow-y: auto;
 		background-color: $primary-color;
 		color: set-text-color($primary-color);
-
-		position: fixed;
-		top: 0;
-		left: 0;
+		padding: 0.3rem 0.5rem;
 		display: flex;
 		flex-direction: column;
-		padding: 0 6px;
+		align-items: center;
 		height: 100%;
 		border-radius: 0;
 		border-right: 1px solid #000;
-	}
-
-	& > &__body {
-		background-color: $surface-color;
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		border-top: 1px solid #ccc;
-		margin-top: 4.5rem;
-		padding: 1rem 1rem 0 4.7rem;
 	}
 
 	&__btn {
@@ -81,7 +44,6 @@
 		align-items: center;
 		background-color: transparent;
 		font-size: 12px;
-		width: 62px;
 		height: 57px;
 		text-align: center;
 		color: set-text-color($primary-color);
@@ -93,22 +55,47 @@
 		}
 
 		&__icon {
-			font-size: 1.5rem;
+			font-size: 1.3rem;
 			margin-bottom: -8px;
+			color: set-text-color($primary-color);
 		}
+
+		&-open {
+			text-transform: uppercase;
+			cursor: pointer;
+
+			& > &__icon {
+				margin-bottom: -1rem;
+			}
+		}
+	}
+
+	& > &__body {
+		background-color: $background-color;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-top: 1px solid #ccc;
+		margin-top: 4.5rem;
+		padding: 1rem 1rem 0 1rem;
+		overflow-y: auto;
 	}
 }
 
 @include media-tablet {
 	.dashboard {
+		&__nav {
+			padding: 0.2rem;
+		}
+
 		&__menu {
 			display: flex;
 			align-items: flex-start;
 			position: static;
-			width: 250px;
+			width: 220px;
 			box-shadow: none;
 			margin-top: 4.5rem;
-			margin-left: 75px;
 			border-top: 1px solid #ccc;
 			border-right: 1px solid #ccc;
 			border-radius: 0;
@@ -116,6 +103,34 @@
 
 		& > &__body {
 			padding-left: 1.5rem;
+		}
+
+		&__btn {
+			height: 65px;
+
+			&__icon {
+				font-size: 1.4rem;
+			}
+
+			&-open {
+				display: none;
+			}
+		}
+	}
+}
+
+@include media-laptop-lg {
+	.dashboard {
+		&__nav {
+			padding: 0.5rem;
+		}
+
+		&__btn {
+			height: 78px;
+
+			&__icon {
+				font-size: 1.8rem;
+			}
 		}
 	}
 }

@@ -1,0 +1,47 @@
+.react-calendar {
+	background-color: $surface-color !important;
+	border: none !important;
+	border-bottom: 1px solid #ccc !important;
+	width: 100% !important;
+
+	&__navigation {
+		margin-bottom: 4px !important;
+		height: 2rem;
+	}
+
+	&__month-view {
+		&__days__day--neighboringMonth {
+			background: $secondary-color !important;
+		}
+
+		&__weekdays__weekday {
+			line-height: 23px;
+			font-size: 0.8em;
+			color: #767676;
+			padding: 0 !important;
+			text-transform: lowercase;
+
+			& > abbr {
+				text-decoration: none;
+			}
+		}
+	}
+
+	&__tile {
+		padding: 0.5em !important;
+		border: 1px solid transparent !important;
+
+		&--now {
+			background: $info-color !important;
+			color: set-text-color($info-color) !important;
+		}
+
+		&--active,
+		&--hasActive,
+		&:enabled:hover {
+			background: transparent !important;
+			border-color: $active-element !important;
+			color: $active-element !important;
+		}
+	}
+}
