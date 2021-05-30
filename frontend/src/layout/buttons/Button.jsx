@@ -95,5 +95,13 @@ CloseButton.prototype.propTypes = {
 	trCorner: PropTypes.bool,
 }
 
-export { CloseButton }
+function RadioButton({ children, ...props }) {
+	return (
+		<>
+			<div>xd</div>
+		</>
+	)
+}
+
+export { CloseButton, RadioButton }
 export default Button

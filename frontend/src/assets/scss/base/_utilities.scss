@@ -29,6 +29,14 @@
 	border-radius: 12px;
 }
 
+.brown {
+	@include color($brown-color);
+}
+
+.green {
+	@include color($green-color);
+}
+
 @include media-tablet {
 	.d-md {
 		display: none;

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
 *,
 *::after,
@@ -9,7 +9,7 @@
 }
 
 body {
-	font-family: 'Source Sans Pro', sans-serif;
+	font-family: 'Roboto', sans-serif;
 	background-color: $background-color;
 	color: set-text-color($background-color);
 	min-height: 100vh;

@@ -93,6 +93,14 @@
 		}
 	}
 
+	@mixin active-label {
+		transform: translate(0, -0.5rem) scale(0.75);
+
+		&::after {
+			content: ':';
+		}
+	}
+
 	& > &__label {
 		cursor: text;
 		color: inherit;
@@ -105,12 +113,12 @@
 		opacity: 0.5;
 
 		&.active {
-			transform: translate(0, -0.5rem) scale(0.75);
+			@include active-label;
 		}
 	}
 
 	&:focus-within > &__label {
-		transform: translate(0, -0.5rem) scale(0.75);
+		@include active-label;
 	}
 }
 

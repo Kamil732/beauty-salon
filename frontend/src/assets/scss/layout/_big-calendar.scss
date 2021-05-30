@@ -59,14 +59,6 @@ $rbc-css-prefix: calendar;
 	z-index: 2;
 	opacity: 0.8;
 
-	&.brown {
-		@include barber-color($barber-brown-color);
-	}
-
-	&.green {
-		@include barber-color($barber-green-color);
-	}
-
 	// &-label {
 	// 	color:rgba(255, 255, 255, 0.5)
 	// }
@@ -90,7 +82,7 @@ $rbc-css-prefix: calendar;
 }
 
 .doNotWork {
-	@include barber-color($doNotWork-bg-color);
+	@include color($doNotWork-bg-color);
 	opacity: 0.8;
 
 	&.selectable {
@@ -116,6 +108,7 @@ $rbc-css-prefix: calendar;
 	z-index: 1;
 	opacity: 0.7;
 	min-height: 25px;
+	border-color: #ccc !important;
 
 	&:hover {
 		background-color: rgba(darken(#fff, 20%), 0.6);
@@ -138,22 +131,11 @@ $rbc-css-prefix: calendar;
 }
 
 @include media-tablet {
-	// .rbc-time-view,
-	// .rbc-time-header {
-	// 	min-width: 1000px;
-	// }
-
 	.toolbar-container {
 		flex-direction: row;
 		gap: 2rem;
 	}
 }
-
-// @include media-laptop {
-// 	.legend {
-// 		grid-template-columns: repeat(3, 1fr);
-// 	}
-// }
 
 @include media-laptop-lg-extra {
 	.legend {

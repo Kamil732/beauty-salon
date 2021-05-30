@@ -1,10 +1,10 @@
 .react-calendar {
 	background-color: $surface-color !important;
 	border: none !important;
-	border-bottom: 1px solid #ccc !important;
 	width: 100% !important;
+	height: 248px !important;
 
-	&__navigation {
+	& > &__navigation {
 		margin-bottom: 4px !important;
 		height: 2rem;
 	}

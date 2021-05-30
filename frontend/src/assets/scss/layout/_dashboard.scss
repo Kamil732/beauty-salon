@@ -44,7 +44,7 @@
 		background-color: transparent;
 		font-size: 12px;
 		width: 100%;
-		padding: 0.7rem 2px;
+		padding: 0.7rem 4px;
 		text-align: center;
 		color: set-text-color($primary-color);
 		opacity: 0.5;
@@ -55,8 +55,8 @@
 		}
 
 		&__icon {
-			font-size: 1.3rem;
-			margin-bottom: -8px;
+			font-size: 1.8em;
+			margin-bottom: -0.3em;
 			color: set-text-color($primary-color);
 		}
 
@@ -65,7 +65,7 @@
 			cursor: pointer;
 
 			& > &__icon {
-				margin-bottom: -1rem;
+				margin-bottom: -0.3em;
 			}
 		}
 	}
@@ -102,10 +102,10 @@
 		}
 
 		&__btn {
-			padding: 0.9rem 4px;
+			padding: 0.9rem 6px;
 
 			&__icon {
-				font-size: 1.4rem;
+				font-size: 1.9em;
 			}
 
 			&-open {
@@ -121,7 +121,7 @@
 			padding: 1.2rem 8px;
 
 			&__icon {
-				font-size: 1.8rem;
+				font-size: 2.4em;
 			}
 		}
 	}
