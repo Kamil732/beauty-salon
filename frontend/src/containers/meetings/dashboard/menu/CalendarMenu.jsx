@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -8,16 +8,25 @@ import { connect } from 'react-redux'
 import { updateCalendarDates } from '../../../../redux/actions/meetings'
 
 function CalendarMenu({ barbers, colors, currentDate, updateCalendarDates }) {
-	const formatShortWeekday = (locale, date) => moment(date).format('dd')
+	const [activeDay, setActiveDay] = useState(currentDate)
+	const formatShortWeekday = (_, date) => moment(date).format('dd')
+
+	useEffect(() => {
+		setActiveDay(currentDate)
+	}, [currentDate])
 
 	const onChange = (date) => updateCalendarDates(date)
+
+	const onActiveStartDateChange = ({ activeStartDate }) =>
+		setActiveDay(activeStartDate)
 
 	return (
 		<div className="tools-menu">
 			<Calendar
 				onChange={onChange}
 				value={currentDate}
-				activeStartDate={currentDate}
+				activeStartDate={activeDay}
+				onActiveStartDateChange={onActiveStartDateChange}
 				locale="pl-PL"
 				next2Label={null}
 				prev2Label={null}
