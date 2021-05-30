@@ -28,7 +28,6 @@
 		overflow-y: auto;
 		background-color: $primary-color;
 		color: set-text-color($primary-color);
-		padding: 0.3rem 0.5rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -44,7 +43,8 @@
 		align-items: center;
 		background-color: transparent;
 		font-size: 12px;
-		height: 57px;
+		width: 100%;
+		padding: 0.7rem 2px;
 		text-align: center;
 		color: set-text-color($primary-color);
 		opacity: 0.5;
@@ -85,10 +85,6 @@
 
 @include media-tablet {
 	.dashboard {
-		&__nav {
-			padding: 0.2rem;
-		}
-
 		&__menu {
 			display: flex;
 			align-items: flex-start;
@@ -106,7 +102,7 @@
 		}
 
 		&__btn {
-			height: 65px;
+			padding: 0.9rem 4px;
 
 			&__icon {
 				font-size: 1.4rem;
@@ -121,12 +117,8 @@
 
 @include media-laptop-lg {
 	.dashboard {
-		&__nav {
-			padding: 0.5rem;
-		}
-
 		&__btn {
-			height: 78px;
+			padding: 1.2rem 8px;
 
 			&__icon {
 				font-size: 1.8rem;
