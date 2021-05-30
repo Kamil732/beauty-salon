@@ -25,6 +25,17 @@ function Home({
 	phone_number,
 	contact_content_second,
 }) {
+	const getCalendar = () => (
+		<Card data-aos="zoom-out-up">
+			<Card.Body>
+				<Legend />
+			</Card.Body>
+			<Card.Body style={{ height: '100vh' }}>
+				<Calendar />
+			</Card.Body>
+		</Card>
+	)
+
 	return (
 		<>
 			<PageHero>
@@ -143,32 +154,18 @@ function Home({
 					<PageHero.Body vertical>
 						<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
-						<Card data-aos="zoom-out-up">
-							<Card.Body>
-								<Legend />
-							</Card.Body>
-							<Card.Body>
-								<Calendar />
-							</Card.Body>
-						</Card>
+						{getCalendar()}
 					</PageHero.Body>
 				)}
 			</PageHero>
 			{window.innerWidth <= 768 && (
-				<>
+				<div>
 					<PageHero.Title style={{ textAlign: 'center' }}>
 						Kalendarz z wizytami
 					</PageHero.Title>
 
-					<Card data-aos="zoom-out-up">
-						<Card.Body>
-							<Legend />
-						</Card.Body>
-						<Card.Body>
-							<Calendar />
-						</Card.Body>
-					</Card>
-				</>
+					{getCalendar()}
+				</div>
 			)}
 		</>
 	)

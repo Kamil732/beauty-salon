@@ -1,3 +1,4 @@
+import moment from 'moment'
 import {
 	ADD_MEETING,
 	REMOVE_MEETING,
@@ -10,6 +11,7 @@ import {
 	UPDATE_MEETING,
 	LOAD_BARBERS,
 	LOAD_CUSTOMERS,
+	UPDATE_CALENDAR_DATES,
 } from '../actions/types'
 
 const initialState = {
@@ -19,6 +21,15 @@ const initialState = {
 	visibleData: [],
 	barberChoiceList: [],
 	customerChoiceList: [],
+	calendarData: {
+		currentDate: new Date(),
+		startOfMonth: moment().startOf('month').startOf('week').toDate(),
+		endOfMonth: moment().endOf('month').endOf('week').toDate(),
+		startOfWeek: moment().startOf('week').toDate(),
+		endOfWeek: moment().endOf('week').toDate(),
+		startOf3days: moment().startOf('day').subtract(1, 'days').toDate(),
+		endOf3days: moment().endOf('day').add(1, 'days').toDate(),
+	},
 	ws: null,
 }
 
@@ -99,6 +110,37 @@ export default function (state = initialState, action) {
 
 					return action.payload
 				}),
+			}
+		case UPDATE_CALENDAR_DATES:
+			return {
+				...state,
+				calendarData: {
+					currentDate: action.payload,
+					startOfMonth: moment(action.payload)
+						.startOf('month')
+						.startOf('week')
+						.toDate(),
+					endOfMonth: moment(action.payload)
+						.endOf('month')
+						.endOf('week')
+
+						.toDate(),
+					startOfWeek: moment(action.payload)
+						.startOf('week')
+						.toDate(),
+					endOfWeek: moment(action.payload)
+						.endOf('week')
+
+						.toDate(),
+					startOf3days: moment(action.payload)
+						.startOf('day')
+						.subtract(1, 'days')
+						.toDate(),
+					endOf3days: moment(action.payload)
+						.endOf('day')
+						.add(1, 'days')
+						.toDate(),
+				},
 			}
 		default:
 			return state

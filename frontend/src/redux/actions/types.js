@@ -22,6 +22,7 @@ export const REGISTER_FAIL = 'REGISTER_FAIL'
 export const LOGOUT = 'LOGOUT'
 
 // Meetings
+export const UPDATE_CALENDAR_DATES = 'UPDATE_CALENDAR_DATES'
 export const LOAD_BARBERS = 'LOAD_BARBERS'
 export const LOAD_CUSTOMERS = 'LOAD_CUSTOMERS'
 

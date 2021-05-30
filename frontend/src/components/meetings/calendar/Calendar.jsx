@@ -16,6 +16,7 @@ import {
 import {
 	loadMeetings,
 	changeVisibleMeetings,
+	updateCalendarDates,
 } from '../../../redux/actions/meetings'
 
 import BrickLoader from '../../../layout/loaders/BrickLoader'
@@ -37,7 +38,6 @@ import getWorkHours from '../../../helpers/getWorkHours'
 import MonthDateHeader from './tools/MonthDateHeader'
 import ThreeDaysView from './tools/ThreeDaysView'
 import EditMeetingForm from './EditMeetingForm'
-import getHexLight from '../../../helpers/getHexLight'
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -51,6 +51,17 @@ class Calendar extends Component {
 		meetings: PropTypes.array,
 		loadedDates: PropTypes.array,
 		visibleMeetings: PropTypes.array,
+
+		calendarData: PropTypes.objectOf({
+			currentDate: PropTypes.instanceOf(Date),
+			startOfMonth: PropTypes.instanceOf(Date),
+			endOfMonth: PropTypes.instanceOf(Date),
+			startOfWeek: PropTypes.instanceOf(Date),
+			endOfWeek: PropTypes.instanceOf(Date),
+			startOf3days: PropTypes.instanceOf(Date),
+			endOf3days: PropTypes.instanceOf(Date),
+		}),
+
 		changeVisibleMeetings: PropTypes.func.isRequired,
 		loadMeetings: PropTypes.func.isRequired,
 
@@ -83,15 +94,7 @@ class Calendar extends Component {
 			ws: null,
 			windowWidth: window.innerWidth,
 
-			currentDate: new Date(),
 			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
-			startOfMonth: moment().startOf('month').startOf('week').toDate(),
-			endOfMonth: moment().endOf('month').endOf('week').toDate(),
-			startOfWeek: moment().startOf('week').toDate(),
-			endOfWeek: moment().endOf('week').toDate(),
-			startOf3days: moment().startOf('day').subtract(1, 'days').toDate(),
-			endOf3days: moment().endOf('day').add(1, 'days').toDate(),
-
 			freeSlots: {},
 
 			minDate: calendarDates.minDate,
@@ -250,16 +253,18 @@ class Calendar extends Component {
 	}
 
 	getVisibleMeetings = () => {
-		const { meetings } = this.props
 		const {
-			view,
-			startOfMonth,
-			startOfWeek,
-			startOf3days,
-			endOfMonth,
-			endOfWeek,
-			endOf3days,
-		} = this.state
+			meetings,
+			calendarData: {
+				startOfMonth,
+				startOfWeek,
+				startOf3days,
+				endOfMonth,
+				endOfWeek,
+				endOf3days,
+			},
+		} = this.props
+		const { view } = this.state
 		let visibleMeetings = []
 
 		const start =
@@ -275,31 +280,40 @@ class Calendar extends Component {
 				? endOf3days
 				: endOfWeek
 
-		for (let i = 0; i < this.props.meetings.length; i++) {
-			if (
-				(meetings[i].start >= start && meetings[i].end <= end) ||
-				(meetings[i].start <= start && meetings[i].end >= end) ||
-				(meetings[i].start >= start &&
-					end > this.props.meetings[i].start) ||
-				(meetings[i].end <= end && start < this.props.meetings[i].end)
-			)
-				visibleMeetings.push(meetings[i])
-		}
+		// Try to load meetings in new range
+		if (this.props.loadedDates.length !== 0 && !this.props.loading)
+			this.props.loadMeetings(start, end)
 
-		this.props.changeVisibleMeetings(visibleMeetings)
+		setTimeout(() => {
+			for (let i = 0; i < meetings.length; i++) {
+				if (
+					(meetings[i].start >= start && meetings[i].end <= end) ||
+					(meetings[i].start <= start && meetings[i].end >= end) ||
+					(meetings[i].start >= start &&
+						end > this.props.meetings[i].start) ||
+					(meetings[i].end <= end &&
+						start < this.props.meetings[i].end)
+				)
+					visibleMeetings.push(meetings[i])
+			}
+
+			this.props.changeVisibleMeetings(visibleMeetings)
+		}, 0)
 	}
 
 	getCountOfFreeSlotsAndMyMeetings = () => {
-		const { work_time } = this.props
 		const {
-			view,
-			startOfMonth,
-			startOfWeek,
-			startOf3days,
-			endOfMonth,
-			endOfWeek,
-			endOf3days,
-		} = this.state
+			work_time,
+			calendarData: {
+				startOfMonth,
+				startOfWeek,
+				startOf3days,
+				endOfMonth,
+				endOfWeek,
+				endOf3days,
+			},
+		} = this.props
+		const { view } = this.state
 
 		const start =
 			view === Views.MONTH
@@ -377,7 +391,7 @@ class Calendar extends Component {
 	componentWillUnmount = () =>
 		window.removeEventListener('resize', this.updateWindowDimensions)
 
-	componentDidUpdate(prevProps, prevState) {
+	componentDidUpdate(prevProps, _) {
 		if (
 			this.props.end_work_sunday !== prevProps.end_work_sunday ||
 			this.props.start_work_sunday !== prevProps.start_work_sunday ||
@@ -395,11 +409,11 @@ class Calendar extends Component {
 			this.props.end_work_monday !== prevProps.end_work_monday ||
 			this.props.start_work_monday !== prevProps.start_work_monday
 		) {
-			const calednarDates = this.getCalendarMinAndMaxTime()
+			const calendarDates = this.getCalendarMinAndMaxTime()
 
 			this.setState({
-				minDate: calednarDates.minDate,
-				maxDate: calednarDates.maxDate,
+				minDate: calendarDates.minDate,
+				maxDate: calendarDates.maxDate,
 			})
 			this.getCountOfFreeSlotsAndMyMeetings()
 		}
@@ -413,12 +427,8 @@ class Calendar extends Component {
 
 		if (
 			prevProps.meetings !== this.props.meetings ||
-			prevState.startOfWeek !== this.state.startOfWeek ||
-			prevState.endOfWeek !== this.state.endOfWeek ||
-			prevState.startOfMonth !== this.state.startOfMonth ||
-			prevState.endOfMonth !== this.state.endOfMonth ||
-			prevState.startOf3days !== this.state.startOf3days ||
-			prevState.endOf3days !== this.state.endOf3days
+			prevProps.calendarData.currentDate !==
+				this.props.calendarData.currentDate
 		)
 			this.getVisibleMeetings()
 
@@ -518,42 +528,20 @@ class Calendar extends Component {
 		}
 	}
 
-	onNavigate = (date) =>
-		this.setState({
-			currentDate: date,
-			startOfMonth: moment(date)
-				.startOf('month')
-				.startOf('week')
-				.toDate(),
-			endOfMonth: moment(date)
-				.endOf('month')
-				.endOf('week')
-
-				.toDate(),
-			startOfWeek: moment(date).startOf('week').toDate(),
-			endOfWeek: moment(date)
-				.endOf('week')
-
-				.toDate(),
-			startOf3days: moment(date)
-				.startOf('day')
-				.subtract(1, 'days')
-				.toDate(),
-			endOf3days: moment(date).endOf('day').add(1, 'days').toDate(),
-		})
+	onNavigate = (date) => this.props.updateCalendarDates(date)
 
 	onView = async (view) => {
 		this.setState({ view })
 
 		if (view === Views.MONTH)
 			await this.onRangeChange([
-				this.state.startOfMonth,
-				this.state.endOfMonth,
+				this.props.calendarData.startOfMonth,
+				this.props.calendarData.endOfMonth,
 			])
 		else if (view === 'threedays')
 			await this.onRangeChange([
-				this.state.startOf3days,
-				this.state.endOf3days,
+				this.props.calendarData.startOf3days,
+				this.props.calendarData.endOf3days,
 			])
 
 		setTimeout(this.getVisibleMeetings, 0)
@@ -651,25 +639,20 @@ class Calendar extends Component {
 			isAdminPanel,
 			user_phone_number,
 			isAuthenticated,
-			work_time,
 			visibleMeetings,
 			services,
+			calendarData: {
+				currentDate,
+				startOfMonth,
+				endOfMonth,
+				startOfWeek,
+				endOfWeek,
+				startOf3days,
+				endOf3days,
+			},
 		} = this.props
-		const {
-			windowWidth,
-			view,
-			currentDate,
-			selected,
-			minDate,
-			maxDate,
-			startOfMonth,
-			endOfMonth,
-			startOfWeek,
-			endOfWeek,
-			startOf3days,
-			endOf3days,
-			freeSlots,
-		} = this.state
+		const { windowWidth, view, selected, minDate, maxDate, freeSlots } =
+			this.state
 
 		if (services.length === 0)
 			return (
@@ -891,6 +874,16 @@ const mapStateToProps = (state) => ({
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
 
+	// currentDate: state.meetings.currentDate,
+	// startOfMonth: state.meetings.startOfMonth,
+	// endOfMonth: state.meetings.endOfMonth,
+	// startOfWeek: state.meetings.startOfWeek,
+	// endOfWeek: state.meetings.endOfWeek,
+	// startOf3days: state.meetings.startOf3days,
+	// endOf3days: state.meetings.endOf3days,
+
+	calendarData: state.meetings.calendarData,
+
 	services: state.data.cms.data.services,
 	colors: state.data.cms.data.colors,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,
@@ -914,6 +907,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
 	loadMeetings,
 	changeVisibleMeetings,
+	updateCalendarDates,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

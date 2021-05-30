@@ -22,7 +22,6 @@ import { useEffect } from 'react'
 function Header({
 	message,
 	ws,
-	meetingsWS,
 	loadingCMSData,
 	isAuthenticated,
 	getUnreadNotificationsAmount,
@@ -57,7 +56,7 @@ function Header({
 		body.style.overflow = isOpen ? 'hidden' : 'auto'
 	}, [isOpen])
 
-	if (loadingCMSData || !meetingsWS) return null
+	if (loadingCMSData) return null
 
 	return (
 		<>
@@ -139,7 +138,6 @@ Header.prototype.propTypes = {
 	message: PropTypes.string,
 	ws: PropTypes.object,
 	loadingCMSData: PropTypes.bool,
-	loadingMeetings: PropTypes.bool,
 	isAuthenticated: PropTypes.bool,
 	notificationLoading: PropTypes.bool,
 	notificationLoaded: PropTypes.bool,
@@ -155,7 +153,6 @@ const mapStateToProps = (state) => ({
 	message: state.data.cms.data.message,
 	ws: state.data.notifications.ws,
 	loadingCMSData: state.data.cms.loading,
-	meetingsWS: state.meetings.ws,
 	notificationLoading: state.data.notifications.loading,
 	notificationLoaded: state.data.notifications.loaded,
 	notifications: state.data.notifications.data,

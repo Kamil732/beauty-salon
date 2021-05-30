@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import { RiMenuUnfoldFill } from 'react-icons/ri'
-import Button from './buttons/Button'
 
 function Dashboard({ children, ...props }) {
 	return (

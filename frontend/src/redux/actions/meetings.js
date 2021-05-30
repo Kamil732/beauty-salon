@@ -9,6 +9,7 @@ import {
 	UPDATE_MEETING,
 	LOAD_BARBERS,
 	LOAD_CUSTOMERS,
+	UPDATE_CALENDAR_DATES,
 } from './types'
 
 import moment from 'moment'
@@ -57,6 +58,13 @@ const getMeeting = async (id) => {
 	} catch (err) {
 		NotificationManager.error('Nie udało sie zaktualizować kalendarza')
 	}
+}
+
+export const updateCalendarDates = (data) => (dispatch) => {
+	dispatch({
+		type: UPDATE_CALENDAR_DATES,
+		payload: data,
+	})
 }
 
 export const addLoadedDates = (dates) => (dispatch) => {

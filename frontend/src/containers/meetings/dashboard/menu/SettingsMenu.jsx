@@ -8,10 +8,10 @@ import { NavLink } from 'react-router-dom'
 
 function CalendarMenu() {
 	return (
-		<div className="nav-menu">
+		<div className="select-menu">
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_WORK_HOURS_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<RiBarChartHorizontalFill />
@@ -20,7 +20,7 @@ function CalendarMenu() {
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_SALON_DATA_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<FaDatabase />
@@ -29,7 +29,7 @@ function CalendarMenu() {
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_CALENDAR_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<FaCalendarAlt />
@@ -38,7 +38,7 @@ function CalendarMenu() {
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_WORKERS_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<FaIdCardAlt />
@@ -47,7 +47,7 @@ function CalendarMenu() {
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_CUSTOMERS_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<ImUsers />
@@ -56,7 +56,7 @@ function CalendarMenu() {
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_COMMUNICATION_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<IoChatbubbles />
@@ -65,7 +65,7 @@ function CalendarMenu() {
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_PAYMENT_URL}
-				className="nav-menu__item"
+				className="select-menu__item"
 			>
 				<span className="icon">
 					<IoCard />

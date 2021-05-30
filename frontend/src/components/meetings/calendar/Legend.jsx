@@ -3,30 +3,28 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
 import { loadBarbers } from '../../../redux/actions/meetings'
-import EditBox from '../../../layout/forms/EditBox'
-import axios from 'axios'
 
 function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 	useEffect(() => {
 		if (barbers.length === 0) loadBarbers()
 	}, [barbers, loadBarbers])
 
-	const onSave = async (name, newValue, headers) => {
-		const body = JSON.stringify({ color: newValue })
+	// const onSave = async (name, newValue, headers) => {
+	// 	const body = JSON.stringify({ color: newValue })
 
-		await axios.patch(
-			`${process.env.REACT_APP_API_URL}/accounts/barbers/${name}/`,
-			body,
-			headers
-		)
+	// 	await axios.patch(
+	// 		`${process.env.REACT_APP_API_URL}/accounts/barbers/${name}/`,
+	// 		body,
+	// 		headers
+	// 	)
 
-		return {
-			colors: {
-				...colors,
-				[name]: newValue,
-			},
-		}
-	}
+	// 	return {
+	// 		colors: {
+	// 			...colors,
+	// 			[name]: newValue,
+	// 		},
+	// 	}
+	// }
 
 	return (
 		<>

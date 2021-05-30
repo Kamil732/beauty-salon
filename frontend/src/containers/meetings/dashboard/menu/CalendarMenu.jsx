@@ -1,28 +1,65 @@
-import React, { useState } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 
 import moment from 'moment'
+import { connect } from 'react-redux'
+import { updateCalendarDates } from '../../../../redux/actions/meetings'
 
-function CalendarMenu() {
-	const [value, onChange] = useState(new Date())
-
+function CalendarMenu({ barbers, colors, currentDate, updateCalendarDates }) {
 	const formatShortWeekday = (locale, date) => moment(date).format('dd')
 
+	const onChange = (date) => updateCalendarDates(date)
+
 	return (
-		<div className="nav-menu">
+		<div className="tools-menu">
 			<Calendar
 				onChange={onChange}
-				value={value}
+				value={currentDate}
+				activeStartDate={currentDate}
 				locale="pl-PL"
 				next2Label={null}
 				prev2Label={null}
 				minDetail="year"
 				maxDetail="month"
 				formatShortWeekday={formatShortWeekday}
+				className="tools-menu__item"
 			/>
+
+			<div className="tools-menu__item">
+				<h4 className="tools-menu__item__title">Pracownicy:</h4>
+				{barbers.map((barber, idx) => (
+					<div className="legend__item" key={idx}>
+						<span
+							className={colors[barber.value]}
+							style={{
+								width: '2rem',
+								height: '1rem',
+							}}
+						></span>
+						<span>{barber.label}</span>
+					</div>
+				))}
+			</div>
 		</div>
 	)
 }
 
-export default CalendarMenu
+CalendarMenu.prototype.propTypes = {
+	barbers: PropTypes.array,
+	colors: PropTypes.array,
+	currentDate: PropTypes.instanceOf(Date),
+}
+
+const mapStateToProps = (state) => ({
+	barbers: state.meetings.barberChoiceList,
+	colors: state.data.cms.data.colors,
+	currentDate: state.meetings.calendarData.currentDate,
+})
+
+const mapDispatchToProps = {
+	updateCalendarDates,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CalendarMenu)
