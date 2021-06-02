@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, lazy, Suspense } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
@@ -18,8 +18,11 @@ import {
 	changeVisibleMeetings,
 	updateCalendarDates,
 } from '../../../redux/actions/meetings'
+import getWorkHours from '../../../helpers/getWorkHours'
 
 import BrickLoader from '../../../layout/loaders/BrickLoader'
+import CircleLoader from '../../../layout/loaders/CircleLoader'
+import ErrorBoundary from '../../ErrorBoundary'
 import Modal from '../../../layout/Modal'
 
 import {
@@ -30,14 +33,13 @@ import {
 import Toolbar from './tools/Toolbar'
 import TouchCellWrapper from './tools/TouchCellWrapper'
 import WeekHeader from './tools/WeekHeader'
-
-import AddMeetingAdminForm from './AddMeetingAdminForm'
-import AddMeetingForm from './AddMeetingForm'
-import EditMeetingAdminForm from './EditMeetingAdminForm'
-import getWorkHours from '../../../helpers/getWorkHours'
 import MonthDateHeader from './tools/MonthDateHeader'
 import ThreeDaysView from './tools/ThreeDaysView'
-import EditMeetingForm from './EditMeetingForm'
+
+const AddMeetingAdminForm = lazy(() => import('./AddMeetingAdminForm'))
+const AddMeetingForm = lazy(() => import('./AddMeetingForm'))
+const EditMeetingAdminForm = lazy(() => import('./EditMeetingAdminForm'))
+const EditMeetingForm = lazy(() => import('./EditMeetingForm'))
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -737,40 +739,51 @@ class Calendar extends Component {
 							{getTitle(selected)}
 						</Modal.Header>
 						<Modal.Body>
-							{isAdminPanel ? (
-								selected.selected_type === 'event' ? (
-									<EditMeetingAdminForm
-										saveMeeting={this.saveMeeting}
-										deleteMeeting={this.deleteMeeting}
-										selected={selected}
-									/>
-								) : (
-									<AddMeetingAdminForm
-										addMeeting={this.addMeeting}
-										doNotWork={
-											selected.slots.length > 2 ||
-											selected.start.getHours() * 60 +
-												selected.start.getMinutes() ===
-												0 ||
-											meetings.filter(
-												(meeting) =>
-													meeting.start >=
-														selected.start &&
-													meeting.end <= selected.end
-											).length >=
-												this.props.one_slot_max_meetings
-										}
-									/>
-								)
-							) : selected.selected_type === 'event' ? (
-								<EditMeetingForm
-									saveMeeting={this.saveMeeting}
-									deleteMeeting={this.deleteMeeting}
-									selected={selected}
-								/>
-							) : (
-								<AddMeetingForm addMeeting={this.addMeeting} />
-							)}
+							<ErrorBoundary>
+								<Suspense fallback={<CircleLoader />}>
+									{isAdminPanel ? (
+										selected.selected_type === 'event' ? (
+											<EditMeetingAdminForm
+												saveMeeting={this.saveMeeting}
+												deleteMeeting={
+													this.deleteMeeting
+												}
+												selected={selected}
+											/>
+										) : (
+											<AddMeetingAdminForm
+												addMeeting={this.addMeeting}
+												doNotWork={
+													selected.slots.length > 2 ||
+													selected.start.getHours() *
+														60 +
+														selected.start.getMinutes() ===
+														0 ||
+													meetings.filter(
+														(meeting) =>
+															meeting.start >=
+																selected.start &&
+															meeting.end <=
+																selected.end
+													).length >=
+														this.props
+															.one_slot_max_meetings
+												}
+											/>
+										)
+									) : selected.selected_type === 'event' ? (
+										<EditMeetingForm
+											saveMeeting={this.saveMeeting}
+											deleteMeeting={this.deleteMeeting}
+											selected={selected}
+										/>
+									) : (
+										<AddMeetingForm
+											addMeeting={this.addMeeting}
+										/>
+									)}
+								</Suspense>
+							</ErrorBoundary>
 						</Modal.Body>
 					</Modal>
 				)}

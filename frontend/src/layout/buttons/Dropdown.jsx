@@ -79,16 +79,7 @@ function Dropdown({
 					<div className="dropdown__inner">
 						<div className="dropdown__content">
 							{loading ? (
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'center',
-										alignItems: 'center',
-										height: '100%',
-									}}
-								>
-									<CircleLoader />
-								</div>
+								<CircleLoader />
 							) : items.length > 0 ? (
 								<div
 									className={`dropdown__list${

@@ -2,11 +2,22 @@ import React from 'react'
 
 function CircleLoader(props) {
 	return (
-		<div class="circle-loader" {...props}>
-			<div className="circle-loader__item"></div>
-			<div className="circle-loader__item"></div>
-			<div className="circle-loader__item"></div>
-			<div className="circle-loader__item"></div>
+		<div
+			style={{
+				height: '100%',
+				width: '100%',
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+			}}
+			{...props}
+		>
+			<div class="circle-loader">
+				<div className="circle-loader__item"></div>
+				<div className="circle-loader__item"></div>
+				<div className="circle-loader__item"></div>
+				<div className="circle-loader__item"></div>
+			</div>
 		</div>
 	)
 }

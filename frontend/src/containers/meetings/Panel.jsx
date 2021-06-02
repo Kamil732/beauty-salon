@@ -1,17 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { lazy, useEffect, useRef, useState, Suspense } from 'react'
 import { NavLink, Redirect, Switch } from 'react-router-dom'
 import PrivateRoute from '../../common/PrivateRoute'
-
-import Dashboard from '../../layout/Dashboard'
-import Calendar from '../../components/meetings/calendar/Calendar'
-import Settings from './dashboard/Settings'
-
-import CalendarMenu from './dashboard/menu/CalendarMenu'
-import SettingsMenu from './dashboard/menu/SettingsMenu'
 
 import { FaCalendarAlt, FaChartPie, FaListAlt } from 'react-icons/fa'
 import { IoChatbubbles, IoSettingsSharp } from 'react-icons/io5'
 import { ImUsers } from 'react-icons/im'
+
+import ErrorBoundary from '../../components/ErrorBoundary'
+import CircleLoader from '../../layout/loaders/CircleLoader'
+import Dashboard from '../../layout/Dashboard'
+
+const Calendar = lazy(() =>
+	import('../../components/meetings/calendar/Calendar')
+)
+const Settings = lazy(() => import('./dashboard/Settings'))
+const CalendarMenu = lazy(() => import('./dashboard/menu/CalendarMenu'))
+const SettingsMenu = lazy(() => import('./dashboard/menu/SettingsMenu'))
 
 function Panel() {
 	const [isMenuOpen, toggleMenu] = useState(false)
@@ -97,36 +101,50 @@ function Panel() {
 					toggleMenu={(state) => toggleMenu(state)}
 					navContainer={navContainer}
 				>
-					<Switch>
-						<PrivateRoute
-							exact
-							path={process.env.REACT_APP_PANEL_CALENDAR_URL}
-							component={CalendarMenu}
-						/>
-						<PrivateRoute
-							exact
-							path={process.env.REACT_APP_PANEL_SETTINGS_URL}
-							component={SettingsMenu}
-						/>
-					</Switch>
+					<ErrorBoundary>
+						<Suspense fallback={<CircleLoader />}>
+							<Switch>
+								<PrivateRoute
+									exact
+									path={
+										process.env.REACT_APP_PANEL_CALENDAR_URL
+									}
+									component={CalendarMenu}
+								/>
+								<PrivateRoute
+									exact
+									path={
+										process.env.REACT_APP_PANEL_SETTINGS_URL
+									}
+									component={SettingsMenu}
+								/>
+							</Switch>
+						</Suspense>
+					</ErrorBoundary>
 				</Dashboard.Menu>
 			</div>
 
 			<Dashboard.Body>
-				<Switch>
-					<PrivateRoute
-						exact
-						path={process.env.REACT_APP_PANEL_CALENDAR_URL}
-						component={() => <Calendar isAdminPanel />}
-					/>
-					<PrivateRoute
-						exact
-						path={process.env.REACT_APP_PANEL_SETTINGS_URL}
-						component={Settings}
-					/>
+				<ErrorBoundary>
+					<Suspense fallback={<CircleLoader />}>
+						<Switch>
+							<PrivateRoute
+								exact
+								path={process.env.REACT_APP_PANEL_CALENDAR_URL}
+								component={() => <Calendar isAdminPanel />}
+							/>
+							<PrivateRoute
+								exact
+								path={process.env.REACT_APP_PANEL_SETTINGS_URL}
+								component={Settings}
+							/>
 
-					<Redirect to={process.env.REACT_APP_PANEL_CALENDAR_URL} />
-				</Switch>
+							<Redirect
+								to={process.env.REACT_APP_PANEL_CALENDAR_URL}
+							/>
+						</Switch>
+					</Suspense>
+				</ErrorBoundary>
 			</Dashboard.Body>
 		</Dashboard>
 	)

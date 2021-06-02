@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+
+import CircleLoader from '../layout/loaders/CircleLoader'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 import { FaPhoneAlt } from 'react-icons/fa'
 import BarberIllustration from '../assets/images/barber-illustration.svg'
@@ -11,12 +14,13 @@ import AppointmentIllustration from '../assets/images/appointment-illustration.s
 import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
 import PageHero from '../layout/PageHero'
-import Calendar from '../components/meetings/calendar/Calendar'
 import Legend from '../components/meetings/calendar/Legend'
 import WorkHours from '../components/meetings/WorkHours'
 import Card from '../layout/cards/Card'
 import Pricing from '../components/meetings/Pricing'
 import EditBox from '../layout/forms/EditBox'
+
+const Calendar = lazy(() => import('../components/meetings/calendar/Calendar'))
 
 function Home({
 	isAdmin,
@@ -31,7 +35,11 @@ function Home({
 				<Legend />
 			</Card.Body>
 			<Card.Body style={{ height: '100vh' }}>
-				<Calendar />
+				<ErrorBoundary>
+					<Suspense fallback={<CircleLoader />}>
+						<Calendar />
+					</Suspense>
+				</ErrorBoundary>
 			</Card.Body>
 		</Card>
 	)

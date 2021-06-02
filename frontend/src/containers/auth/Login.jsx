@@ -73,7 +73,7 @@ class Login extends Component {
 											htmlFor="email"
 											inputValue={email}
 										>
-											Email:
+											Email
 										</FormControl.Label>
 										<FormControl.Input
 											required
@@ -89,7 +89,7 @@ class Login extends Component {
 											htmlFor="password"
 											inputValue={password}
 										>
-											Hasło:
+											Hasło
 										</FormControl.Label>
 										<FormControl.Input
 											required
