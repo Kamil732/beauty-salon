@@ -7,8 +7,8 @@
 }
 
 @mixin color($color) {
-	color: set-text-color($color);
-	background-color: $color;
+	color: set-text-color($color) !important;
+	background-color: $color !important;
 	border: 1px solid $color !important;
 }
 
