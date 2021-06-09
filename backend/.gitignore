@@ -1,3 +1,6 @@
+# JavaScript build
+build/
+
 # Django #
 *.log
 *.pot

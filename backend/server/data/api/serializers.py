@@ -4,32 +4,48 @@ import re
 from rest_framework import serializers
 
 from accounts.models import Barber
-from data.models import Data, Service, Notification
+from data.models import Data, Service, ServiceGroup, Notification
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    barbers = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
-    time = serializers.SerializerMethodField('get_time')
+    group = serializers.StringRelatedField(read_only=True)
+    display_time = serializers.SerializerMethodField('get_display_time')
 
-    def get_time(self, obj):
+    def get_display_time(self, obj):
         hours = obj.time // 60
         minutes = obj.time % 60
 
         if hours:
             return f'{hours}h {minutes}min'
-        return f'{minutes}min'
+        return f'{minutes} min'
 
     class Meta:
         model = Service
         fields = '__all__'
 
 
+class ServiceGroupSerializer(serializers.ModelSerializer):
+    services = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    subgroups = serializers.SerializerMethodField('get_subgroups')
+
+    def get_subgroups(self, obj):
+        return ServiceGroupSerializer(ServiceGroup.objects.filter(parent=obj.id), many=True).data
+
+    class Meta:
+        model = ServiceGroup
+        exclude = ('parent',)
+
+
 class DataSerializer(serializers.ModelSerializer):
-    services = serializers.SerializerMethodField('get_serivces')
+    service_groups = serializers.SerializerMethodField('get_service_groups')
+    services = serializers.SerializerMethodField('get_services')
     colors = serializers.SerializerMethodField('get_colors')
 
-    def get_serivces(self, obj):
+    def get_services(self, obj):
         return ServiceSerializer(Service.objects.all(), many=True).data
+
+    def get_service_groups(self, obj):
+        return ServiceGroupSerializer(ServiceGroup.objects.filter(parent=None), many=True).data
 
     def get_colors(self, obj):
         res = {}

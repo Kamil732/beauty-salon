@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
-from .models import Data, Notification, Service
+from .models import Data, Notification, Service, ServiceGroup, ServiceBarber
 
 
 @admin.register(Data)
@@ -15,8 +15,18 @@ class DataAdmin(ModelAdmin):
         return False
 
 
+@admin.register(ServiceGroup)
+class ServiceGroupAdmin(ModelAdmin):
+    readonly_fields = ('id',)
+
+
 @admin.register(Service)
 class ServiceAdmin(ModelAdmin):
+    readonly_fields = ('id',)
+
+
+@admin.register(ServiceBarber)
+class ServiceBarberAdmin(ModelAdmin):
     readonly_fields = ('id',)
 
 

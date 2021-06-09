@@ -1,8 +1,6 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
-from autoslug import AutoSlugField
-
 from accounts.models import Account
 from meetings.models import Meeting
 
@@ -51,15 +49,49 @@ class Data(models.Model):
         return Data.objects.filter(id=self.id).exists()
 
 
+class ServiceGroup(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    barbers = models.ManyToManyField('accounts.Barber', related_name='service_groups')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
+
+    def __str__(self):
+        full_path = [self.name]
+        k = self.parent
+
+        while k is not None:
+            full_path.append(k.name)
+            k = k.parent
+
+        return ' -> '.join(full_path[::-1])
+
+
 class Service(models.Model):
-    barbers = models.ManyToManyField('accounts.Barber', blank=True, related_name='services')
-    time = models.PositiveIntegerField(default=0)
+    VAT = (
+        (23, '23%'),
+        (8, '8%'),
+        (5, '5%'),
+        (0, '0%'),
+    )
+
+    group = models.ForeignKey(ServiceGroup, on_delete=models.CASCADE, blank=True, null=True, related_name='services')
+    barbers = models.ManyToManyField('accounts.Barber', through='ServiceBarber', related_name='services')
     name = models.CharField(max_length=25)
+    time = models.PositiveIntegerField(default=0)
     price = models.DecimalField(decimal_places=2, max_digits=5)
+    vat = models.PositiveSmallIntegerField(default=0, choices=VAT)
     choosen_times = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f'{self.name} - {self.price} zł'
+
+
+class ServiceBarber(models.Model):
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='service_barber_data')
+    barber = models.ForeignKey('accounts.Barber', on_delete=models.CASCADE, related_name='service_barber_data')
+    time = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.barber} - {self.service}'
 
 
 class Notification(models.Model):

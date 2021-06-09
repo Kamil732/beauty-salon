@@ -6,7 +6,8 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from server.utilities import get_working_hours
-from accounts.models import Account
+from data.models import Service
+from accounts.models import Account, Barber
 from meetings.models import Meeting
 
 
@@ -25,8 +26,9 @@ class Command(BaseCommand):
 
         end_date = datetime.datetime.strptime(options['end'][0], '%Y-%m-%d')
 
-        barber1 = Account.objects.get(is_admin=True, email='kamilkamil554@wp.pl')
-        barber2 = Account.objects.get(is_admin=True, email='fryzjer@fryzjer.pl')
+        barber1 = Barber.objects.get(slug='damian')
+        barber2 = Barber.objects.get(slug='kamil-2')
+        services = Service.objects.all()
 
         while current_date <= end_date:
             work_hours = get_working_hours(current_date.weekday(), False)
@@ -42,7 +44,7 @@ class Command(BaseCommand):
                         first_name=faker.first_name(),
                         last_name=faker.last_name(),
                         phone_number='+48500484315',
-                        trusted_customer=faker.boolean()
+                        trusted=faker.boolean()
                     )
 
                     customer2, _ = Account.objects.get_or_create(
@@ -50,7 +52,7 @@ class Command(BaseCommand):
                         first_name=faker.first_name(),
                         last_name=faker.last_name(),
                         phone_number='+48500484315',
-                        trusted_customer=faker.boolean()
+                        trusted=faker.boolean()
                     )
 
                     Meeting.objects.create(
@@ -59,7 +61,7 @@ class Command(BaseCommand):
                         customer_first_name=customer1.first_name,
                         customer_last_name=customer1.last_name,
                         customer_phone_number=customer1.phone_number,
-                        type=random.choice(['hair', 'beard']),
+                        service=random.choice(services),
                         start=current_time
                     )
 
@@ -69,7 +71,7 @@ class Command(BaseCommand):
                         customer_first_name=customer2.first_name,
                         customer_last_name=customer2.last_name,
                         customer_phone_number=customer2.phone_number,
-                        type=random.choice(['hair', 'beard']),
+                        service=random.choice(services),
                         start=current_time
                     )
 

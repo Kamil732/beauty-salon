@@ -31,6 +31,11 @@ class AccountAdmin(ModelAdmin):
     readonly_fields = ('id', 'slug',)
 
 
+@admin.register(Barber)
+class BarberAdmin(ModelAdmin):
+    readonly_fields = ('slug', 'id',)
+
+
 @admin.register(CustomerImage)
 class CustomerImageAdmin(ModelAdmin):
     list_display = ('title',)
@@ -39,4 +44,3 @@ class CustomerImageAdmin(ModelAdmin):
 
 
 # admin.site.unregister(Group)
-admin.site.register(Barber)
