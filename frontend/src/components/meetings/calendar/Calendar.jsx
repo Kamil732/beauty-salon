@@ -54,7 +54,7 @@ class Calendar extends Component {
 		loadedDates: PropTypes.array,
 		visibleMeetings: PropTypes.array,
 
-		calendarData: PropTypes.objectOf({
+		calendarData: PropTypes.shape({
 			currentDate: PropTypes.instanceOf(Date),
 			startOfMonth: PropTypes.instanceOf(Date),
 			endOfMonth: PropTypes.instanceOf(Date),

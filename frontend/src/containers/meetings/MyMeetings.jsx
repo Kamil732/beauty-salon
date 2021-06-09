@@ -13,9 +13,7 @@ class MyMeetings extends Component {
 	render() {
 		return (
 			<PageHero>
-				<PageHero.Body>
-					<Calendar />
-				</PageHero.Body>
+				<Calendar />
 			</PageHero>
 		)
 	}

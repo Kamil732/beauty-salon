@@ -1,26 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function PageHero({ children, ...props }) {
+function PageHero({ children, vertical, ...props }) {
 	return (
-		<div className="page-hero" {...props}>
+		<div className={`page-hero${vertical ? ' vertical' : ''}`} {...props}>
 			{children}
 		</div>
 	)
 }
 
-function Body({ children, vertical, ...props }) {
-	return (
-		<div
-			className={`page-hero__body${vertical ? ' vertical' : ''}`}
-			{...props}
-		>
-			{children}
-		</div>
-	)
-}
-
-Body.prototype.propTypes = {
+PageHero.prototype.propTypes = {
 	vertical: PropTypes.bool,
 }
 
@@ -62,7 +51,6 @@ function Text({ children, ...props }) {
 	)
 }
 
-PageHero.Body = Body
 PageHero.Content = Content
 PageHero.Img = Img
 PageHero.Title = Title

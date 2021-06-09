@@ -48,73 +48,71 @@ class Login extends Component {
 		if (this.props.isAuthenticated) return <Redirect to="/" />
 
 		return (
-			<PageHero>
-				<PageHero.Body data-aos="fade-up">
-					<PageHero.Img src={AuthIllustration}>
-						<p className="text-broken">
-							Nie masz jeszcze konta? Kliknij{' '}
-							<Link to="/register" className="slide-floor">
-								tutaj
-							</Link>{' '}
-							by je utworzyć
-						</p>
-					</PageHero.Img>
+			<PageHero data-aos="fade-up">
+				<PageHero.Img src={AuthIllustration}>
+					<p className="text-broken">
+						Nie masz jeszcze konta? Kliknij{' '}
+						<Link to="/register" className="slide-floor">
+							tutaj
+						</Link>{' '}
+						by je utworzyć
+					</p>
+				</PageHero.Img>
 
-					<PageHero.Content>
-						<PageHero.Title>Zaloguj się</PageHero.Title>
+				<PageHero.Content>
+					<PageHero.Title>Zaloguj się</PageHero.Title>
 
-						<Card>
-							<Card.Body>
-								<form onSubmit={this.onSubmit}>
-									<CSRFToken />
+					<Card>
+						<Card.Body>
+							<form onSubmit={this.onSubmit}>
+								<CSRFToken />
 
-									<FormControl>
-										<FormControl.Label
-											htmlFor="email"
-											inputValue={email}
-										>
-											Email
-										</FormControl.Label>
-										<FormControl.Input
-											required
-											type="email"
-											id="email"
-											name="email"
-											onChange={this.onChange}
-											value={email}
-										/>
-									</FormControl>
-									<FormControl>
-										<FormControl.Label
-											htmlFor="password"
-											inputValue={password}
-										>
-											Hasło
-										</FormControl.Label>
-										<FormControl.Input
-											required
-											type="password"
-											id="password"
-											name="password"
-											onChange={this.onChange}
-											value={password}
-											min="3"
-										/>
-									</FormControl>
-
-									<Button
-										primary
-										center
-										loading={loading}
-										loadingText="Logowanie"
+								<FormControl>
+									<FormControl.Label
+										htmlFor="email"
+										inputValue={email}
 									>
-										Zaloguj się
-									</Button>
-								</form>
-							</Card.Body>
-						</Card>
-					</PageHero.Content>
-				</PageHero.Body>
+										Email
+									</FormControl.Label>
+									<FormControl.Input
+										required
+										type="email"
+										id="email"
+										name="email"
+										onChange={this.onChange}
+										value={email}
+									/>
+								</FormControl>
+								<FormControl>
+									<FormControl.Label
+										htmlFor="password"
+										inputValue={password}
+									>
+										Hasło
+									</FormControl.Label>
+									<FormControl.Input
+										required
+										type="password"
+										id="password"
+										name="password"
+										onChange={this.onChange}
+										value={password}
+										min="3"
+									/>
+								</FormControl>
+
+								<Button
+									primary
+									center
+									loading={loading}
+									loadingText="Logowanie"
+								>
+									Zaloguj się
+								</Button>
+							</form>
+						</Card.Body>
+					</Card>
+				</PageHero.Content>
 			</PageHero>
 		)
 	}

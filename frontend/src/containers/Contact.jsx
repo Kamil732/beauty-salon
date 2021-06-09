@@ -32,8 +32,8 @@ class Contact extends Component {
 		} = this.props
 
 		return (
-			<PageHero>
-				<PageHero.Body data-aos="zoom-in-down">
+			<>
+				<PageHero data-aos="zoom-in-down">
 					<PageHero.Img src={ContactIllustration} />
 
 					<PageHero.Content>
@@ -94,9 +94,9 @@ class Contact extends Component {
 							</EditBox>
 						</PageHero.Text>
 					</PageHero.Content>
-				</PageHero.Body>
+				</PageHero>
 
-				<PageHero.Body>
+				<PageHero>
 					<PageHero.Content data-aos="fade-right">
 						<PageHero.Title>
 							<div className="icon-container">
@@ -137,8 +137,8 @@ class Contact extends Component {
 							></iframe>
 						</EditBox>
 					</div>
-				</PageHero.Body>
-			</PageHero>
+				</PageHero>
+			</>
 		)
 	}
 }

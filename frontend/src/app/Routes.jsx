@@ -28,9 +28,7 @@ class Routes extends Component {
 
 		const loader = () => (
 			<PageHero>
-				<PageHero.Body>
-					<BrickLoader />
-				</PageHero.Body>
+				<BrickLoader />
 			</PageHero>
 		)
 

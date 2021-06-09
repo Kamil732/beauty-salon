@@ -12,7 +12,7 @@ function CircleLoader(props) {
 			}}
 			{...props}
 		>
-			<div class="circle-loader">
+			<div className="circle-loader">
 				<div className="circle-loader__item"></div>
 				<div className="circle-loader__item"></div>
 				<div className="circle-loader__item"></div>

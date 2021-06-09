@@ -67,8 +67,8 @@ class Gallery extends Component {
 		const { loading, data } = this.state
 
 		return (
-			<PageHero>
-				<PageHero.Body data-aos="flip-up">
+			<>
+				<PageHero data-aos="flip-up">
 					<PageHero.Img src={GalleryIllustration} />
 					<PageHero.Content>
 						<PageHero.Title>
@@ -96,8 +96,8 @@ class Gallery extends Component {
 							</EditBox>
 						</PageHero.Text>
 					</PageHero.Content>
-				</PageHero.Body>
-				<PageHero.Body vertical>
+				</PageHero>
+				<PageHero vertical>
 					<PageHero.Title
 						style={{
 							textAlign: 'center',
@@ -128,8 +128,8 @@ class Gallery extends Component {
 							Załaduj Więcej
 						</Button>
 					) : null}
-				</PageHero.Body>
-			</PageHero>
+				</PageHero>
+			</>
 		)
 	}
 }

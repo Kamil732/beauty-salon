@@ -17,7 +17,7 @@ import PageHero from '../layout/PageHero'
 import Legend from '../components/meetings/calendar/Legend'
 import WorkHours from '../components/meetings/WorkHours'
 import Card from '../layout/cards/Card'
-import Pricing from '../components/meetings/Pricing'
+import ServicesPricing from '../components/meetings/ServicesPricing'
 import EditBox from '../layout/forms/EditBox'
 
 const Calendar = lazy(() => import('../components/meetings/calendar/Calendar'))
@@ -46,126 +46,113 @@ function Home({
 
 	return (
 		<>
-			<PageHero>
-				<PageHero.Body data-aos="zoom-in">
-					<PageHero.Content>
-						<PageHero.Title>
-							<EditBox
-								name="home_title"
-								value={home_title}
-								label="Tytuł strony głównej"
-								type="textarea"
-							>
-								{isAdmin && !home_title
-									? 'BRAK TREŚCI'
-									: home_title}
-							</EditBox>
-						</PageHero.Title>
+			<PageHero data-aos="zoom-in">
+				<PageHero.Content>
+					<PageHero.Title>
+						<EditBox
+							name="home_title"
+							value={home_title}
+							label="Tytuł strony głównej"
+							type="textarea"
+						>
+							{isAdmin && !home_title
+								? 'BRAK TREŚCI'
+								: home_title}
+						</EditBox>
+					</PageHero.Title>
 
-						<PageHero.Text>
-							<EditBox
-								name="home_content"
-								value={home_content}
-								label="Treść strony głównej"
-								type="textarea"
-							>
-								{isAdmin && !home_content
-									? 'BRAK TREŚCI'
-									: home_content}
-							</EditBox>
-						</PageHero.Text>
+					<PageHero.Text>
+						<EditBox
+							name="home_content"
+							value={home_content}
+							label="Treść strony głównej"
+							type="textarea"
+						>
+							{isAdmin && !home_content
+								? 'BRAK TREŚCI'
+								: home_content}
+						</EditBox>
+					</PageHero.Text>
 
-						<ButtonContainer style={{ marginTop: '2rem' }}>
-							<Button
-								primary
-								to={process.env.REACT_APP_CALENDAR_URL}
-							>
-								Umów wizytę
-							</Button>
-							<Button
-								secondary
-								to={process.env.REACT_APP_CONTACT_URL}
-							>
-								Kontakt
-							</Button>
-						</ButtonContainer>
-					</PageHero.Content>
+					<ButtonContainer style={{ marginTop: '2rem' }}>
+						<Button primary to={process.env.REACT_APP_CALENDAR_URL}>
+							Umów wizytę
+						</Button>
+						<Button
+							secondary
+							to={process.env.REACT_APP_CONTACT_URL}
+						>
+							Kontakt
+						</Button>
+					</ButtonContainer>
+				</PageHero.Content>
 
-					<PageHero.Img src={BarberIllustration} />
-				</PageHero.Body>
-
-				<PageHero.Body>
-					<PageHero.Img
-						src={TimeIllustration}
-						data-aos="fade-right"
-					/>
-					<PageHero.Content data-aos="fade-left">
-						<PageHero.Title>Godziny Pracy</PageHero.Title>
-						<Card>
-							<div style={{ overflow: 'auto' }}>
-								<WorkHours />
-							</div>
-						</Card>
-					</PageHero.Content>
-				</PageHero.Body>
-
-				<PageHero.Body
-					data-aos="zoom-out-up"
-					data-aos-anchor-placement="center-bottom"
-				>
-					<PageHero.Content style={{ maxWidth: '80%' }}>
-						<PageHero.Title>Cennik</PageHero.Title>
-
-						<Card>
-							<div style={{ overflow: 'auto' }}>
-								<Pricing />
-							</div>
-						</Card>
-					</PageHero.Content>
-
-					<PageHero.Img src={PaymentIllustration} />
-				</PageHero.Body>
-
-				{phone_number ? (
-					<PageHero.Body>
-						<PageHero.Content>
-							<div data-aos="fade-up">
-								<PageHero.Title>
-									Jak umówić wizytę?
-								</PageHero.Title>
-
-								<PageHero.Text>
-									Jeśli chcesz umówić wizytę, skonataktuj się
-									ze mną:
-								</PageHero.Text>
-
-								<a
-									href={`tel:+48-${phone_number}`}
-									className="unique-text icon-container"
-								>
-									<FaPhoneAlt className="icon-container__icon" />
-									{phone_number}
-								</a>
-							</div>
-							{contact_content_second ? (
-								<PageHero.Text data-aos="flip-up">
-									{contact_content_second}
-								</PageHero.Text>
-							) : null}
-						</PageHero.Content>
-
-						<PageHero.Img src={AppointmentIllustration} />
-					</PageHero.Body>
-				) : null}
-
-				{window.innerWidth > 768 && (
-					<PageHero.Body vertical>
-						<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
-
-						{getCalendar()}
-					</PageHero.Body>
-				)}
+				<PageHero.Img src={BarberIllustration} />
 			</PageHero>
+
+			<PageHero>
+				<PageHero.Img src={TimeIllustration} data-aos="fade-right" />
+				<PageHero.Content data-aos="fade-left">
+					<PageHero.Title>Godziny Pracy</PageHero.Title>
+					<Card>
+						<div style={{ overflow: 'auto' }}>
+							<WorkHours />
+						</div>
+					</Card>
+				</PageHero.Content>
+			</PageHero>
+
+			<PageHero
+				data-aos="zoom-out-up"
+				data-aos-anchor-placement="center-bottom"
+			>
+				<PageHero.Content style={{ maxWidth: '80%' }}>
+					<PageHero.Title>Cennik usług</PageHero.Title>
+
+					<ServicesPricing />
+				</PageHero.Content>
+
+				<PageHero.Img src={PaymentIllustration} />
+			</PageHero>
+
+			{phone_number ? (
+				<PageHero>
+					<PageHero.Content>
+						<div data-aos="fade-up">
+							<PageHero.Title>Jak umówić wizytę?</PageHero.Title>
+
+							<PageHero.Text>
+								Jeśli chcesz umówić wizytę, skonataktuj się ze
+								mną:
+							</PageHero.Text>
+
+							<a
+								href={`tel:+48-${phone_number}`}
+								className="unique-text icon-container"
+							>
+								<FaPhoneAlt className="icon-container__icon" />
+								{phone_number}
+							</a>
+						</div>
+						{contact_content_second ? (
+							<PageHero.Text data-aos="flip-up">
+								{contact_content_second}
+							</PageHero.Text>
+						) : null}
+					</PageHero.Content>
+
+					<PageHero.Img src={AppointmentIllustration} />
+				</PageHero>
+			) : null}
+
+			{window.innerWidth > 768 && (
+				<PageHero vertical>
+					<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
+
+					{getCalendar()}
+				</PageHero>
+			)}
+
 			{window.innerWidth <= 768 && (
 				<div>
 					<PageHero.Title style={{ textAlign: 'center' }}>
