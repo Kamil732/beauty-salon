@@ -59,17 +59,24 @@ $rbc-css-prefix: calendar;
 	z-index: 2;
 	opacity: 0.8;
 
-	// &-label {
-	// 	color:rgba(255, 255, 255, 0.5)
-	// }
+	&-label {
+		width: 100% !important;
+		font-size: 0.8em;
+		font-weight: 500;
+		padding-right: 0 !important;
+		padding: 1px;
+	}
 
 	&-content {
-		margin: 5px 0 5px;
-		font-size: 0.9em;
+		margin-bottom: 1px;
+		font-size: 0.8em;
+		padding: 0.3rem 0.2rem;
 		width: 100%;
 		flex: 0 1;
+
 		white-space: pre-line;
 		background-color: rgba(255, 255, 255, 0.8);
+		color: rgba(#000000, 0.6);
 	}
 
 	&.selectable {
@@ -81,8 +88,17 @@ $rbc-css-prefix: calendar;
 	}
 }
 
-.doNotWork {
+@mixin doNotWorkSlog {
 	@include color($doNotWork-bg-color);
+	color: #000;
+
+	& > .rbc-event-content {
+		margin: 5px 0 5px;
+	}
+}
+
+.doNotWork {
+	@include doNotWorkSlog;
 	opacity: 0.8;
 
 	&.selectable {
@@ -95,8 +111,7 @@ $rbc-css-prefix: calendar;
 }
 
 .rbc-event-allday {
-	background-color: $doNotWork-bg-color;
-	color: set-text-color($doNotWork-bg-color);
+	@include doNotWorkSlog;
 }
 
 .rbc-timeslot-group {

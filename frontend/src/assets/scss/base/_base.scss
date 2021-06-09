@@ -19,6 +19,10 @@ body {
 	background: url(../images/bg.jpg), linear-gradient(transparent, transparent);
 	background-repeat: no-repeat;
 	background-size: 100% auto;
+
+	word-wrap: break-word;
+	font-size: 18px;
+	font-weight: 400;
 }
 
 .google_map {
@@ -27,8 +31,8 @@ body {
 }
 
 .content-wrap {
-	padding-bottom: 250px;
-	overflow-x: hidden;
+	padding-bottom: 15rem;
+	overflow: hidden;
 }
 
 a {
@@ -93,7 +97,6 @@ a {
 .header {
 	width: 100%;
 	padding: 1rem 2rem;
-	margin-bottom: 3rem;
 	display: flex;
 
 	&__logo {
@@ -217,7 +220,6 @@ a {
 	.header {
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 0;
 
 		&.dashboard-mode {
 			padding-left: 5.5rem;

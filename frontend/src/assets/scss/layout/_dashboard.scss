@@ -42,12 +42,13 @@
 		justify-content: center;
 		align-items: center;
 		background-color: transparent;
-		font-size: 12px;
+		font-size: 0.65em;
 		width: 100%;
-		padding: 0.7rem 4px;
+		padding: 0.75rem 2.5px;
 		text-align: center;
 		color: set-text-color($primary-color);
 		opacity: 0.5;
+		text-transform: lowercase;
 
 		&:hover,
 		&.active {
@@ -55,7 +56,7 @@
 		}
 
 		&__icon {
-			font-size: 1.8em;
+			font-size: 1.7em;
 			margin-bottom: -0.3em;
 			color: set-text-color($primary-color);
 		}
@@ -102,11 +103,11 @@
 		}
 
 		&__btn {
-			padding: 0.9rem 6px;
+			// padding: 0.9rem 6px;
 
-			&__icon {
-				font-size: 1.9em;
-			}
+			// &__icon {
+			// 	font-size: 1.9em;
+			// }
 
 			&-open {
 				display: none;
@@ -118,11 +119,11 @@
 @include media-laptop-lg {
 	.dashboard {
 		&__btn {
-			padding: 1.2rem 8px;
+			// padding: 1.2rem 8px;
 
-			&__icon {
-				font-size: 2.4em;
-			}
+			// &__icon {
+			// 	font-size: 2.4em;
+			// }
 		}
 	}
 }
