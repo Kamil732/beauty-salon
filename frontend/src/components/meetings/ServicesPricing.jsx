@@ -1,11 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import CollapseMenu from '../../layout/CollapseMenu'
+import CollapseMenu from '../../layout/menus/CollapseMenu'
 import Button from '../../layout/buttons/Button'
+import Modal from '../../layout/Modal'
 
-function ServicesPricing({ serviceGroups, services }) {
+function ServicesPricing({ serviceGroups, services, barbers }) {
+	const [modalData, setModalData] = useState({
+		isOpen: false,
+		barbers: [],
+		name: '',
+		display_time: '',
+		price: '',
+		description: '',
+	})
+
 	if (serviceGroups.length === 0)
 		return <h4>Nie obsługujemy narazie żadnych wizyt</h4>
 
@@ -38,7 +48,19 @@ function ServicesPricing({ serviceGroups, services }) {
 		)
 	}
 
-	const getService = (service) => (
+	const getDisplayPrice = (price) => (
+		<span className="text-broken">
+			{price > 0 ? (
+				<>
+					{price} <sup>zł</sup>
+				</>
+			) : (
+				'Za darmo'
+			)}
+		</span>
+	)
+
+	const getService = (service, showDetailBtn = true) => (
 		<CollapseMenu.Item key={service.id}>
 			<div>
 				<h5>
@@ -53,26 +75,30 @@ function ServicesPricing({ serviceGroups, services }) {
 						{service.display_time}
 					</small>
 				</h5>
-				<Button
-					extraSmall
-					style={{
-						fontSize: '0.7em',
-						fontWeight: '600',
-						marginTop: '0.5rem',
-					}}
-				>
-					Szczegóły
-				</Button>
-			</div>
-			<span className="text-broken">
-				{service.price > 0 ? (
-					<>
-						{service.price} <sup>zł</sup>
-					</>
-				) : (
-					'Za darmo'
+				{showDetailBtn && (
+					<Button
+						extraSmall
+						style={{
+							fontSize: '0.7em',
+							fontWeight: '600',
+							marginTop: '0.5rem',
+						}}
+						onClick={() =>
+							setModalData({
+								isOpen: true,
+								barbers: service.barbers,
+								name: service.name,
+								description: service.public_description,
+								display_time: service.display_time,
+								price: service.price,
+							})
+						}
+					>
+						Szczegóły
+					</Button>
 				)}
-			</span>
+			</div>
+			{getDisplayPrice(service.price)}
 		</CollapseMenu.Item>
 	)
 
@@ -93,6 +119,41 @@ function ServicesPricing({ serviceGroups, services }) {
 
 	return (
 		<>
+			{modalData.isOpen && (
+				<Modal
+					closeModal={(data) =>
+						setModalData({ isOpen: false, ...data })
+					}
+				>
+					<Modal.Header>
+						<h3>{modalData.name}</h3>
+					</Modal.Header>
+					<Modal.Body>
+						{getService(modalData, false)}
+						<CollapseMenu header={<h4>Przydzieleni fryzjerzy</h4>}>
+							{modalData.barbers.map((barber, index) => (
+								<CollapseMenu.Item key={index}>
+									<h6>
+										{
+											barbers.find(
+												(_barber) =>
+													_barber.value === barber
+											).label
+										}
+									</h6>
+								</CollapseMenu.Item>
+							))}
+						</CollapseMenu>
+
+						<div
+							dangerouslySetInnerHTML={{
+								__html: modalData.description,
+							}}
+						></div>
+					</Modal.Body>
+				</Modal>
+			)}
+
 			{services
 				.filter((service) => !service.group)
 				.map((service) => getService(service))}
@@ -105,11 +166,13 @@ function ServicesPricing({ serviceGroups, services }) {
 ServicesPricing.prototype.propTypes = {
 	serviceGroups: PropTypes.array,
 	services: PropTypes.array,
+	barbers: PropTypes.array,
 }
 
 const mapStateToProps = (state) => ({
 	serviceGroups: state.data.cms.data.service_groups,
 	services: state.data.cms.data.services,
+	barbers: state.meetings.barberChoiceList,
 })
 
 export default connect(mapStateToProps, null)(ServicesPricing)
