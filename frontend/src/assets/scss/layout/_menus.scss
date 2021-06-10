@@ -47,7 +47,7 @@
 }
 
 .collapse {
-	& > &__header {
+	&__header {
 		display: flex;
 		align-items: center;
 		width: 100%;
@@ -75,7 +75,7 @@
 		}
 	}
 
-	& > &__content {
+	&__content {
 		margin-left: 0.5rem;
 		transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -84,7 +84,7 @@
 		}
 	}
 
-	& &__item {
+	&__item {
 		padding: 1rem 2rem;
 		display: flex;
 		align-items: center;
