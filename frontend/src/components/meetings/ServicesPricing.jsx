@@ -38,52 +38,68 @@ function ServicesPricing({ serviceGroups, services }) {
 		)
 	}
 
+	const getService = (service) => (
+		<CollapseMenu.Item key={service.id}>
+			<div>
+				<h5>
+					{service.name}
+
+					<small
+						className="text-broken"
+						style={{
+							marginLeft: '0.5rem',
+						}}
+					>
+						{service.display_time}
+					</small>
+				</h5>
+				<Button
+					extraSmall
+					style={{
+						fontSize: '0.7em',
+						fontWeight: '600',
+						marginTop: '0.5rem',
+					}}
+				>
+					Szczegóły
+				</Button>
+			</div>
+			<span className="text-broken">
+				{service.price > 0 ? (
+					<>
+						{service.price} <sup>zł</sup>
+					</>
+				) : (
+					'Za darmo'
+				)}
+			</span>
+		</CollapseMenu.Item>
+	)
+
 	const getServiceGroup = (group) => {
 		return (
 			<CollapseMenu header={getHeader(group)} key={group.id}>
-				{group.services.map((service, index) => {
+				{group.services.map((service) => {
 					service = services.find(
 						(_service) => _service.id === service
 					)
 
-					return (
-						<CollapseMenu.Item key={index}>
-							<div>
-								<h5>
-									{service.name}
-
-									<small
-										className="text-broken"
-										style={{
-											marginLeft: '0.5rem',
-										}}
-									>
-										{service.display_time}
-									</small>
-								</h5>
-								<Button
-									extraSmall
-									style={{
-										fontSize: '0.7em',
-										fontWeight: '600',
-										marginTop: '0.5rem',
-									}}
-								>
-									Szczegóły
-								</Button>
-							</div>
-							<span className="text-broken">
-								{service.price} <sup>zł</sup>
-							</span>
-						</CollapseMenu.Item>
-					)
+					return getService(service)
 				})}
 				{group.subgroups.map((_group) => getServiceGroup(_group))}
 			</CollapseMenu>
 		)
 	}
 
-	return serviceGroups.map((group) => getServiceGroup(group))
+	return (
+		<>
+			{services
+				.filter((service) => !service.group)
+				.map((service) => getService(service))}
+
+			{serviceGroups.map((group) => getServiceGroup(group))}
+		</>
+	)
 }
 
 ServicesPricing.prototype.propTypes = {
