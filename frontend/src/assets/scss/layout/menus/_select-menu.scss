@@ -1,0 +1,20 @@
+.select-menu {
+	@include menu;
+
+	& > &__item {
+		padding: 1rem;
+		cursor: pointer;
+		width: 100%;
+		font-size: 1.2em;
+		color: set-text-color($surface-color);
+
+		&:hover,
+		&.active {
+			background-color: $shadow-color;
+		}
+
+		& > .icon {
+			margin-right: 0.5rem;
+		}
+	}
+}

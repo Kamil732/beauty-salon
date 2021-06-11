@@ -1,0 +1,12 @@
+@mixin menu {
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+@import './collapse';
+@import './select-menu';
+@import './tools-menu';
+@import './root-menu';
