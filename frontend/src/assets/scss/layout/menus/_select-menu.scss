@@ -1,11 +1,11 @@
 .select-menu {
+	font-size: 0.9em;
 	@include menu;
 
 	& > &__item {
 		padding: 1rem;
 		cursor: pointer;
 		width: 100%;
-		font-size: 1.2em;
 		color: set-text-color($surface-color);
 
 		&:hover,
