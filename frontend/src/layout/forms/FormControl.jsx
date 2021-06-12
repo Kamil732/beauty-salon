@@ -26,11 +26,14 @@ function CheckBoxLabel(props) {
 
 function Input(props) {
 	return (
-		<input
-			className="form-control__input"
-			title={props.required ? 'Proszę wypełnij to pole' : ''}
-			{...props}
-		/>
+		<>
+			<input
+				className="form-control__input"
+				title={props.required ? 'Proszę wypełnij to pole' : ''}
+				{...props}
+			/>
+			<span className="form-control__input__border"></span>
+		</>
 	)
 }
 
@@ -88,11 +91,7 @@ function SelectSearchInput({
 	theme,
 	...props
 }) {
-	return (
-		<input className="form-control__input" {...props}>
-			{children}
-		</input>
-	)
+	return <Input {...props}>{children}</Input>
 }
 
 function SelectSingleValue({ children, id, ...props }) {

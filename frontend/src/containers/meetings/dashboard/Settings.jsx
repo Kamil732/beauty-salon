@@ -7,9 +7,11 @@ function Settings(props) {
 		<div
 			style={{
 				opacity: '0.6',
+				height: '100%',
 				display: 'flex',
 				flexDirection: 'column',
 				alignItems: 'center',
+				justifyContent: 'center',
 				fontSize: '1.7em',
 				userSelect: 'none',
 				textAlign: 'center',

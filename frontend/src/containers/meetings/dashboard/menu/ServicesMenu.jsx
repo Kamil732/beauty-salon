@@ -25,10 +25,13 @@ function ServicesMenu({ serviceGroups }) {
 		<RootMenu
 			isHead
 			title={
-				<>
-					<BsCardChecklist size="18" />
+				<div className="icon-container">
+					<BsCardChecklist
+						size="18"
+						className="icon-container__icon"
+					/>
 					Wszystkie usługi
-				</>
+				</div>
 			}
 			value={null}
 			activeValue={activeItem}

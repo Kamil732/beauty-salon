@@ -65,34 +65,21 @@ function Menu({
 				) : (
 					<>
 						{isAdmin ? (
-							<>
-								<NavLink
-									to={process.env.REACT_APP_PANEL_URL}
-									className="nav__link"
-									onClick={closeNavigation}
-								>
-									Panel
-								</NavLink>
-								<a
-									href="/admin/"
-									className="nav__link"
-									onClick={closeNavigation}
-								>
-									Admin
-								</a>
-							</>
+							<NavLink
+								to={process.env.REACT_APP_PANEL_URL}
+								className="nav__link"
+								onClick={closeNavigation}
+							>
+								Panel
+							</NavLink>
 						) : (
-							<>
-								<NavLink
-									to={
-										process.env.REACT_APP_PANEL_CALENDAR_URL
-									}
-									className="nav__link"
-									onClick={closeNavigation}
-								>
-									Moje wizyty
-								</NavLink>
-							</>
+							<NavLink
+								to={process.env.REACT_APP_PANEL_CALENDAR_URL}
+								className="nav__link"
+								onClick={closeNavigation}
+							>
+								Moje wizyty
+							</NavLink>
 						)}
 						{window.innerWidth > 768 && (
 							<Dropdown

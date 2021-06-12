@@ -861,6 +861,7 @@ class Calendar extends Component {
 						}}
 						titleAccessor={getTitle}
 						tooltipAccessor={getTitle}
+						scrollToTime={new Date()}
 						messages={{
 							month: 'Miesiąc',
 							week: 'Tydzień',

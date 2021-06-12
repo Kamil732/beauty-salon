@@ -11,65 +11,51 @@ function CalendarMenu() {
 		<div className="select-menu">
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_WORK_HOURS_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<RiBarChartHorizontalFill />
-				</span>
+				<RiBarChartHorizontalFill className="icon-container__icon" />
 				Grafiki pracy
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_SALON_DATA_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<FaDatabase />
-				</span>
+				<FaDatabase className="icon-container__icon" />
 				Dane solonu
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_CALENDAR_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<FaCalendarAlt />
-				</span>
+				<FaCalendarAlt className="icon-container__icon" />
 				Kalendarz
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_WORKERS_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<FaIdCardAlt />
-				</span>
+				<FaIdCardAlt className="icon-container__icon" />
 				Pracownicy
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_CUSTOMERS_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<ImUsers />
-				</span>
+				<ImUsers className="icon-container__icon" />
 				Klienci
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_COMMUNICATION_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<IoChatbubbles />
-				</span>
+				<IoChatbubbles className="icon-container__icon" />
 				Komunikacja
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_PAYMENT_URL}
-				className="select-menu__item"
+				className="select-menu__item icon-container"
 			>
-				<span className="icon">
-					<IoCard />
-				</span>
+				<IoCard className="icon-container__icon" />
 				Płatności
 			</NavLink>
 		</div>
