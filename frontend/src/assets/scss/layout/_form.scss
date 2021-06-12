@@ -6,20 +6,37 @@
 
 .form-control {
 	position: relative;
-	margin: 1rem 0;
+	margin: 2rem 0;
 	width: 100%;
 
 	&__input {
+		&__border {
+			position: absolute;
+			bottom: -1px;
+			left: 0;
+			right: 0;
+			height: 4px;
+			background-color: $active-element;
+			z-index: 3;
+			transform: scaleX(0);
+			transition: transform 0.15s ease-in-out;
+		}
+
+		&:focus + &__border,
+		&__container:focus::after {
+			transform: scaleX(1);
+		}
+
 		position: relative;
 		width: 100%;
 		border: none;
 		font-size: 1rem;
-		margin: 1rem 0;
 		padding: 5px 0;
 		outline: 0;
-		border-bottom: 2px solid $active-element;
+		border-bottom: 2px solid #ccc;
 		background-color: transparent;
 		z-index: 2;
+		display: block;
 
 		&:required:invalid {
 			box-shadow: none;
@@ -94,11 +111,7 @@
 	}
 
 	@mixin active-label {
-		transform: translate(0, -0.5rem) scale(0.75);
-
-		&::after {
-			content: ':';
-		}
+		transform: translateY(-1rem) scale(0.7);
 	}
 
 	& > &__label {
@@ -107,17 +120,16 @@
 		font-size: 1.1rem;
 		position: absolute;
 		transform-origin: top left;
-		transform: translate(0, 1.2rem) scale(1);
+		transform: translateY(0.3rem) scale(1);
 		transition: all 0.1s ease-in-out;
 		z-index: 1;
 		opacity: 0.5;
-
-		&.active {
-			@include active-label;
-		}
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
-	&:focus-within > &__label {
+	&:focus-within > &__label,
+	&__label.active {
 		@include active-label;
 	}
 }

@@ -11,6 +11,15 @@
 	@include sliding-floor;
 }
 
+.icon-container {
+	display: flex;
+	align-items: center;
+
+	&__icon {
+		margin-right: 0.5rem;
+	}
+}
+
 .unique-text {
 	display: block;
 	width: fit-content;

@@ -57,16 +57,6 @@ a {
 	gap: 1rem;
 }
 
-.icon-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	&__icon {
-		margin-right: 1rem;
-	}
-}
-
 .badge {
 	position: absolute;
 	top: 2px;
@@ -237,7 +227,7 @@ a {
 			align-items: center;
 			background-color: inherit;
 			position: static;
-			gap: 0;
+			gap: 1rem;
 			padding: 0;
 			white-space: nowrap;
 			overflow-y: unset;
@@ -254,7 +244,7 @@ a {
 
 @include media-laptop {
 	.header > .nav {
-		gap: 1rem;
+		gap: 2rem;
 	}
 	.google_map {
 		width: 450px;
