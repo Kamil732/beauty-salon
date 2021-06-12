@@ -14,8 +14,11 @@ const Calendar = lazy(() =>
 	import('../../components/meetings/calendar/Calendar')
 )
 const Settings = lazy(() => import('./dashboard/Settings'))
+const Services = lazy(() => import('./dashboard/Services'))
+
 const CalendarMenu = lazy(() => import('./dashboard/menu/CalendarMenu'))
 const SettingsMenu = lazy(() => import('./dashboard/menu/SettingsMenu'))
+const ServicesMenu = lazy(() => import('./dashboard/menu/ServicesMenu'))
 
 function Panel() {
 	const [isMenuOpen, toggleMenu] = useState(false)
@@ -114,6 +117,13 @@ function Panel() {
 								<PrivateRoute
 									exact
 									path={
+										process.env.REACT_APP_PANEL_SERVICES_URL
+									}
+									component={ServicesMenu}
+								/>
+								<PrivateRoute
+									exact
+									path={
 										process.env.REACT_APP_PANEL_SETTINGS_URL
 									}
 									component={SettingsMenu}
@@ -132,6 +142,11 @@ function Panel() {
 								exact
 								path={process.env.REACT_APP_PANEL_CALENDAR_URL}
 								component={() => <Calendar isAdminPanel />}
+							/>
+							<PrivateRoute
+								exact
+								path={process.env.REACT_APP_PANEL_SERVICES_URL}
+								component={Services}
 							/>
 							<PrivateRoute
 								exact

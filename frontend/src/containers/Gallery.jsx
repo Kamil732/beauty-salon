@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, lazy, Suspense } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import axios from 'axios'
@@ -8,10 +8,13 @@ import GalleryIllustration from '../assets/images/gallery-illustration.svg'
 import { NotificationManager } from 'react-notifications'
 
 import PageHero from '../layout/PageHero'
-import ImageList from '../components/gallery/ImageList'
-import UploadImage from '../components/gallery/UploadImage'
 import Button from '../layout/buttons/Button'
 import EditBox from '../layout/forms/EditBox'
+import CircleLoader from '../layout/loaders/CircleLoader'
+import ErrorBoundary from '../components/ErrorBoundary'
+
+const ImageList = lazy(() => import('../components/gallery/ImageList'))
+const UploadImage = lazy(() => import('../components/gallery/UploadImage'))
 
 class Gallery extends Component {
 	static propTypes = {
@@ -109,9 +112,13 @@ class Gallery extends Component {
 						</div>
 					</PageHero.Title>
 					{isAdmin && (
-						<UploadImage>
-							<Button primary>Dodaj zdjęcia</Button>
-						</UploadImage>
+						<ErrorBoundary>
+							<Suspense fallback={<CircleLoader />}>
+								<UploadImage>
+									<Button primary>Dodaj zdjęcia</Button>
+								</UploadImage>
+							</Suspense>
+						</ErrorBoundary>
 					)}
 
 					<ImageList images={data.results} loading={loading} />
