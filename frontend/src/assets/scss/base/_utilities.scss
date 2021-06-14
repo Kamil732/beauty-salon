@@ -1,5 +1,13 @@
-.center {
-	margin: 0 auto;
+.center-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+.center-item {
+	margin: auto;
 }
 
 .text-broken {
