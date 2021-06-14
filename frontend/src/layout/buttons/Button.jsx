@@ -14,8 +14,8 @@ function Button({
 	small,
 	extraSmall,
 	rounded,
-	center,
 	loadingText,
+	className,
 	...props
 }) {
 	if (to) {
@@ -29,8 +29,8 @@ function Button({
 				}${loading ? ' btn__loading' : ''}${to ? ' btn__link' : ''}${
 					small ? ' btn__small' : ''
 				}${extraSmall ? ' btn__extraSmall slide-floor' : ''}${
-					center ? ' center' : ''
-				}${rounded ? ' btn__rounded' : ''}`}
+					rounded ? ' btn__rounded' : ''
+				} ${className}`}
 				disabled={loading || disabled}
 				{...props}
 			>
@@ -47,7 +47,7 @@ function Button({
 				loading ? ' btn__loading' : ''
 			}${to ? ' btn__link' : ''}${small ? ' btn__small' : ''}${
 				extraSmall ? ' btn__extraSmall slide-floor' : ''
-			}${center ? ' center' : ''}${rounded ? ' btn__rounded' : ''}`}
+			}${rounded ? ' btn__rounded' : ''} ${className}`}
 			disabled={loading || disabled}
 			{...props}
 		>
@@ -67,8 +67,8 @@ Button.prototype.propTypes = {
 	small: PropTypes.bool,
 	extraSmall: PropTypes.bool,
 	rounded: PropTypes.bool,
-	center: PropTypes.bool,
 	to: PropTypes.string,
+	className: PropTypes.string,
 }
 
 function CloseButton({ trCorner, ...props }) {

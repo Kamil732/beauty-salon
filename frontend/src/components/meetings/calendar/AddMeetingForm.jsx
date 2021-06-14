@@ -110,9 +110,9 @@ class AddMeetingForm extends Component {
 
 				<Button
 					success
-					center
 					loading={loading}
 					loadingText="Zapisywanie"
+					className="center-item"
 				>
 					Zapisz wizytę
 				</Button>

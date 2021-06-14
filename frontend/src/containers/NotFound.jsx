@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Error404Illustration from '../assets/images/error-404-illustration.svg'
+import Error404Illustration from '../assets/svgs/error-404-illustration.svg'
 import PageHero from '../layout/PageHero'
 
 function NotFound() {

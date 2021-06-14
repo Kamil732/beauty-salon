@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import { login } from '../../redux/actions/auth'
 
-import AuthIllustration from '../../assets/images/auth-illustration.svg'
+import AuthIllustration from '../../assets/svgs/auth-illustration.svg'
 
 import CSRFToken from '../../components/CSRFToken'
 import Card from '../../layout/cards/Card'
@@ -103,9 +103,9 @@ class Login extends Component {
 
 								<Button
 									primary
-									center
 									loading={loading}
 									loadingText="Logowanie"
+									className="center-item"
 								>
 									Zaloguj się
 								</Button>

@@ -2,6 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import {
+	getNotifications,
+	markNotificationAsRead,
+} from '../../redux/actions/data'
+
 import { IoMdNotifications } from 'react-icons/io'
 import { GoMegaphone } from 'react-icons/go'
 
@@ -9,10 +14,7 @@ import { logout } from '../../redux/actions/auth'
 import { NavLink } from 'react-router-dom'
 import Button from '../../layout/buttons/Button'
 import Dropdown from '../../layout/buttons/Dropdown'
-import {
-	getNotifications,
-	markNotificationAsRead,
-} from '../../redux/actions/data'
+import ReactTooltip from 'react-tooltip'
 
 function Menu({
 	loading,
@@ -48,6 +50,8 @@ function Menu({
 				to={process.env.REACT_APP_GALLERY_URL}
 				className="nav__link"
 				onClick={closeNavigation}
+				data-tip="Galeria"
+				data-for="dark-tooltip"
 			>
 				Galeria
 			</NavLink>
@@ -82,33 +86,49 @@ function Menu({
 							</NavLink>
 						)}
 						{window.innerWidth > 768 && (
-							<Dropdown
-								btnContent={<IoMdNotifications size={25} />}
-								rounded
-								loading={notificationLoading}
-								loaded={notificationLoaded}
-								loadItems={getNotifications}
-								items={notifications}
-								unReadItems={unReadNotificationsAmount}
-								markRead={markNotificationAsRead}
-								noItemsContent={
-									<div
-										style={{
-											display: 'flex',
-											flexDirection: 'column',
-											justifyContent: 'center',
-											alignItems: 'center',
-											height: '100%',
-										}}
-									>
-										<GoMegaphone fontSize="100" />
+							<>
+								<Dropdown
+									btnContent={
+										<IoMdNotifications
+											size={25}
+											data-tip="Powiadomienia"
+											data-for="dark-tooltip"
+										/>
+									}
+									rounded
+									loading={notificationLoading}
+									loaded={notificationLoaded}
+									loadItems={getNotifications}
+									items={notifications}
+									unReadItems={unReadNotificationsAmount}
+									markRead={markNotificationAsRead}
+									noItemsContent={
+										<div
+											style={{
+												display: 'flex',
+												flexDirection: 'column',
+												justifyContent: 'center',
+												alignItems: 'center',
+												height: '100%',
+											}}
+										>
+											<GoMegaphone fontSize="100" />
 
-										<h3 style={{ textAlign: 'center' }}>
-											Nie masz żadnych powiadomień
-										</h3>
-									</div>
-								}
-							/>
+											<h3 style={{ textAlign: 'center' }}>
+												Nie masz żadnych powiadomień
+											</h3>
+										</div>
+									}
+									data-tip="Powiadomienia"
+									data-for="notificationsTip"
+								/>
+								<ReactTooltip
+									type="dark"
+									place="bottom"
+									id="notificationsTip"
+									effect="solid"
+								/>
+							</>
 						)}
 						<Button
 							onClick={() => {

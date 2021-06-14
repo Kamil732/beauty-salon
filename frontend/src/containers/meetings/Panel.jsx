@@ -33,6 +33,12 @@ function Panel() {
 		}
 	}, [])
 
+	const getLoader = () => (
+		<div className="center-container">
+			<CircleLoader />
+		</div>
+	)
+
 	return (
 		<Dashboard>
 			<div ref={navContainer} style={{ display: 'inherit' }}>
@@ -105,7 +111,7 @@ function Panel() {
 					navContainer={navContainer}
 				>
 					<ErrorBoundary>
-						<Suspense fallback={<CircleLoader />}>
+						<Suspense fallback={getLoader()}>
 							<Switch>
 								<PrivateRoute
 									exact
@@ -136,7 +142,7 @@ function Panel() {
 
 			<Dashboard.Body>
 				<ErrorBoundary>
-					<Suspense fallback={<CircleLoader />}>
+					<Suspense fallback={getLoader()}>
 						<Switch>
 							<PrivateRoute
 								exact

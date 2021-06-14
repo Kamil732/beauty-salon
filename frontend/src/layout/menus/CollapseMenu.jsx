@@ -18,11 +18,7 @@ function CollapseMenu({ children, header, ...props }) {
 					className={`collapse__arrow${isOpen ? ' active' : ''}`}
 				/>
 			</div>
-			<Collapse
-				layoutEffect
-				isOpen={isOpen}
-				className="collapse__content"
-			>
+			<Collapse isOpen={isOpen} className="collapse__content">
 				{children}
 			</Collapse>
 		</div>

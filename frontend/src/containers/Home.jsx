@@ -1,15 +1,17 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+
+import useIntersectionObserver from '../helpers/hooks/intersectionObserver'
 
 import CircleLoader from '../layout/loaders/CircleLoader'
 import ErrorBoundary from '../components/ErrorBoundary'
 
 import { FaPhoneAlt } from 'react-icons/fa'
-import BarberIllustration from '../assets/images/barber-illustration.svg'
-import TimeIllustration from '../assets/images/time-illustration.svg'
-import PaymentIllustration from '../assets/images/payment-illustration.svg'
-import AppointmentIllustration from '../assets/images/appointment-illustration.svg'
+import BarberIllustration from '../assets/svgs/barber-illustration.svg'
+import TimeIllustration from '../assets/svgs/time-illustration.svg'
+import PaymentIllustration from '../assets/svgs/payment-illustration.svg'
+import AppointmentIllustration from '../assets/svgs/appointment-illustration.svg'
 
 import ButtonContainer from '../layout/buttons/ButtonContainer'
 import Button from '../layout/buttons/Button'
@@ -29,6 +31,9 @@ function Home({
 	phone_number,
 	contact_content_second,
 }) {
+	const calendarContainer = useRef(null)
+	const isCalendarVisible = useIntersectionObserver(calendarContainer)
+
 	const getCalendar = () => (
 		<Card data-aos="zoom-out-up">
 			<Card.Body>
@@ -145,23 +150,25 @@ function Home({
 				</PageHero>
 			) : null}
 
-			{window.innerWidth > 768 && (
-				<PageHero vertical>
-					<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
+			<div ref={calendarContainer}>
+				{window.innerWidth > 768 && isCalendarVisible && (
+					<PageHero vertical>
+						<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
 
-					{getCalendar()}
-				</PageHero>
-			)}
+						{getCalendar()}
+					</PageHero>
+				)}
 
-			{window.innerWidth <= 768 && (
-				<div>
-					<PageHero.Title style={{ textAlign: 'center' }}>
-						Kalendarz z wizytami
-					</PageHero.Title>
+				{window.innerWidth <= 768 && isCalendarVisible && (
+					<>
+						<PageHero.Title style={{ textAlign: 'center' }}>
+							Kalendarz z wizytami
+						</PageHero.Title>
 
-					{getCalendar()}
-				</div>
-			)}
+						{getCalendar()}
+					</>
+				)}
+			</div>
 		</>
 	)
 }

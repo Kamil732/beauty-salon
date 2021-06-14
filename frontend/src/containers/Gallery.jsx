@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 
 import { IoMdPhotos } from 'react-icons/io'
-import GalleryIllustration from '../assets/images/gallery-illustration.svg'
+import GalleryIllustration from '../assets/svgs/gallery-illustration.svg'
 import { NotificationManager } from 'react-notifications'
 
 import PageHero from '../layout/PageHero'

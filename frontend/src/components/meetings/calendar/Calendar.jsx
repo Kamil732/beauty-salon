@@ -35,6 +35,7 @@ import TouchCellWrapper from './tools/TouchCellWrapper'
 import WeekHeader from './tools/WeekHeader'
 import MonthDateHeader from './tools/MonthDateHeader'
 import ThreeDaysView from './tools/ThreeDaysView'
+import EventWrapper from './tools/EventWrapper'
 
 const AddMeetingAdminForm = lazy(() => import('./AddMeetingAdminForm'))
 const AddMeetingForm = lazy(() => import('./AddMeetingForm'))
@@ -740,7 +741,13 @@ class Calendar extends Component {
 						</Modal.Header>
 						<Modal.Body>
 							<ErrorBoundary>
-								<Suspense fallback={<CircleLoader />}>
+								<Suspense
+									fallback={
+										<div className="center-container">
+											<CircleLoader />
+										</div>
+									}
+								>
 									{isAdminPanel ? (
 										selected.selected_type === 'event' ? (
 											<EditMeetingAdminForm
@@ -825,6 +832,7 @@ class Calendar extends Component {
 						getDrilldownView={this.getDrilldownView}
 						onDrillDown={this.onDrillDown}
 						components={{
+							eventWrapper: EventWrapper,
 							toolbar: (props) => (
 								<Toolbar windowWidth={windowWidth} {...props} />
 							),
@@ -873,7 +881,11 @@ class Calendar extends Component {
 						}}
 					/>
 				</div>
-				{loading && <BrickLoader />}
+				{loading && (
+					<div className="center-container">
+						<BrickLoader />
+					</div>
+				)}
 			</>
 		)
 	}
@@ -887,17 +899,7 @@ const mapStateToProps = (state) => ({
 	meetings: state.meetings.data,
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
-
-	// currentDate: state.meetings.currentDate,
-	// startOfMonth: state.meetings.startOfMonth,
-	// endOfMonth: state.meetings.endOfMonth,
-	// startOfWeek: state.meetings.startOfWeek,
-	// endOfWeek: state.meetings.endOfWeek,
-	// startOf3days: state.meetings.startOf3days,
-	// endOf3days: state.meetings.endOf3days,
-
 	calendarData: state.meetings.calendarData,
-
 	services: state.data.cms.data.services,
 	colors: state.data.cms.data.colors,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,

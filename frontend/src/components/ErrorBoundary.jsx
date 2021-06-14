@@ -11,10 +11,11 @@ class ErrorBoundary extends React.Component {
 	}
 
 	render() {
-		if (this.state.hasError)
-			return (
-				<h4>Wystąpił błąd w ładowaniu. Prosimy zrestartować stronę</h4>
-			)
+		// In production
+		// if (this.state.hasError)
+		// 	return (
+		// 		<h4>Wystąpił błąd w ładowaniu. Prosimy zrestartować stronę</h4>
+		// 	)
 
 		return this.props.children
 	}

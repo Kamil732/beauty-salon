@@ -1,21 +1,18 @@
 import React from 'react'
 
-import SettingsIllustration from '../../../assets/images/settings-illustration.svg'
+import SettingsIllustration from '../../../assets/svgs/settings-illustration.svg'
 
 function Settings(props) {
 	return (
 		<div
 			style={{
 				opacity: '0.6',
-				height: '100%',
-				display: 'flex',
 				flexDirection: 'column',
-				alignItems: 'center',
-				justifyContent: 'center',
 				fontSize: '1.7em',
 				userSelect: 'none',
 				textAlign: 'center',
 			}}
+			className="center-container"
 		>
 			<img
 				src={SettingsIllustration}

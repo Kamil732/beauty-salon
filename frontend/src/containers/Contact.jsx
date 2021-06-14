@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import { FaPhoneAlt } from 'react-icons/fa'
 import { IoLocationSharp } from 'react-icons/io5'
-import ContactIllustration from '../assets/images/contact-illustration.svg'
+import ContactIllustration from '../assets/svgs/contact-illustration.svg'
 
 import PageHero from '../layout/PageHero'
 import EditBox from '../layout/forms/EditBox'
@@ -131,7 +131,7 @@ class Contact extends Component {
 							<iframe
 								title="map"
 								src={google_maps_url}
-								allowfullscreen
+								allowFullScreen
 								loading="lazy"
 								className="google_map"
 							></iframe>

@@ -14,6 +14,7 @@ import Button from '../buttons/Button'
 import ButtonContainer from '../buttons/ButtonContainer'
 import CSRFToken from '../../components/CSRFToken'
 import FormControl from './FormControl'
+import ReactTooltip from 'react-tooltip'
 
 function EditBox({
 	dispatch,
@@ -154,9 +155,20 @@ function EditBox({
 			<div className="edit-box">
 				{children}
 
-				<Button rounded onClick={() => setIsEditMode(true)}>
+				<Button
+					rounded
+					onClick={() => setIsEditMode(true)}
+					data-tip="Edytuj"
+					data-for={`${name}Tip`}
+				>
 					<FaRegEdit />
 				</Button>
+				<ReactTooltip
+					type="dark"
+					place="right"
+					id={`${name}Tip`}
+					effect="solid"
+				/>
 			</div>
 		</>
 	)
