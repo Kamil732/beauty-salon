@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.contrib.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin, TabularInline
 
-from .models import Data, Notification, Service, ServiceGroup, ServiceBarber
+from .models import Data, Notification, Service, ServiceGroup, ServiceBarber, ServiceImage
 
 
 @admin.register(Data)
@@ -20,9 +20,15 @@ class ServiceGroupAdmin(ModelAdmin):
     readonly_fields = ('id',)
 
 
+class ServiceImageAdmin(TabularInline):
+    model = ServiceImage
+    readonly_fields = ('id',)
+
+
 @admin.register(Service)
 class ServiceAdmin(ModelAdmin):
     readonly_fields = ('id',)
+    inlines = (ServiceImageAdmin,)
 
 
 @admin.register(ServiceBarber)

@@ -80,9 +80,16 @@ class Service(models.Model):
     price = models.DecimalField(decimal_places=2, max_digits=5)
     vat = models.PositiveSmallIntegerField(default=0, choices=VAT)
     choosen_times = models.PositiveIntegerField(default=0)
+    private_description = models.TextField(blank=True)
+    public_description = models.TextField(blank=True)
 
     def __str__(self):
         return f'{self.name} - {self.price} zł'
+
+
+class ServiceImage(models.Model):
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='service_images/%Y/%m/%d/')
 
 
 class ServiceBarber(models.Model):

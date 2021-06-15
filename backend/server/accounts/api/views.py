@@ -13,8 +13,8 @@ from rest_framework.exceptions import ValidationError
 
 from . import serializers
 from . import pagination
-from server.permissions import IsAdminOrReadOnly, IsAdmin, IsOwnerOrIsAdminOrReadOnly
-from accounts.models import CustomerImage, Account, Barber
+from server.permissions import IsAdminOrReadOnly, IsAdmin
+from accounts.models import CustomerImage, Customer, Barber
 
 
 class CurrentAccountAPIView(generics.RetrieveAPIView):
@@ -125,15 +125,15 @@ class CustomerListAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_field = request.query_params.get('search', '')
 
-        accounts = Account.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
-            first_name__istartswith=search_field) | Q(last_name__istartswith=search_field)).exclude(is_admin=True)[:10]
+        customers = Customer.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
+            first_name__istartswith=search_field) | Q(last_name__istartswith=search_field))[:10]
 
         res = [
             {
-                'label': account.get_full_name(),
-                'value': serializers.AccountSerializer(account).data,
+                'label': customer.get_full_name(),
+                'value': serializers.CustomerSerializer(customer).data,
             }
-            for account in accounts
+            for customer in customers
         ]
 
         return Response(res)
@@ -141,12 +141,13 @@ class CustomerListAPIView(APIView):
 
 class BarberListAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        barbers = Barber.objects.values('slug', 'first_name', 'last_name')
+        barbers = Barber.objects.prefetch_related('service_barber_data')
 
         res = [
             {
-                'label': f"{barber['first_name']} {barber['last_name']}",
-                'value': barber['slug'],
+                'label': f"{barber.first_name} {barber.last_name}",
+                'value': barber.slug,
+                'data': serializers.BarberSerializer(barber).data,
             }
             for barber in barbers
         ]

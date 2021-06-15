@@ -7,9 +7,7 @@ from .models import Meeting
 @admin.register(Meeting)
 class MeetingAdmin(ModelAdmin):
     empty_value_display = '-?-'
-    list_display = ('service', 'customer_first_name', 'barber', 'start', 'end',)
-    search_fields = ('service', 'customer_first_name', 'start', 'end',)
-    list_editable = ('start', 'end',)
+    list_display = ('barber', 'start', 'end',)
     readonly_fields = ('id',)
 
 

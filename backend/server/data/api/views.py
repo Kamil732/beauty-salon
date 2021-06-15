@@ -14,17 +14,17 @@ from . import serializers
 
 
 @method_decorator(csrf_protect, name='patch')
-class DataListAPIView(APIView):
+class DataListAPIView(GenericAPIView):
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = serializers.DataSerializer
     object = Data.objects.first()
 
     def get(self, request):
-        serializer = self.serializer_class(self.object, many=False)
+        serializer = self.get_serializer(self.object, many=False)
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
-        serializer = self.serializer_class(self.object, data=request.data, partial=True)
+        serializer = self.get_serializer(self.object, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

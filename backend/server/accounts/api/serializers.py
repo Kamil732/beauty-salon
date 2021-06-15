@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from accounts.models import Account, Barber, CustomerImage
+from accounts.models import Account, Barber, CustomerImage, Customer
+# from data.models import ServiceBarber
+from data.api.serializers import ServiceBarberSerializer
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -10,10 +12,20 @@ class AccountSerializer(serializers.ModelSerializer):
         exclude = ('password', 'is_superuser', 'is_staff',)
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+    account = AccountSerializer()
+
+    class Meta:
+        model = Customer
+        fields = '__all__'
+
+
 class BarberSerializer(serializers.ModelSerializer):
+    services_data = ServiceBarberSerializer(source='service_barber_data', many=True)
+
     class Meta:
         model = Barber
-        fields = ('first_name', 'last_name', 'color',)
+        fields = ('first_name', 'last_name', 'color', 'services_data',)
 
 
 class RegisterSerializer(serializers.ModelSerializer):

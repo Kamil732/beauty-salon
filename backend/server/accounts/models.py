@@ -50,6 +50,31 @@ class AccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name='E-mail adres', max_length=80, unique=True)
+    is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=True)
+    is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
+    is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
+    is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = AccountManager()
+
+    def __str__(self):
+        return self.email
+
+    @property
+    def room_name(self):
+        return f'user_{self.id}'
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
+
+
+class Customer(models.Model):
+    account = models.OneToOneField(Account, on_delete=models.SET_NULL, blank=True, null=True, related_name='profile')
     first_name = models.CharField(verbose_name='Imię', max_length=20)
     last_name = models.CharField(verbose_name='Nazwisko', max_length=20)
     phone_number = PhoneNumberField(verbose_name='Numer telefonu')
@@ -58,32 +83,13 @@ class Account(AbstractBaseUser):
     no_shows = models.PositiveIntegerField(default=0)
     revenue = models.PositiveIntegerField(default=0)
     trusted = models.BooleanField(default=False)
-
-    is_active = models.BooleanField(verbose_name='Jest aktywowany?', default=True)
-    is_admin = models.BooleanField(verbose_name='Jest adminem?', default=False)
-    is_staff = models.BooleanField(verbose_name='Ma uprawnienia?', default=False)
-    is_superuser = models.BooleanField(verbose_name='Jest super urzytkownikiem?', default=False)
     slug = AutoSlugField(populate_from='first_name', unique=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']
-    objects = AccountManager()
 
     def __str__(self):
         return self.get_full_name()
 
-    @property
-    def room_name(self):
-        return f'user_{self.id}'
-
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
-
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser
-
-    def has_module_perms(self, app_label):
-        return self.is_superuser
 
 
 class Barber(models.Model):

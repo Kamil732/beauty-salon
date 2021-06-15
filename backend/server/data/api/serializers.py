@@ -1,14 +1,18 @@
-from datetime import date, datetime
-import re
-
 from rest_framework import serializers
 
 from accounts.models import Barber
-from data.models import Data, Service, ServiceGroup, Notification
+from data.models import Data, Service, ServiceGroup, ServiceBarber, Notification
+
+
+class ServiceBarberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceBarber
+        fields = ('time', 'service',)
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     group = serializers.StringRelatedField(read_only=True)
+    barbers = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     display_time = serializers.SerializerMethodField('get_display_time')
 
     def get_display_time(self, obj):
@@ -21,7 +25,16 @@ class ServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Service
+
+
+class ServiceSerializerAdmin(ServiceSerializer):
+    class Meta(ServiceSerializer.Meta):
         fields = '__all__'
+
+
+class ServiceSerializerCustomer(ServiceSerializer):
+    class Meta(ServiceSerializer.Meta):
+        exclude = ('private_description', 'choosen_times',)
 
 
 class ServiceGroupSerializer(serializers.ModelSerializer):
@@ -39,21 +52,15 @@ class ServiceGroupSerializer(serializers.ModelSerializer):
 class DataSerializer(serializers.ModelSerializer):
     service_groups = serializers.SerializerMethodField('get_service_groups')
     services = serializers.SerializerMethodField('get_services')
-    colors = serializers.SerializerMethodField('get_colors')
 
     def get_services(self, obj):
-        return ServiceSerializer(Service.objects.all(), many=True).data
+        user = self.context.get('request').user
+        serializer = ServiceSerializerAdmin if user.is_authenticated and user.is_admin else ServiceSerializerCustomer
+
+        return serializer(Service.objects.all(), many=True).data
 
     def get_service_groups(self, obj):
         return ServiceGroupSerializer(ServiceGroup.objects.filter(parent=None), many=True).data
-
-    def get_colors(self, obj):
-        res = {}
-
-        for barber in Barber.objects.values_list('slug', 'color'):
-            res[barber[0]] = barber[1]
-
-        return res
 
     def to_internal_value(self, data):
         if 'start_work_sunday' in data and not(data['start_work_sunday']):

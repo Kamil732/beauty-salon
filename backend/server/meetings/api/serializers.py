@@ -11,14 +11,13 @@ from server.utilities import get_working_hours
 from meetings.models import Meeting
 from accounts.models import Account, Barber
 from data.models import Data, Service, Notification
-from data.api.serializers import ServiceSerializer
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    barber = serializers.SlugRelatedField(queryset=Barber.objects.all(), slug_field='slug', allow_null=True)
+    barber = serializers.SlugRelatedField(queryset=Barber.objects.all(), slug_field='slug')
     barber_first_name = serializers.ReadOnlyField(source='barber.first_name')
     barber_last_name = serializers.ReadOnlyField(source='barber.last_name')
-    service = serializers.PrimaryKeyRelatedField(queryset=Service.objects.all(), allow_null=True)
+    services = serializers.PrimaryKeyRelatedField(queryset=Service.objects.all(), many=True)
 
     def validate(self, data, pass_cached_data=False):
         # Cannot create meeting WHEN it's not between 2 slots, but maybe in the middle of them []
@@ -31,9 +30,6 @@ class MeetingSerializer(serializers.ModelSerializer):
         working_hours = get_working_hours(data['start'].weekday())
         start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)
 
-        if not(data.get('do_not_work')) and not(data['barber']):
-            raise serializers.ValidationError({'detail': 'Fryzjer jest wymagany'})
-
         if (data['end'] < data['start']):
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
@@ -43,20 +39,33 @@ class MeetingSerializer(serializers.ModelSerializer):
                 {'detail': 'Nie można umówić wizyty krócej niż 15min przed jej rozpoczęciem'})
 
         # Validate if meeting is NOT between work hours and validate meeting work_time
-        if not(data.get('do_not_work')) and (working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < cms_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - cms_data.work_time):
+        if working_hours['is_non_working_hour'] or ((data['end'] - data['start']).seconds % 3600) // 60 < cms_data.work_time or start_meeting < working_hours['start'] or start_meeting > working_hours['end'] - cms_data.work_time:
             raise serializers.ValidationError('Nie poprawna data wizyty')
 
         # Validate if barber is occupied
-        if not(data.get('do_not_work')) and not(data['barber'] == ''):
-            for barber in same_slot_meetings.values_list('barber__slug', flat=True):
-                if barber == data['barber'].slug:
-                    raise serializers.ValidationError({'detail': 'Nie umówić wizyty z nieczynnym fryzjerem'})
+        for barber in same_slot_meetings.values_list('barber__slug', flat=True):
+            if barber == data['barber'].slug:
+                raise serializers.ValidationError({'detail': 'Nie umówić wizyty z zablokowanym fryzjerem'})
 
         if pass_cached_data:
             data['same_slot_meeting_count'] = same_slot_meetings.count()
             data['one_slot_max_meetings'] = cms_data.one_slot_max_meetings
 
         return data
+
+    def create(self, validated_data):
+        if (validated_data['services']):
+            meeting_duration = 0
+
+            for serivce in validated_data['services']:
+                try:
+                    meeting_duration += validated_data['barber'].service_barber_data.get(service=serivce).time
+                except:
+                    meeting_duration += serivce.time
+
+            validated_data['end'] = validated_data['start'] + timedelta(minutes=meeting_duration)
+
+        return super(MeetingSerializer, self).create(self, validated_data)
 
     class Meta:
         model = Meeting
@@ -68,12 +77,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             'customer',
             'start',
             'end',
-            'service',
-            'do_not_work',
-            'customer_first_name',
-            'customer_last_name',
-            'customer_phone_number',
-            'customer_fax_number',
+            'services',
             'confirmed'
         )
         read_only_fields = ('id',)
@@ -84,6 +88,9 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
     def validate(self, data):
         data = super(CustomerMeetingSerializer, self).validate(data, True)
+
+        if not(data['services']):
+            raise serializers.ValidationError({'detail': 'Musisz wybrać usługę'})
 
         # Validate same slot meeting count
         if data['same_slot_meeting_count'] >= data['one_slot_max_meetings']:
@@ -96,15 +103,10 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
     def create(self, validated_data):
         user = self.context.get('request').user
-
-        validated_data['customer_first_name'] = user.first_name
-        validated_data['customer_last_name'] = user.last_name
-        validated_data['customer_phone_number'] = user.phone_number
-        validated_data['customer_fax_number'] = user.fax_number
         validated_data['confirmed'] = True
 
         user.bookings += 1
-        user.revenue += round(validated_data['service'].price)
+        user.revenue += round(sum(service.price for service in validated_data['services']))
         user.save()
 
         # Send notfiy
@@ -137,11 +139,11 @@ class CustomerMeetingSerializer(MeetingSerializer):
         confirmed = instance.confirmed
         instance = super(CustomerMeetingSerializer, self).update(instance, validated_data)
 
-        if not(instance.do_not_work) and not(confirmed) and validated_data.get('confirmed'):
+        if not(confirmed) and validated_data.get('confirmed'):
             user = instance.customer
 
             user.bookings += 1
-            user.revenue += round(validated_data['service'].price)
+            user.revenue += round(sum(service.price for service in validated_data['services']))
             user.save()
 
         return instance
@@ -152,15 +154,6 @@ class CustomerMeetingSerializer(MeetingSerializer):
             'customer_id',
         )
 
-        extra_kwargs = {
-            'do_not_work': {'read_only': True},
-            'service': {'allow_null': False},
-            'customer_first_name': {'write_only': True, 'required': False, 'allow_blank': True},
-            'customer_last_name': {'write_only': True, 'required': False, 'allow_blank': True},
-            'customer_phone_number': {'write_only': True, 'required': False, 'allow_blank': True},
-            'customer_fax_number': {'write_only': True},
-        }
-
 
 class AdminMeetingSerializer(MeetingSerializer):
     customer = serializers.SlugRelatedField(queryset=Account.objects.filter(
@@ -169,20 +162,10 @@ class AdminMeetingSerializer(MeetingSerializer):
     def validate(self, data):
         data = super(AdminMeetingSerializer, self).validate(data, True)
 
-        if not(data.get('do_not_work')):
-            if not(data['service']):
-                raise serializers.ValidationError({'detail': 'Musisz wybrać usługę'})
-            if len(data['customer_first_name']) < 3:
-                raise serializers.ValidationError({'detail': 'Imię musi mieć conajmniej 3 znaki'})
-            if len(data['customer_last_name']) < 3:
-                raise serializers.ValidationError({'detail': 'Nazwisko musi mieć conajmniej 3 znaki'})
-            if not(data['customer_phone_number']):
-                raise serializers.ValidationError({'detail': 'Numer telefonu jest wymagany'})
-
         # Validate same slot meeting count
-        if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data.get('do_not_work'))) or \
-                (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data.get('do_not_work')):
-            raise serializers.ValidationError({'detail': 'Nie porawna ilość wizyt w jednym czasie'})
+        # if (data['same_slot_meeting_count'] >= data['one_slot_max_meetings'] and not(data.get('do_not_work'))) or \
+        #         (data['same_slot_meeting_count'] > data['one_slot_max_meetings'] and data.get('do_not_work')):
+        #     raise serializers.ValidationError({'detail': 'Nie porawna ilość wizyt w jednym czasie'})
 
         del data['same_slot_meeting_count']
         del data['one_slot_max_meetings']
@@ -266,14 +249,8 @@ class AdminMeetingSerializer(MeetingSerializer):
 
         return super().update(instance, validated_data)
 
-    # def to_representation(self, instance):
-    #     data = super(AdminMeetingSerializer, self).to_representation(instance)
-    #     data['service'] = ServiceSerializer(instance.service).data
-    #     return data
-
     class Meta(MeetingSerializer.Meta):
-        extra_kwargs = {
-            'customer_first_name': {'required': False, 'allow_blank': True},
-            'customer_last_name': {'required': False, 'allow_blank': True},
-            'customer_phone_number': {'required': False, 'allow_blank': True},
-        }
+        fields = (
+            *MeetingSerializer.Meta.fields,
+            'description',
+        )
