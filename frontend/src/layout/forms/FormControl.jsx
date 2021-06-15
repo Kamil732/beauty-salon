@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import TextareaAutosize from 'react-textarea-autosize'
 import Select, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 
@@ -39,13 +40,16 @@ function Input(props) {
 
 function Textarea({ value, ...props }) {
 	return (
-		<textarea
-			className="form-control__textarea"
-			title={props.required ? 'Proszę wypełnij to pole' : ''}
-			{...props}
-		>
-			{value}
-		</textarea>
+		<>
+			<TextareaAutosize
+				className="form-control__input form-control__textarea"
+				title={props.required ? 'Proszę wypełnij to pole' : ''}
+				{...props}
+			>
+				{value}
+			</TextareaAutosize>
+			<span className="form-control__input__border"></span>
+		</>
 	)
 }
 
