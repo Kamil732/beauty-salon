@@ -54,6 +54,7 @@ class Calendar extends Component {
 		meetings: PropTypes.array,
 		loadedDates: PropTypes.array,
 		visibleMeetings: PropTypes.array,
+		barbers: PropTypes.array,
 
 		calendarData: PropTypes.shape({
 			currentDate: PropTypes.instanceOf(Date),
@@ -69,7 +70,6 @@ class Calendar extends Component {
 		loadMeetings: PropTypes.func.isRequired,
 
 		serivces: PropTypes.array,
-		colors: PropTypes.object,
 		one_slot_max_meetings: PropTypes.number.isRequired,
 		work_time: PropTypes.number,
 		end_work_sunday: PropTypes.string,
@@ -591,7 +591,7 @@ class Calendar extends Component {
 	}
 
 	eventPropGetter = (event) => {
-		const { colors, isAdminPanel, isAuthenticated, user_phone_number } =
+		const { barbers, isAdminPanel, isAuthenticated, user_phone_number } =
 			this.props
 
 		return {
@@ -602,7 +602,12 @@ class Calendar extends Component {
 					!event.do_not_work)
 					? 'selectable'
 					: ''
-			} ${!event.do_not_work ? colors[event.barber] : ''}`,
+			} ${
+				!event.do_not_work
+					? barbers.find((barber) => barber.value === event.barber)
+							.data.color
+					: ''
+			}`,
 		}
 	}
 
@@ -869,7 +874,6 @@ class Calendar extends Component {
 						}}
 						titleAccessor={getTitle}
 						tooltipAccessor={getTitle}
-						scrollToTime={new Date()}
 						messages={{
 							month: 'Miesiąc',
 							week: 'Tydzień',
@@ -900,8 +904,8 @@ const mapStateToProps = (state) => ({
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
 	calendarData: state.meetings.calendarData,
+	barbers: state.meetings.barberChoiceList,
 	services: state.data.cms.data.services,
-	colors: state.data.cms.data.colors,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,
 	work_time: state.data.cms.data.work_time || 30,
 	end_work_sunday: state.data.cms.data.end_work_sunday || '',

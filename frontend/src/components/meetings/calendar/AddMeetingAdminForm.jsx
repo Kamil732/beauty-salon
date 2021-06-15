@@ -27,14 +27,11 @@ class AddMeetingAdminForm extends Component {
 		this.state = {
 			loading: false,
 
-			do_not_work: props.doNotWork,
+			blocked: props.doNotWork,
 			customer: '',
-			customer_first_name: '',
-			customer_last_name: '',
-			customer_phone_number: '',
-			customer_fax_number: '',
 			barber: '',
 			service: '',
+			description: '',
 		}
 
 		this.onChange = this.onChange.bind(this)
@@ -47,7 +44,7 @@ class AddMeetingAdminForm extends Component {
 
 	componentDidUpdate(_, prevState) {
 		if (
-			prevState.do_not_work !== this.state.do_not_work &&
+			prevState.blocked !== this.state.blocked &&
 			this.state.barber === 'everyone'
 		)
 			this.setState({ barber: '' })
@@ -55,33 +52,21 @@ class AddMeetingAdminForm extends Component {
 
 	onSubmit = async (e) => {
 		e.preventDefault()
-		const {
-			do_not_work,
-			customer,
-			customer_first_name,
-			customer_last_name,
-			customer_phone_number,
-			customer_fax_number,
-			barber,
-			service,
-		} = this.state
+		const { blocked, customer, barber, service, description } = this.state
 
 		const payload = {
-			do_not_work,
+			blocked,
 			customer,
-			customer_first_name,
-			customer_last_name,
-			customer_phone_number,
-			customer_fax_number,
 			barber,
 			service,
+			description,
 		}
 
 		const phoneRegexValidation =
 			/^\+?([0-9]{2})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/
 
 		if (
-			!this.state.do_not_work &&
+			!this.state.blocked &&
 			(!this.state.customer_phone_number.match(phoneRegexValidation) ||
 				(this.state.customer_fax_number &&
 					!this.state.customer_fax_number.match(
@@ -107,17 +92,8 @@ class AddMeetingAdminForm extends Component {
 
 	render() {
 		const { barberChoiceList, customerChoiceList, services } = this.props
-		const {
-			loading,
-			do_not_work,
-			customer,
-			customer_first_name,
-			customer_last_name,
-			customer_phone_number,
-			customer_fax_number,
-			barber,
-			service,
-		} = this.state
+		const { loading, blocked, customer, barber, service, description } =
+			this.state
 
 		return (
 			<form onSubmit={this.onSubmit}>
@@ -127,25 +103,23 @@ class AddMeetingAdminForm extends Component {
 					<>
 						<FormControl>
 							<FormControl.CheckBoxLabel>
-								Nie pracuje
+								Blokada
 								<FormControl.CheckBox
-									name="do_not_work"
-									checked={do_not_work}
+									name="blocked"
+									checked={blocked}
 									onChange={this.onChange}
 								/>
 							</FormControl.CheckBoxLabel>
 						</FormControl>
 
-						<div
-							style={{ display: do_not_work ? 'none' : 'block' }}
-						>
+						<div style={{ display: blocked ? 'none' : 'block' }}>
 							<FormGroup>
 								<FormControl>
 									<FormControl.Label
 										htmlFor="customer"
 										inputValue={customer}
 									>
-										Konto Klienta
+										Klient
 									</FormControl.Label>
 
 									<FormControl.ChoiceField
@@ -185,7 +159,7 @@ class AddMeetingAdminForm extends Component {
 									</FormControl.Label>
 
 									<FormControl.ChoiceField
-										required={!do_not_work}
+										required={!blocked}
 										id="barber"
 										name="barber"
 										value={barber}
@@ -207,93 +181,6 @@ class AddMeetingAdminForm extends Component {
 								</FormControl>
 							</FormGroup>
 
-							<FormGroup>
-								<FormControl>
-									<FormControl.Label
-										htmlFor="customer_first_name"
-										inputValue={customer_first_name}
-									>
-										Imię klienta
-									</FormControl.Label>
-									<FormControl.Input
-										required={!do_not_work}
-										type="text"
-										id="customer_first_name"
-										name="customer_first_name"
-										onChange={(e) => {
-											if (!customer) this.onChange(e)
-										}}
-										value={customer_first_name}
-										minLength="3"
-										maxLength="20"
-									/>
-								</FormControl>
-
-								<FormControl>
-									<FormControl.Label
-										htmlFor="customer_last_name"
-										inputValue={customer_last_name}
-									>
-										Nazwisko klienta
-									</FormControl.Label>
-									<FormControl.Input
-										required={!do_not_work}
-										type="text"
-										id="customer_last_name"
-										name="customer_last_name"
-										onChange={(e) => {
-											if (!customer) this.onChange(e)
-										}}
-										value={customer_last_name}
-										minLength="3"
-										maxLength="20"
-									/>
-								</FormControl>
-							</FormGroup>
-
-							<FormGroup>
-								<FormControl>
-									<FormControl.Label
-										htmlFor="customer_phone_number"
-										inputValue={customer_phone_number}
-									>
-										Nr. tel. klienta
-									</FormControl.Label>
-									<FormControl.Input
-										required={!do_not_work}
-										type="text"
-										id="customer_phone_number"
-										name="customer_phone_number"
-										onChange={(e) => {
-											if (!customer) this.onChange(e)
-										}}
-										value={customer_phone_number}
-										minLength="9"
-										maxLength="12"
-									/>
-								</FormControl>
-
-								<FormControl>
-									<FormControl.Label
-										htmlFor="customer_fax_number"
-										inputValue={customer_fax_number}
-									>
-										Zapasowy nr. tel. klienta
-									</FormControl.Label>
-									<FormControl.Input
-										type="text"
-										id="customer_fax_number"
-										name="customer_fax_number"
-										onChange={(e) => {
-											if (!customer) this.onChange(e)
-										}}
-										value={customer_fax_number}
-										minLength="9"
-										maxLength="12"
-									/>
-								</FormControl>
-							</FormGroup>
-
 							<FormControl>
 								<FormControl.Label
 									htmlFor="service"
@@ -302,7 +189,7 @@ class AddMeetingAdminForm extends Component {
 									Usługa
 								</FormControl.Label>
 								<FormControl.ChoiceField
-									required={!do_not_work}
+									required={!blocked}
 									id="service"
 									name="service"
 									onChange={(option) =>
@@ -336,11 +223,26 @@ class AddMeetingAdminForm extends Component {
 									isNotClearable
 								/>
 							</FormControl>
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor="description"
+									inputValue={description}
+								>
+									Opis
+								</FormControl.Label>
+								<FormControl.Textarea
+									id="description"
+									name="description"
+									onChange={this.onChange}
+									value={description}
+								/>
+							</FormControl>
 						</div>
 					</>
 				) : null}
 
-				{do_not_work ? (
+				{blocked ? (
 					<>
 						<FormControl>
 							<FormControl.Label
@@ -351,7 +253,7 @@ class AddMeetingAdminForm extends Component {
 							</FormControl.Label>
 
 							<FormControl.ChoiceField
-								required={do_not_work}
+								required={blocked}
 								id="barber"
 								name="barber"
 								value={barber}

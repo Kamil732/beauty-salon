@@ -16,7 +16,6 @@ const Calendar = lazy(() => import('react-calendar'))
 function CalendarMenu({
 	loadBarbers,
 	barbers,
-	colors,
 	currentDate,
 	updateCalendarDates,
 }) {
@@ -62,7 +61,7 @@ function CalendarMenu({
 				{barbers.map((barber, idx) => (
 					<div className="legend__item" key={idx}>
 						<span
-							className={colors[barber.value]}
+							className={barber.data.color}
 							style={{
 								width: '2rem',
 								height: '1rem',
@@ -78,14 +77,12 @@ function CalendarMenu({
 
 CalendarMenu.prototype.propTypes = {
 	barbers: PropTypes.array,
-	colors: PropTypes.array,
 	currentDate: PropTypes.instanceOf(Date),
 	loadBarbers: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
 	barbers: state.meetings.barberChoiceList,
-	colors: state.data.cms.data.colors,
 	currentDate: state.meetings.calendarData.currentDate,
 })
 

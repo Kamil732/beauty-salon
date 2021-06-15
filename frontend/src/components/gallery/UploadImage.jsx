@@ -209,11 +209,11 @@ function UploadImage({ children, ...props }) {
 
 							<Button
 								success
-								center
 								type="submit"
 								style={{ marginTop: '2rem' }}
 								loading={isLoading}
 								disabled={images.length === 0}
+								className="center-item"
 							>
 								Dodaj {images.length} zdję
 								{images.length === 0 || images.length > 4
