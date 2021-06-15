@@ -88,6 +88,12 @@ $rbc-css-prefix: calendar;
 	}
 }
 
+.event-tooltip {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
 @mixin doNotWorkSlog {
 	@include color($doNotWork-bg-color);
 	color: #000;

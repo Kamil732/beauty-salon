@@ -1,0 +1,24 @@
+@mixin active-label {
+	transform: translateY(-1rem) scale(0.7);
+}
+
+.#{$prefix} {
+	& > &__label {
+		cursor: text;
+		color: inherit;
+		font-size: 1.1rem;
+		position: absolute;
+		transform-origin: top left;
+		transform: translateY(0.3rem) scale(1);
+		transition: all 0.1s ease-in-out;
+		z-index: 1;
+		opacity: 0.5;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	&:focus-within > &__label,
+	&__label.active {
+		@include active-label;
+	}
+}

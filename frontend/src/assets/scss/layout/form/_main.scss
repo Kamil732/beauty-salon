@@ -1,0 +1,22 @@
+@import '../../abstarct/variables';
+@import '../../abstarct/config';
+
+$prefix: form-control;
+
+.form-group {
+	display: flex;
+	gap: 1rem;
+	width: 100%;
+	margin: -2rem 0;
+}
+
+.#{$prefix} {
+	position: relative;
+	margin: 2rem 0;
+	width: 100%;
+}
+
+@import './checkbox';
+@import './input';
+@import './label';
+@import './textarea';

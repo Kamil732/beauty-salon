@@ -1,0 +1,38 @@
+.form-control__input {
+	&__border {
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background-color: $active-element;
+		z-index: 3;
+		transform: scaleX(0);
+		transition: transform 0.15s ease-in-out;
+	}
+
+	&:focus + &__border,
+	&__container:focus::after {
+		transform: scaleX(1);
+	}
+
+	position: relative;
+	width: 100%;
+	border: none;
+	font-size: 1rem;
+	padding: 5px 0;
+	outline: 0;
+	border-bottom: 2px solid #ccc;
+	background-color: transparent;
+	z-index: 2;
+	display: block;
+
+	&:required:invalid {
+		box-shadow: none;
+		border-color: $error-color;
+	}
+
+	&:required:valid {
+		border-color: $success-color;
+	}
+}

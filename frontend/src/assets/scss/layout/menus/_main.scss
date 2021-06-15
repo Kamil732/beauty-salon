@@ -1,3 +1,6 @@
+@import '../../abstarct/variables';
+@import '../../abstarct/config';
+
 @mixin menu {
 	overflow: auto;
 	display: flex;
