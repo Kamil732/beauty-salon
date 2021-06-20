@@ -15,14 +15,12 @@ import { Provider } from 'react-redux'
 import store from '../redux/store'
 import { loadUser } from '../redux/actions/auth'
 import { getCMSData } from '../redux/actions/data'
-import { connectMeetingWS } from '../redux/actions/meetings'
 
 function App() {
 	useEffect(() => {
 		const getDatas = async () => {
 			await store.dispatch(getCMSData())
 			await store.dispatch(loadUser())
-			await store.dispatch(connectMeetingWS())
 
 			AOS.init({
 				duration: 500,

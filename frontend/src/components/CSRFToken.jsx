@@ -9,9 +9,7 @@ class CSRFToken extends Component {
 
 	componentDidMount = async () => {
 		try {
-			await axios.get(
-				`${process.env.REACT_APP_API_URL}/accounts/csrf_cookie/`
-			)
+			await axios.get(`${process.env.REACT_APP_API_URL}/csrf_cookie/`)
 
 			this.setState({ csrftoken: Cookies.get('csrftoken') })
 		} catch (err) {

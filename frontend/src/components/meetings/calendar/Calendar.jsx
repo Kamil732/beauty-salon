@@ -14,6 +14,7 @@ import {
 	UPDATE_MEETING,
 } from '../../../redux/actions/types'
 import {
+	connectMeetingWS,
 	loadMeetings,
 	changeVisibleMeetings,
 	updateCalendarDates,
@@ -36,11 +37,12 @@ import WeekHeader from './tools/WeekHeader'
 import MonthDateHeader from './tools/MonthDateHeader'
 import ThreeDaysView from './tools/ThreeDaysView'
 import EventWrapper from './tools/EventWrapper'
+import getEventTooltip from '../../../helpers/getEventTooltip'
 
-const AddMeetingAdminForm = lazy(() => import('./AddMeetingAdminForm'))
-const AddMeetingForm = lazy(() => import('./AddMeetingForm'))
-const EditMeetingAdminForm = lazy(() => import('./EditMeetingAdminForm'))
-const EditMeetingForm = lazy(() => import('./EditMeetingForm'))
+const AddMeetingAdminForm = lazy(() => import('./forms/AddMeetingAdminForm'))
+const AddMeetingCustomerForm = lazy(() => import('./forms/AddMeetingCustomerForm'))
+const EditMeetingAdminForm = lazy(() => import('./forms/EditMeetingAdminForm'))
+const EditMeetingCustomerForm = lazy(() => import('./forms/EditMeetingCustomerForm'))
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
@@ -48,7 +50,7 @@ const localizer = momentLocalizer(moment)
 class Calendar extends Component {
 	static propTypes = {
 		isAdminPanel: PropTypes.bool,
-		isAuthenticated: PropTypes.bool,
+		userId: PropTypes.number,
 		ws: PropTypes.object,
 		loading: PropTypes.bool,
 		meetings: PropTypes.array,
@@ -67,6 +69,7 @@ class Calendar extends Component {
 		}),
 
 		changeVisibleMeetings: PropTypes.func.isRequired,
+		connectMeetingWS: PropTypes.func.isRequired,
 		loadMeetings: PropTypes.func.isRequired,
 
 		serivces: PropTypes.array,
@@ -145,9 +148,9 @@ class Calendar extends Component {
 					visibleMeetings[i].start <= date &&
 					visibleMeetings[i].end > date
 				) {
-					if (visibleMeetings[i].do_not_work)
+					if (visibleMeetings[i].blocked)
 						notWorkingHours.push(visibleMeetings[i])
-					else if (!isAdminPanel && !visibleMeetings[i].do_not_work)
+					else if (!isAdminPanel && !visibleMeetings[i].blocked)
 						eventsOnSlot.push(visibleMeetings[i])
 				}
 
@@ -384,6 +387,7 @@ class Calendar extends Component {
 	componentDidMount = () => {
 		window.addEventListener('resize', this.updateWindowDimensions)
 
+		if (this.props.ws === null) this.props.connectMeetingWS()
 		if (!this.props.loading && this.props.loadedDates.length === 0)
 			this.props.loadMeetings()
 
@@ -471,7 +475,7 @@ class Calendar extends Component {
 		data.start = start
 		data.end = end
 
-		if (data.do_not_work && data.barber === 'everyone') data.barber = ''
+		if (data.blocked && data.barber === 'everyone') data.barber = ''
 
 		if (loading) loading(true)
 
@@ -504,7 +508,7 @@ class Calendar extends Component {
 	saveMeeting = async (data, loading = null) => {
 		const { selected } = this.state
 
-		if (selected.do_not_work && data.barber === 'everyone') data.barber = ''
+		if (selected.blocked && data.barber === 'everyone') data.barber = ''
 		if (loading) loading(true)
 
 		try {
@@ -591,21 +595,18 @@ class Calendar extends Component {
 	}
 
 	eventPropGetter = (event) => {
-		const { barbers, isAdminPanel, isAuthenticated, user_phone_number } =
-			this.props
+		const { barbers, isAdminPanel, userId } = this.props
 
 		return {
-			className: `${event.do_not_work ? 'doNotWork' : ''} ${
-				isAdminPanel ||
-				(isAuthenticated &&
-					event.customer_phone_number === user_phone_number &&
-					!event.do_not_work)
+			className: `${event.blocked ? 'doNotWork' : ''} ${
+				isAdminPanel || (event.customer === userId && !event.blocked)
 					? 'selectable'
 					: ''
 			} ${
-				!event.do_not_work
-					? barbers.find((barber) => barber.value === event.barber)
-							.data.color
+				!event.blocked
+					? barbers.find(
+							(barber) => barber.id === event.services[0]?.barber
+					  ).color
 					: ''
 			}`,
 		}
@@ -614,12 +615,9 @@ class Calendar extends Component {
 	onSelecting = () => (this.props.isAdminPanel ? true : false)
 
 	onSelectEvent = (event) => {
-		if (
-			this.props.isAdminPanel ||
-			(this.props.isAuthenticated &&
-				event.customer_phone_number === this.props.user_phone_number &&
-				!event.do_not_work)
-		)
+		const { isAdminPanel, userId } = this.props
+
+		if (isAdminPanel || (event.customer === userId && !event.blocked))
 			this.openModal('event', event)
 	}
 
@@ -645,8 +643,8 @@ class Calendar extends Component {
 		const {
 			loading,
 			isAdminPanel,
-			user_phone_number,
-			isAuthenticated,
+			userId,
+
 			visibleMeetings,
 			services,
 			calendarData: {
@@ -701,33 +699,22 @@ class Calendar extends Component {
 					(view === Views.MONTH && visibleMeetings[i].allDay) ||
 					// Not MONTH and IsAdminPanel
 					(view !== Views.MONTH && isAdminPanel) ||
-					// Not MONTH is do_not_work
-					(view !== Views.MONTH && visibleMeetings[i].do_not_work) ||
+					// Not MONTH is blocked
+					(view !== Views.MONTH && visibleMeetings[i].blocked) ||
 					// Is owner of meeting
-					(visibleMeetings[i].customer_phone_number ===
-						user_phone_number &&
-						isAuthenticated)
+					visibleMeetings[i].customer === userId
 				)
 					meetings.push(visibleMeetings[i])
 			}
 		}
 		console.log(view, meetings.length, visibleMeetings.length)
 
-		const getTitle = (event) => {
-			if (event.customer_first_name) return event.customer_first_name
-
-			if (event.do_not_work)
-				return event.barber_first_name
-					? `${event.barber_first_name} NIE PRACUJE`
-					: 'ZAMKNIĘTE'
-		}
-
 		return (
 			<>
 				{Object.keys(selected).length > 0 && (
 					<Modal closeModal={() => this.setState({ selected: {} })}>
 						<Modal.Header>
-							{selected.do_not_work ? (
+							{selected.blocked ? (
 								<>
 									{moment(selected.start).format(
 										'DD/MM/YYYY'
@@ -741,8 +728,6 @@ class Calendar extends Component {
 									{moment(selected.end).format('DD/H:mm')}
 								</>
 							)}
-							<br />
-							{getTitle(selected)}
 						</Modal.Header>
 						<Modal.Body>
 							<ErrorBoundary>
@@ -765,7 +750,7 @@ class Calendar extends Component {
 										) : (
 											<AddMeetingAdminForm
 												addMeeting={this.addMeeting}
-												doNotWork={
+												isBlocked={
 													selected.slots.length > 2 ||
 													selected.start.getHours() *
 														60 +
@@ -784,13 +769,13 @@ class Calendar extends Component {
 											/>
 										)
 									) : selected.selected_type === 'event' ? (
-										<EditMeetingForm
+										<EditMeetingCustomerForm
 											saveMeeting={this.saveMeeting}
 											deleteMeeting={this.deleteMeeting}
 											selected={selected}
 										/>
 									) : (
-										<AddMeetingForm
+										<AddMeetingCustomerForm
 											addMeeting={this.addMeeting}
 										/>
 									)}
@@ -872,8 +857,10 @@ class Calendar extends Component {
 								),
 							},
 						}}
-						titleAccessor={getTitle}
-						tooltipAccessor={getTitle}
+						titleAccessor={(event) =>
+							getEventTooltip(event, services, false)
+						}
+						tooltipAccessor={null}
 						messages={{
 							month: 'Miesiąc',
 							week: 'Tydzień',
@@ -896,15 +883,14 @@ class Calendar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	isAuthenticated: state.auth.isAuthenticated,
-	user_phone_number: state.auth.data.phone_number,
+	userId: state.auth.data.profile?.id,
 	ws: state.meetings.ws,
 	loading: state.meetings.loading,
 	meetings: state.meetings.data,
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
 	calendarData: state.meetings.calendarData,
-	barbers: state.meetings.barberChoiceList,
+	barbers: state.data.barbers,
 	services: state.data.cms.data.services,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,
 	work_time: state.data.cms.data.work_time || 30,
@@ -925,6 +911,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
+	connectMeetingWS,
 	loadMeetings,
 	changeVisibleMeetings,
 	updateCalendarDates,

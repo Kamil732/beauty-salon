@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import logo from '../assets/images/logo.png'
+import { IoMdNotifications } from 'react-icons/io'
+import { GoMegaphone } from 'react-icons/go'
 
 import {
 	connectNotificationWS,
@@ -12,12 +14,9 @@ import {
 	markNotificationAsRead,
 } from '../redux/actions/data'
 
-import { default as NavigationMenu } from '../components/navigation/Menu'
-import { IoMdNotifications } from 'react-icons/io'
-import { GoMegaphone } from 'react-icons/go'
-import Dropdown from '../layout/buttons/Dropdown'
 import { CloseButton } from '../layout/buttons/Button'
-import { useEffect } from 'react'
+import Dropdown from '../layout/buttons/Dropdown'
+import { default as NavigationMenu } from '../components/navigation/Menu'
 
 function Header({
 	message,
@@ -47,7 +46,7 @@ function Header({
 	])
 
 	useEffect(() => {
-		if (isAuthenticated && !ws) connectNotificationWS()
+		if (isAuthenticated && ws === null) connectNotificationWS()
 	}, [isAuthenticated, ws, connectNotificationWS])
 
 	useEffect(() => {

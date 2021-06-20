@@ -15,11 +15,9 @@ const Home = lazy(() => import('../containers/Home'))
 const PrivacyPolicy = lazy(() => import('../containers/PrivacyPolicy'))
 const TermsOfUse = lazy(() => import('../containers/TermsOfUse'))
 const Panel = lazy(() => import('../containers/meetings/Panel'))
-const MyMeetings = lazy(() => import('../containers/meetings/MyMeetings'))
 
 class Routes extends Component {
 	static propTypes = {
-		isAdmin: PropTypes.bool,
 		loadingCMSData: PropTypes.bool,
 	}
 
@@ -66,7 +64,7 @@ class Routes extends Component {
 
 					<PrivateRoute
 						path={process.env.REACT_APP_PANEL_URL}
-						component={this.props.isAdmin ? Panel : MyMeetings}
+						component={Panel}
 					/>
 
 					<Route path="*" component={NotFound} />
@@ -77,7 +75,6 @@ class Routes extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	isAdmin: state.auth.data.is_admin,
 	loadingCMSData: state.data.cms.loading,
 })
 

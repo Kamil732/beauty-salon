@@ -116,6 +116,7 @@ function ChoiceField({
 	labelValue,
 	id,
 	getValue,
+	extraComponents,
 	...props
 }) {
 	const handleOnChange = (opt) => onChange(opt)
@@ -144,22 +145,37 @@ function ChoiceField({
 			...provided,
 			width: '100%',
 		}),
+		multiValue: (provided, _) => ({
+			...provided,
+			display: 'flex',
+			width: '100%',
+			justifyContent: 'space-between',
+			padding: '0.5rem',
+			gap: '1rem',
+			border: '1px solid #ccc',
+		}),
+		multiValueLabel: (provided, _) => ({
+			...provided,
+			flexGrow: '1',
+			display: 'inline-flex',
+		}),
 	}
 
 	const components = {
-		IndicatorSeparator: () => <></>,
-		DropdownIndicator: () => <></>,
+		IndicatorSeparator: null,
+		DropdownIndicator: null,
 		Input: SelectSearchInput,
 		SingleValue: (provided) => <SelectSingleValue {...provided} id={id} />,
+		...extraComponents,
 	}
 
 	const loadingMessage = () => 'Ładowanie...'
 
 	const noOptionsMessage = () => 'Nic nie znaleziono'
 
-	if (searchAsync)
-		return (
-			<>
+	return (
+		<>
+			{searchAsync ? (
 				<AsyncSelect
 					defaultOptions={
 						defaultOptions?.length > 0 ? defaultOptions : true
@@ -173,41 +189,30 @@ function ChoiceField({
 					onChange={handleOnChange}
 					isClearable={!isNotClearable}
 					hideSelectedOptions
-					defaultValue={value}
+					value={value}
 					{...props}
 				/>
-				{props.required && (
-					<input
-						tabIndex={-1}
-						autoComplete="off"
-						style={{ height: 0, width: 0, opacity: 0 }}
-						value={labelValue}
-						required
-					/>
-				)}
-			</>
-		)
+			) : (
+				<Select
+					options={choices}
+					noOptionsMessage={noOptionsMessage}
+					components={components}
+					styles={styles}
+					placeholder=""
+					onChange={handleOnChange}
+					isClearable={!isNotClearable}
+					value={value}
+					hideSelectedOptions
+					isLoading={choices.length === 0}
+					{...props}
+				/>
+			)}
 
-	return (
-		<>
-			<Select
-				options={choices}
-				noOptionsMessage={noOptionsMessage}
-				components={components}
-				styles={styles}
-				placeholder=""
-				onChange={handleOnChange}
-				isClearable={!isNotClearable}
-				hideSelectedOptions
-				value={value ? getValue(choices) : null}
-				isLoading={choices.length === 0}
-				{...props}
-			/>
 			{props.required && (
 				<input
 					tabIndex={-1}
 					autoComplete="off"
-					style={{ height: 0, width: 0, opacity: 0 }}
+					style={{ position: 'absolute', opacity: 0 }}
 					value={labelValue}
 					required
 				/>
@@ -229,6 +234,7 @@ ChoiceField.prototype.propTypes = {
 	).isRequired,
 	labelValue: PropTypes.string.isRequired,
 	value: PropTypes.any,
+	extraComponents: PropTypes.object,
 	getValue: PropTypes.func.isRequired,
 	onChange: PropTypes.func.isRequired,
 }

@@ -4,10 +4,8 @@ import 'react-calendar/dist/Calendar.css'
 
 import moment from 'moment'
 import { connect } from 'react-redux'
-import {
-	updateCalendarDates,
-	loadBarbers,
-} from '../../../../redux/actions/meetings'
+import { loadBarbers } from '../../../../redux/actions/data'
+import { updateCalendarDates } from '../../../../redux/actions/meetings'
 
 import ErorrBoundary from '../../../../components/ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
@@ -61,13 +59,13 @@ function CalendarMenu({
 				{barbers.map((barber, idx) => (
 					<div className="legend__item" key={idx}>
 						<span
-							className={barber.data.color}
+							className={barber.color}
 							style={{
 								width: '2rem',
 								height: '1rem',
 							}}
 						></span>
-						<span>{barber.label}</span>
+						<span>{barber.full_name}</span>
 					</div>
 				))}
 			</div>
@@ -82,7 +80,7 @@ CalendarMenu.prototype.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-	barbers: state.meetings.barberChoiceList,
+	barbers: state.data.barbers,
 	currentDate: state.meetings.calendarData.currentDate,
 })
 

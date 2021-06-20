@@ -9,8 +9,6 @@ import {
 	ADD_LOADED_DATES,
 	CHANGE_VISIBLE_MEETINGS,
 	UPDATE_MEETING,
-	LOAD_BARBERS,
-	LOAD_CUSTOMERS,
 	UPDATE_CALENDAR_DATES,
 } from '../actions/types'
 
@@ -19,8 +17,6 @@ const initialState = {
 	data: [],
 	loadedDates: [],
 	visibleData: [],
-	barberChoiceList: [],
-	customerChoiceList: [],
 	calendarData: {
 		currentDate: new Date(),
 		startOfMonth: moment().startOf('month').startOf('week').toDate(),
@@ -36,28 +32,6 @@ const initialState = {
 // eslint-disable-next-line
 export default function (state = initialState, action) {
 	switch (action.type) {
-		case LOAD_BARBERS:
-			return {
-				...state,
-				barberChoiceList: action.payload,
-			}
-		case LOAD_CUSTOMERS:
-			let newCustomers = []
-
-			for (let i = 0; i < action.payload.length; i++) {
-				const found = state.customerChoiceList.some(
-					(item) => item.value.id === action.payload[i].value.id
-				)
-				if (!found) newCustomers.push(action.payload[i])
-			}
-
-			return {
-				...state,
-				customerChoiceList: [
-					...state.customerChoiceList,
-					...newCustomers,
-				],
-			}
 		case MEETINGS_LOADING:
 			return {
 				...state,
@@ -67,7 +41,6 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				ws: action.payload,
-				loading: state.loadedDates.length > 0 ? false : state.loading,
 			}
 		case CLEAR_MEETINGS:
 			return {
@@ -86,7 +59,7 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				loadedDates: [...state.loadedDates, ...action.payload],
-				loading: state.ws ? false : true,
+				loading: false,
 			}
 		case LOAD_MEETINGS:
 			return {

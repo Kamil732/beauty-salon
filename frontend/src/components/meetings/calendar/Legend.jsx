@@ -1,14 +1,6 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
+import React from 'react'
 
-import { loadBarbers } from '../../../redux/actions/meetings'
-
-function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
-	useEffect(() => {
-		if (barbers.length === 0) loadBarbers()
-	}, [barbers, loadBarbers])
-
+function Legend() {
 	// const onSave = async (name, newValue, headers) => {
 	// 	const body = JSON.stringify({ color: newValue })
 
@@ -64,57 +56,8 @@ function Legend({ isAuthenticated, isAdmin, loadBarbers, barbers, colors }) {
 					<span>Liczba wolnych godzin</span>
 				</div>
 			</div>
-
-			{/* <div>
-				{isAuthenticated &&
-					barbers.map((barber, idx) => {
-						if (!colors[barber.value] && !isAdmin) return null
-
-						return (
-							<div className="legend__item" key={idx}>
-								<EditBox
-									name={barber.value}
-									label={`${barber.label} HEX kolor`}
-									value={colors[barber.value]}
-									onSave={onSave}
-									regexValidation={/^([0-9a-f]{6})$/i}
-									validationErrorMessage="Nie poprawny HEX kolor"
-								>
-									<span
-										style={{
-											width: '2rem',
-											height: '1rem',
-											backgroundColor: `#${
-												colors[barber.value]
-											}`,
-										}}
-									></span>
-									<span>{barber.label}</span>
-								</EditBox>
-							</div>
-						)
-					})}
-			</div> */}
 		</>
 	)
 }
 
-Legend.prototype.propTypes = {
-	isAuthenticated: PropTypes.bool,
-	isAdmin: PropTypes.bool,
-	barbers: PropTypes.array,
-	colors: PropTypes.object,
-}
-
-const mapStateToProps = (state) => ({
-	isAuthenticated: state.auth.isAuthenticated,
-	isAdmin: state.auth.data.is_admin,
-	barbers: state.meetings.barberChoiceList,
-	colors: state.data.cms.data.colors,
-})
-
-const mapDispatchToProps = {
-	loadBarbers,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Legend)
+export default Legend

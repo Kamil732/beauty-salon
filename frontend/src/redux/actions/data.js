@@ -8,12 +8,18 @@ import {
 	GET_NOTIFICATION,
 	NOTIFICATION_CONNECT_WS,
 	ADD_UNREAD_NOTIFICATIONS_AMOUNT,
+	LOAD_BARBERS,
+	LOAD_CUSTOMERS,
 } from './types'
 
 import { NotificationManager } from 'react-notifications'
 
 import getHeaders from '../../helpers/getHeaders'
 import axios from 'axios'
+import {
+	phoneNumberValidation,
+	phoneNumberValidationErrorMessage,
+} from '../../helpers/validations'
 
 export const getCMSData = () => async (dispatch) => {
 	try {
@@ -32,6 +38,60 @@ export const getCMSData = () => async (dispatch) => {
 			10 ** 6
 		)
 	}
+}
+
+export const loadBarbers = () => async (dispatch) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/accounts/barbers/`
+		)
+
+		dispatch({
+			type: LOAD_BARBERS,
+			payload: res.data,
+		})
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się załadować listy fryzjerów',
+			'Błąd',
+			4000
+		)
+	}
+}
+
+export const loadCustomers = (value) => async (dispatch, getState) => {
+	try {
+		const res = await axios.get(
+			`${process.env.REACT_APP_API_URL}/accounts/customers/?search=${value}`
+		)
+
+		dispatch({
+			type: LOAD_CUSTOMERS,
+			payload: res.data,
+		})
+
+		value = value.toLowerCase()
+
+		return getState().data.customers.filter(
+			(customer) =>
+				customer.full_name.toLowerCase().startsWith(value) ||
+				customer.fist_name.toLowerCase().startsWith(value) ||
+				customer.last_name.toLowerCase().startsWith(value)
+		)
+	} catch (err) {
+		NotificationManager.error(
+			'Nie udało się załadować listy klientów',
+			'Błąd',
+			4000
+		)
+	}
+}
+
+export const addCustomer = (data) => async (dispatch) => {
+	dispatch({
+		type: LOAD_CUSTOMERS,
+		payload: [data],
+	})
 }
 
 export const getUnreadNotificationsAmount = () => async (dispatch) => {

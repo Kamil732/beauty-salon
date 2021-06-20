@@ -7,8 +7,6 @@ import {
 	ADD_LOADED_DATES,
 	CHANGE_VISIBLE_MEETINGS,
 	UPDATE_MEETING,
-	LOAD_BARBERS,
-	LOAD_CUSTOMERS,
 	UPDATE_CALENDAR_DATES,
 } from './types'
 
@@ -154,53 +152,6 @@ export const changeVisibleMeetings = (data) => (dispatch) => {
 	})
 }
 
-export const loadBarbers = () => async (dispatch) => {
-	try {
-		const res = await axios.get(
-			`${process.env.REACT_APP_API_URL}/accounts/choice-list/barbers/`
-		)
-
-		dispatch({
-			type: LOAD_BARBERS,
-			payload: res.data,
-		})
-	} catch (err) {
-		NotificationManager.error(
-			'Nie udało się załadować listy fryzjerów',
-			'Błąd',
-			4000
-		)
-	}
-}
-
-export const loadCustomers = (value) => async (dispatch, getState) => {
-	try {
-		const res = await axios.get(
-			`${process.env.REACT_APP_API_URL}/accounts/choice-list/customers/?search=${value}`
-		)
-
-		dispatch({
-			type: LOAD_CUSTOMERS,
-			payload: res.data,
-		})
-
-		value = value.toLowerCase()
-
-		return getState().meetings.customerChoiceList.filter(
-			(customer) =>
-				customer.label.toLowerCase().startsWith(value) ||
-				customer.label.split(' ')[0].toLowerCase().startsWith(value) ||
-				customer.label.split(' ')[1].toLowerCase().startsWith(value)
-		)
-	} catch (err) {
-		NotificationManager.error(
-			'Nie udało się załadować listy klientów',
-			'Błąd',
-			4000
-		)
-	}
-}
-
 export const connectMeetingWS = () => (dispatch) => {
 	const ws = new WebSocket(`${process.env.REACT_APP_SOCKET_URL}/meetings/`)
 	let connectInterval = null
@@ -244,7 +195,6 @@ export const connectMeetingWS = () => (dispatch) => {
 	}
 
 	ws.onclose = (e) => {
-		dispatch({ type: MEETINGS_LOADING })
 		console.log(
 			`Meeting socket is closed. Reconnect will be attempted in ${Math.min(
 				10000 / 1000,
@@ -261,7 +211,6 @@ export const connectMeetingWS = () => (dispatch) => {
 	}
 
 	ws.onerror = (err) => {
-		dispatch({ type: MEETINGS_LOADING })
 		console.error(
 			'Meeting socket encountered error: ',
 			err.message,

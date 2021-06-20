@@ -6,6 +6,8 @@ import {
 	GET_NOTIFICATIONS,
 	GET_NOTIFICATIONS_ERROR,
 	GET_NOTIFICATIONS_UNREAD_AMOUNT,
+	LOAD_BARBERS,
+	LOAD_CUSTOMERS,
 	NOTIFICATIONS_LOADING,
 	NOTIFICATION_CONNECT_WS,
 	UPDATE_DATA,
@@ -26,6 +28,8 @@ const initialState = {
 		loaded: false,
 		data: [],
 	},
+	barbers: [],
+	customers: [],
 }
 
 // eslint-disable-next-line
@@ -44,13 +48,33 @@ export default function (state = initialState, action) {
 					},
 				},
 			}
+		case LOAD_BARBERS:
+			return {
+				...state,
+				barbers: action.payload,
+			}
+		case LOAD_CUSTOMERS:
+			let newCustomers = []
+
+			// Iterate over payload and check if payload[i] is in customers
+			// If it's not, then add it to state
+			for (let i = 0; i < action.payload.length; i++) {
+				const found = state.customers.some(
+					(item) => item.id === action.payload[i].id
+				)
+				if (!found) newCustomers.push(action.payload[i])
+			}
+
+			return {
+				...state,
+				customers: [...state.customers, ...newCustomers],
+			}
 		case NOTIFICATION_CONNECT_WS:
 			return {
 				...state,
 				notifications: {
 					...state.notifications,
 					ws: action.payload,
-					loading: false,
 				},
 			}
 		case CLEAR_NOTIFICATIONS:
@@ -118,7 +142,7 @@ export default function (state = initialState, action) {
 				...state,
 				notifications: {
 					...state.notifications,
-					loading: state.notifications.ws ? false : true,
+					loading: false,
 					data: action.payload,
 					loaded: true,
 				},
