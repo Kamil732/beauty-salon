@@ -14,8 +14,8 @@
 
 	width: 100%;
 	background-color: $surface-color;
-	@include box-shadow;
 	border-radius: $border-radius;
+	@include box-shadow;
 
 	& > &__title {
 		background-color: $secondary-color;

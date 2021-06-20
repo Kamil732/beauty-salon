@@ -7,7 +7,7 @@
 	align-items: center;
 	gap: 2rem;
 	flex-direction: column;
-	margin-bottom: 5rem;
+	margin-bottom: 20vh;
 
 	&__title {
 		margin-bottom: 50px;
@@ -42,7 +42,8 @@
 @include media-tablet {
 	.page-hero {
 		flex-direction: row;
-		min-height: 100vh;
+		min-height: 90vh;
+		margin-bottom: 10vh;
 
 		&.vertical {
 			justify-content: baseline;

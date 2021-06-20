@@ -5,14 +5,23 @@ $prefix: form-control;
 
 .form-group {
 	display: flex;
+	align-items: baseline;
 	gap: 1rem;
 	width: 100%;
-	margin: -2rem 0;
+	margin: -2.5rem 0;
+
+	&:first-of-type {
+		margin-top: 0;
+	}
+
+	&:last-of-type {
+		margin-bottom: 0;
+	}
 }
 
 .#{$prefix} {
 	position: relative;
-	margin: 2rem 0;
+	margin: 2.5rem 0;
 	width: 100%;
 }
 
