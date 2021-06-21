@@ -1,10 +1,10 @@
 .form-control__input {
 	&__border {
 		position: absolute;
-		bottom: -1px;
+		bottom: 0;
 		left: 0;
 		right: 0;
-		height: 4px;
+		height: 3px;
 		background-color: $active-element;
 		z-index: 3;
 		transform: scaleX(0);

@@ -8,7 +8,6 @@
 	max-height: 90vh;
 	background-color: $surface-color;
 	border-radius: $border-radius;
-	overflow: auto;
 
 	& > &__header {
 		border-radius: $border-radius $border-radius 0 0;
@@ -42,6 +41,6 @@
 
 @include media-tablet {
 	.modal {
-		min-width: 40%;
+		min-width: 50%;
 	}
 }

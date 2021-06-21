@@ -1,0 +1,45 @@
+.dropdown {
+	position: relative;
+
+	&__value {
+		position: absolute;
+		padding: 5px 0;
+	}
+
+	&__input-container {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	&-options {
+		background-color: $surface-color;
+		position: absolute;
+		border: 1px solid #ccc;
+		padding: 0.3rem 0;
+		border-radius: 6px;
+		z-index: 4;
+		max-height: 15rem;
+		overflow: auto;
+		min-width: 100%;
+		width: auto;
+		@include box-shadow;
+
+		&__option {
+			padding: 0.6rem 1rem;
+			cursor: default;
+
+			&.navigated {
+				background-color: $shadow-color;
+			}
+		}
+
+		&__text {
+			text-align: center;
+			width: 100%;
+			opacity: 0.7;
+			padding: 0.5rem 0;
+		}
+	}
+}
