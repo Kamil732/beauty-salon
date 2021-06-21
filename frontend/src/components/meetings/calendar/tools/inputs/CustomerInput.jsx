@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { useId } from 'react-id-generator'
 
 import { loadCustomers } from '../../../../../redux/actions/data'
 
 import FormGroup from '../../../../../layout/forms/FormGroup'
 import FormControl from '../../../../../layout/forms/FormControl'
 import Button from '../../../../../layout/buttons/Button'
+import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 
 function CustomerInput({
 	value,
@@ -17,33 +19,37 @@ function CustomerInput({
 	loadCustomers,
 	...props
 }) {
+	const [id] = useId('customer-')
+
 	return (
 		<FormGroup>
-			<FormControl>
-				<FormControl.Label
-					htmlFor="customer"
-					inputValue={value?.full_name}
-				>
-					Klient
-				</FormControl.Label>
+			<Dropdown.InputContainer>
+				<FormControl>
+					<FormControl.Label
+						htmlFor={id}
+						inputValue={value?.full_name}
+					>
+						Klient
+					</FormControl.Label>
 
-				<FormControl.ChoiceField
-					id="customer"
-					labelValue={value?.full_name}
-					getOptionLabel={(option) => option.full_name}
-					getOptionValue={(option) => option.id}
-					onChange={onChange}
-					value={value}
-					searchAsync
-					defaultOptions={
-						choices?.length > 0
-							? [...choices, ...customers]
-							: customers
-					}
-					choices={loadCustomers}
-					{...props}
-				/>
-			</FormControl>
+					<Dropdown
+						id={id}
+						getOptionLabel={(option) => option.full_name}
+						getOptionValue={(option) => option.id}
+						onChange={onChange}
+						value={value}
+						searchAsync
+						options={
+							choices?.length > 0
+								? [...choices, ...customers]
+								: customers
+						}
+						loadOptions={loadCustomers}
+						{...props}
+					/>
+				</FormControl>
+				<Dropdown.ClearBtn clear={() => onChange(null)} value={value} />
+			</Dropdown.InputContainer>
 			{!value?.full_name && (
 				<Button type="button" small primary onClick={changeForm}>
 					Nowy

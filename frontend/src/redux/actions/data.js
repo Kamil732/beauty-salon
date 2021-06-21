@@ -16,10 +16,6 @@ import { NotificationManager } from 'react-notifications'
 
 import getHeaders from '../../helpers/getHeaders'
 import axios from 'axios'
-import {
-	phoneNumberValidation,
-	phoneNumberValidationErrorMessage,
-} from '../../helpers/validations'
 
 export const getCMSData = () => async (dispatch) => {
 	try {
@@ -75,7 +71,7 @@ export const loadCustomers = (value) => async (dispatch, getState) => {
 		return getState().data.customers.filter(
 			(customer) =>
 				customer.full_name.toLowerCase().startsWith(value) ||
-				customer.fist_name.toLowerCase().startsWith(value) ||
+				customer.first_name.toLowerCase().startsWith(value) ||
 				customer.last_name.toLowerCase().startsWith(value)
 		)
 	} catch (err) {

@@ -13,7 +13,7 @@ import { GoMegaphone } from 'react-icons/go'
 import { logout } from '../../redux/actions/auth'
 import { NavLink } from 'react-router-dom'
 import Button from '../../layout/buttons/Button'
-import Dropdown from '../../layout/buttons/Dropdown'
+import DropdownSelect from '../../layout/buttons/dropdowns/DropdownSelect'
 import ReactTooltip from 'react-tooltip'
 
 function Menu({
@@ -87,7 +87,7 @@ function Menu({
 						)}
 						{window.innerWidth > 768 && (
 							<>
-								<Dropdown
+								<DropdownSelect
 									btnContent={
 										<IoMdNotifications
 											size={25}

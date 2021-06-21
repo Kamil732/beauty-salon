@@ -1,43 +1,46 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { useId } from 'react-id-generator'
 
 import { loadBarbers } from '../../../../../redux/actions/data'
 
 import FormControl from '../../../../../layout/forms/FormControl'
+import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 
 function BarberInput({
 	value,
-	extraChoices,
-	choices,
+	extraOptions,
+	options,
 	barbers,
 	loadBarbers,
 	onChange,
 	...props
 }) {
+	const [id] = useId('barber-')
+
+	useEffect(() => {
+		if (barbers.length === 0) loadBarbers()
+	}, [barbers, loadBarbers])
+
 	return (
 		<FormControl>
-			<FormControl.Label htmlFor="barber" inputValue={value?.full_name}>
+			<FormControl.Label htmlFor={id} inputValue={value?.full_name}>
 				Fryzjer
 			</FormControl.Label>
-
-			<FormControl.ChoiceField
-				id="barber"
+			<Dropdown
+				id={id}
 				value={value}
-				searchAsync
-				labelValue={value?.full_name}
 				getOptionLabel={(option) => option.full_name}
 				getOptionValue={(option) => option.id}
 				onChange={onChange}
-				defaultOptions={
-					extraChoices?.length > 0
-						? [...extraChoices, ...barbers]
-						: choices?.length > 0
-						? choices
+				options={
+					extraOptions?.length > 0
+						? [...extraOptions, ...barbers]
+						: options?.length > 0
+						? options
 						: barbers
 				}
-				choices={loadBarbers}
-				isNotClearable
 				{...props}
 			/>
 		</FormControl>

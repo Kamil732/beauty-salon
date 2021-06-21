@@ -5,10 +5,10 @@ import moment from 'moment'
 import { BiLeftArrowAlt } from 'react-icons/bi'
 
 import Truncate from 'react-truncate'
-import Button from './Button'
-import CircleLoader from '../loaders/CircleLoader'
+import Button from '../Button'
+import CircleLoader from '../../loaders/CircleLoader'
 
-function Dropdown({
+function DropdownSelect({
 	btnContent,
 	loading,
 	loaded,
@@ -75,16 +75,16 @@ function Dropdown({
 			</Button>
 
 			{isOpen && (
-				<div className="dropdown">
-					<div className="dropdown__inner">
-						<div className="dropdown__content">
+				<div className="dropdown-select">
+					<div className="dropdown-select__inner">
+						<div className="dropdown-select__content">
 							{loading ? (
 								<div className="center-container">
 									<CircleLoader />
 								</div>
 							) : items.length > 0 ? (
 								<div
-									className={`dropdown__list${
+									className={`dropdown-select__list${
 										selected.isOpen ? ' slide' : ''
 									}`}
 								>
@@ -105,7 +105,7 @@ function Dropdown({
 													}}
 												>
 													{item.read === false ? (
-														<div className="dropdown__header">
+														<div className="dropdown-select__header">
 															<h4>
 																<Truncate
 																	lines={1}
@@ -143,9 +143,9 @@ function Dropdown({
 										))}
 									</ul>
 
-									<div className="dropdown__selected">
+									<div className="dropdown-select__selected">
 										<div
-											className="dropdown__header"
+											className="dropdown-select__header"
 											style={{ marginBottom: '1rem' }}
 										>
 											<Button
@@ -187,7 +187,7 @@ function Dropdown({
 	)
 }
 
-Dropdown.prototype.propTypes = {
+DropdownSelect.prototype.propTypes = {
 	btnContent: PropTypes.any,
 	loading: PropTypes.bool,
 	loaded: PropTypes.bool,
@@ -207,4 +207,4 @@ Dropdown.prototype.propTypes = {
 	noItemsContent: PropTypes.instanceOf(Element).isRequired,
 }
 
-export default Dropdown
+export default DropdownSelect

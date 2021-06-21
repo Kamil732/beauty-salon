@@ -15,7 +15,7 @@ import {
 } from '../redux/actions/data'
 
 import { CloseButton } from '../layout/buttons/Button'
-import Dropdown from '../layout/buttons/Dropdown'
+import DropdownSelect from '../layout/buttons/dropdowns/DropdownSelect'
 import { default as NavigationMenu } from '../components/navigation/Menu'
 
 function Header({
@@ -73,7 +73,7 @@ function Header({
 					</Link>
 
 					{window.innerWidth <= 768 && isAuthenticated && (
-						<Dropdown
+						<DropdownSelect
 							btnContent={<IoMdNotifications size={25} />}
 							rounded
 							loading={notificationLoading}
