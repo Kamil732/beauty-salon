@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
 import { useId } from 'react-id-generator'
 
@@ -19,6 +20,7 @@ function Dropdown({
 	getOptionLabel,
 	getOptionValue,
 	formatOptionLabel,
+	setShowInput,
 	...props
 }) {
 	const [isOpen, setIsOpen] = useState(false)
@@ -41,15 +43,18 @@ function Dropdown({
 
 	useEffect(() => {
 		const handleClickOutside = (e) => {
-			if (container.current && !container.current.contains(e.target))
+			if (container.current && !container.current.contains(e.target)) {
 				setIsOpen(false)
+
+				if (isMulti && value.length > 0) setShowInput(false)
+			}
 		}
 
 		document.addEventListener('mousedown', handleClickOutside)
 
 		return () =>
 			document.removeEventListener('mousedown', handleClickOutside)
-	}, [isOpen])
+	}, [isOpen, isMulti, value, setShowInput])
 
 	useEffect(() => {
 		if (searchAsync) {
@@ -123,6 +128,8 @@ function Dropdown({
 				break
 			case 9: // TAB
 				setIsOpen(false)
+
+				if (isMulti && value.length > 0) setShowInput(false)
 				break
 			default:
 				break
@@ -140,11 +147,12 @@ function Dropdown({
 				<div className="dropdown__value">{getOptionLabel(value)}</div>
 			)}
 
-			<div className="dropdown__input-container" on>
+			<div className="dropdown__input-container">
 				<FormControl.Input
 					required={required && !value}
 					onBlur={() => setInputValue('')}
 					onClick={() => setIsOpen(true)}
+					onInput={() => setIsOpen(true)}
 					value={inputValue}
 					onChange={(e) => setInputValue(e.target.value)}
 					{...props}
@@ -166,7 +174,7 @@ function Dropdown({
 										if (navigatedIndex !== index)
 											setNavigatedIndex(index)
 									}}
-									key={index}
+									key={getOptionValue(option)}
 								>
 									{formatOptionLabel
 										? formatOptionLabel(option)
@@ -187,6 +195,21 @@ function Dropdown({
 			)}
 		</div>
 	)
+}
+
+Dropdown.prototype.propTypes = {
+	required: PropTypes.bool,
+	searchAsync: PropTypes.bool,
+	loadOptions: PropTypes.func,
+	isMulti: PropTypes.bool,
+	addOptionBtnText: PropTypes.string,
+	options: PropTypes.array,
+	value: PropTypes.oneOfType(PropTypes.object, PropTypes.array),
+	onChange: PropTypes.func.isRequired,
+	getOptionLabel: PropTypes.func,
+	getOptionValue: PropTypes.func,
+	formatOptionLabel: PropTypes.func,
+	setShowInput: PropTypes.func,
 }
 
 function ClearBtn({ clear, value, ...props }) {
@@ -214,6 +237,11 @@ function ClearBtn({ clear, value, ...props }) {
 			/>
 		</>
 	)
+}
+
+ClearBtn.prototype.propTypes = {
+	clear: PropTypes.func.isRequired,
+	value: PropTypes.oneOfType(PropTypes.object, PropTypes.array),
 }
 
 function InputContainer({ children, ...props }) {

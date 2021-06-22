@@ -1,107 +1,188 @@
-import React, { lazy, Suspense, useState } from 'react'
+import React, { lazy, Suspense, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { useId } from 'react-id-generator'
 
-import { components } from 'react-select'
+import { FiTrash2 } from 'react-icons/fi'
+
 import FormControl from '../../../../../layout/forms/FormControl'
+import Button from '../../../../../layout/buttons/Button'
+import Modal from '../../../../../layout/Modal'
 import ErrorBoundary from '../../../../ErrorBoundary'
+import ReactTooltip from 'react-tooltip'
+import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 
 const BarberInput = lazy(() => import('./BarberInput'))
 
-const MultiValueLabel = ({
-	children,
-	values,
-	barbers,
-	data,
-	onChange,
-	...props
-}) => {
-	console.log(values)
-
-	return (
-		<components.MultiValueLabel {...props}>
-			<ErrorBoundary>
-				<Suspense fallback={'Ładowanie...'}>
-					<BarberInput
-						value={values.find((value) => value.idx === data.id)?.value || {}}
-						onChange={(options) => onChange(options, data.id)}
-						choices={data.barbers.map((barberId) =>
-							barbers.find((barber) => barber.id === barberId)
-						)} // Get barbers related to service
-					/>
-				</Suspense>
-			</ErrorBoundary>
-
-			{children}
-		</components.MultiValueLabel>
-	)
-}
-
 function ServicesInput({
 	value,
-	barberValues,
-	choices,
+	// barberValues,
 	services,
 	barbers,
 	onChange,
 	onChangeBarberInput,
+	removeValue,
 	...props
 }) {
+	const [selected, setSelected] = useState({})
+	const [showInput, setShowInput] = useState(true)
+	const [dropdownId] = useId(1, 'service-')
+	const [multiListId] = useId(1, 'multiList-')
+
+	useEffect(() => {
+		if (value.length === 0 && !showInput) setShowInput(true)
+	}, [value, showInput])
+
+	const formatOptionLabel = ({ name, display_time, price }) => (
+		<div
+			style={{
+				display: 'flex',
+				justifyContent: 'space-between',
+				alignItems: 'baseline',
+				flexGrow: '1',
+			}}
+		>
+			<span>
+				{name}
+				&nbsp;
+				<span className="text-broken">{display_time}</span>
+			</span>
+			<span className="text-broken">{price} zł</span>
+		</div>
+	)
+
+	const input = (
+		<Dropdown
+			id={dropdownId}
+			onChange={(option) => {
+				onChange(option)
+				setShowInput(false)
+			}}
+			autoFocus={value.length > 0}
+			value={value}
+			options={services}
+			addOptionBtnText="kolejna usługa"
+			getOptionLabel={(option) => option.name}
+			getOptionValue={(option) => option.id}
+			formatOptionLabel={formatOptionLabel}
+			isMulti
+			setShowInput={(state) => setShowInput(state)}
+			{...props}
+		/>
+	)
+
 	return (
-		<FormControl>
-			<FormControl.Label htmlFor="services" inputValue={value[0]?.name}>
-				Usługi
-			</FormControl.Label>
-			<FormControl.ChoiceField
-				id="services"
-				onChange={onChange}
-				value={value}
-				labelValue={value[0]?.name}
-				choices={
-					choices?.length > 0 ? [...choices, ...services] : services
-				}
-				getOptionLabel={(option) => option.name}
-				getOptionValue={(option) => option.id}
-				formatOptionLabel={({ name, display_time, price }) => (
-					<div
-						style={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							alignItems: 'baseline',
-							flexGrow: '1',
-						}}
-					>
-						<span>
-							{name}
-							&nbsp;
-							<span className="text-broken">{display_time}</span>
-						</span>
-						<span className="text-broken">{price} zł</span>
+		<>
+			{Object.keys(selected).length > 0 && (
+				<Modal closeModal={() => setSelected({})}>
+					<Modal.Body>
+						<ErrorBoundary>
+							<Suspense fallback={'Ładowanie...'}>
+								<BarberInput
+									value={value}
+									onChange={onChangeBarberInput}
+									options={selected.barbers.map((barberId) =>
+										barbers.find(
+											(barber) => barber.id === barberId
+										)
+									)} // Get barbers related to service
+								/>
+							</Suspense>
+						</ErrorBoundary>
+					</Modal.Body>
+				</Modal>
+			)}
+
+			{value.length > 0 && (
+				<div className="multi-list__container">
+					<FormControl.Label htmlFor={multiListId} inputValue>
+						Usługi
+					</FormControl.Label>
+					<div className="multi-list" id={multiListId}>
+						{value.map((option) => (
+							<div className="multi-list__item" key={option.id}>
+								{formatOptionLabel(option)}
+
+								<Button
+									type="button"
+									primary
+									small
+									onClick={() => setSelected(option)}
+								>
+									{option.full_name}
+								</Button>
+								<Button
+									type="button"
+									rounded
+									onClick={() => removeValue(option)}
+									data-tip="Usuń usługę"
+									data-for={`removeValueTip-${option.id}`}
+								>
+									<FiTrash2 size="20" />
+								</Button>
+
+								<ReactTooltip
+									id={`removeValueTip-${option.id}`}
+									effect="solid"
+									place="right"
+									delayShow={250}
+								/>
+							</div>
+						))}
 					</div>
-				)}
-				isMulti
-				extraComponents={{
-					MultiValueLabel: (provided) => (
-						<MultiValueLabel
-							{...provided}
-							barbers={barbers}
-							values={barberValues}
-							onChange={onChangeBarberInput}
-						/>
-					),
-				}}
-				{...props}
-			/>
-		</FormControl>
+				</div>
+			)}
+			{showInput ? (
+				value.length > 0 ? (
+					input
+				) : (
+					<FormControl>
+						<FormControl.Label htmlFor={dropdownId}>
+							Usługi
+						</FormControl.Label>
+
+						{input}
+					</FormControl>
+				)
+			) : (
+				<div className="space-between">
+					{value.length !== services.length && (
+						<Button
+							secondary
+							small
+							onClick={() => setShowInput(true)}
+						>
+							Kolejna usługa
+						</Button>
+					)}
+					{value.length > 0 && (
+						<div style={{ marginLeft: 'auto' }}>
+							Łącznie:{' '}
+							<b>
+								{value
+									.reduce(
+										(n, { price }) =>
+											parseFloat(n) + parseFloat(price),
+										0
+									)
+									.toFixed(2)}{' '}
+								zł
+							</b>
+						</div>
+					)}
+				</div>
+			)}
+		</>
 	)
 }
 
 ServicesInput.prototype.propTypes = {
 	value: PropTypes.any.isRequired,
-	choices: PropTypes.array,
+	barbersValue: PropTypes.any.isRequired,
 	services: PropTypes.array,
 	barbers: PropTypes.array,
 	onChange: PropTypes.func.isRequired,
+	onChangeBarberInput: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({

@@ -13,7 +13,7 @@ import CircleLoader from '../../../../layout/loaders/CircleLoader'
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
 
-class EditMeetingForm extends Component {
+class EditMeetingCustomerForm extends Component {
 	static propTypes = {
 		selected: PropTypes.object.isRequired,
 		saveMeeting: PropTypes.func.isRequired,
@@ -32,12 +32,12 @@ class EditMeetingForm extends Component {
 			barber: props.barberChoiceList.find(
 				(barber) => barber.id === props.selected.barber
 			),
-			barbers: props.selected.services.map((service) => ({
-				idx: service.id,
-				value: props.barberChoiceList.find(
-					(barber) => barber.id === service.barber
-				),
-			})),
+			// barbers: props.selected.services.map((service) => ({
+			// 	idx: service.id,
+			// 	value: props.barberChoiceList.find(
+			// 		(barber) => barber.id === service.barber
+			// 	),
+			// })),
 			services: props.selected.services.map((service) =>
 				props.servicesData.find(
 					(_service) => _service.id === service.id
@@ -45,14 +45,8 @@ class EditMeetingForm extends Component {
 			),
 		}
 
-		this.onChangeSelect = this.onChangeSelect.bind(this)
 		this.onSubmit = this.onSubmit.bind(this)
 	}
-
-	onChangeSelect = (options, name) =>
-		this.setState({
-			[name]: options,
-		})
 
 	onSubmit = async (e) => {
 		e.preventDefault()
@@ -75,40 +69,44 @@ class EditMeetingForm extends Component {
 		if (this.props.barberChoiceList.length === 0) this.props.loadBarbers()
 	}
 
-	componentDidUpdate(_, prevState) {
-		if (prevState.services.length !== this.state.services.length) {
-			// Deleted service
-			if (prevState.services.length > this.state.services.length) {
-				const deletedServicesIds = prevState.services
-					.filter((service) => !this.state.services.includes(service))
-					.map((service) => service.id)
+	// componentDidUpdate(_, prevState) {
+	// 	if (prevState.services.length !== this.state.services.length) {
+	// 		// Deleted service
+	// 		if (prevState.services.length > this.state.services.length) {
+	// 			const deletedServicesIds = prevState.services
+	// 				.filter((service) => !this.state.services.includes(service))
+	// 				.map((service) => service.id)
 
-				// Filter barbers without deleted ones
-				const newBarbers = this.state.barbers.filter(
-					(barber) => !deletedServicesIds.includes(barber.idx)
-				)
+	// 			// Filter barbers without deleted ones
+	// 			const newBarbers = this.state.barbers.filter(
+	// 				(barber) => !deletedServicesIds.includes(barber.idx)
+	// 			)
 
-				this.setState({ barbers: [...newBarbers] })
-			}
-			// Add service
-			else
-				this.setState((state) => ({
-					barbers: [
-						...state.barbers,
-						{
-							// set idx as last service id for item so it can be detected
-							idx: state.services[state.services.length - 1].id,
-							value: {},
-						},
-					],
-				}))
-		}
-	}
+	// 			this.setState({ barbers: [...newBarbers] })
+	// 		}
+	// 		// Add service
+	// 		else {
+	// 			const newService =
+	// 				this.state.services[this.state.services.length - 1]
+
+	// 			this.setState((state) => ({
+	// 				barbers: [
+	// 					...state.barbers,
+	// 					{
+	// 						idx: newService.id, // set idx as last service id for item so it can be detected
+	// 						value: this.props.barberChoiceList.find(
+	// 							(barber) => barber.id === newService.barbers[0]
+	// 						),
+	// 					},
+	// 				],
+	// 			}))
+	// 		}
+	// 	}
+	// }
 
 	render() {
 		const { selected } = this.props
-		const { saveLoading, deleteLoading, barber, barbers, services } =
-			this.state
+		const { saveLoading, deleteLoading, barber, services } = this.state
 
 		return (
 			<ErrorBoundary>
@@ -119,30 +117,38 @@ class EditMeetingForm extends Component {
 						<BarberInput
 							required={!selected.blocked}
 							value={barber}
-							onChange={(options) =>
-								this.onChangeSelect(options, 'barber')
+							onChange={(option) =>
+								this.setState({ barber: option })
 							}
 						/>
 
 						<ServicesInput
 							required={!selected.blocked}
 							value={services}
-							barberValues={barbers}
-							onChange={(options) =>
-								this.onChangeSelect(options, 'services')
+							onChange={(option) =>
+								this.setState({
+									services: [...services, option],
+								})
 							}
-							onChangeBarberInput={(options, idx) =>
-								this.setState((state) => ({
-									barbers: state.barbers.map((barber) => {
-										if (barber.idx !== idx) return barber
+							removeValue={(option) =>
+								this.setState({
+									services: services.filter(
+										(service) => service.id !== option.id
+									),
+								})
+							}
+							// onChangeBarberInput={(options, idx) =>
+							// 	this.setState((state) => ({
+							// 		barbers: state.barbers.map((barber) => {
+							// 			if (barber.idx !== idx) return barber
 
-										return {
-											...barber,
-											value: options,
-										}
-									}),
-								}))
-							}
+							// 			return {
+							// 				...barber,
+							// 				value: options,
+							// 			}
+							// 		}),
+							// 	}))
+							// }
 						/>
 
 						<ButtonContainer
@@ -194,4 +200,7 @@ const mapDispatchToProps = {
 	loadBarbers,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditMeetingForm)
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(EditMeetingCustomerForm)

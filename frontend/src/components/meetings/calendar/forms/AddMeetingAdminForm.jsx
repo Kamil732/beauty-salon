@@ -8,7 +8,7 @@ import Button from '../../../../layout/buttons/Button'
 import CSRFToken from '../../../CSRFToken'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
-import FormGroup from '../../../../layout/forms/FormGroup'
+import { connect } from 'react-redux'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -17,6 +17,7 @@ const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
 
 class AddMeetingAdminForm extends Component {
 	static propTypes = {
+		barberChoiceList: PropTypes.array.isRequired,
 		addMeeting: PropTypes.func.isRequired,
 		isBlocked: PropTypes.bool,
 	}
@@ -31,13 +32,12 @@ class AddMeetingAdminForm extends Component {
 			blocked: props.isBlocked,
 			customer: null,
 			barber: null,
-			barbers: [],
+			// barbers: [],
 			services: [],
 			description: '',
 		}
 
 		this.onChange = this.onChange.bind(this)
-		this.onChangeSelect = this.onChangeSelect.bind(this)
 		this.onSubmit = this.onSubmit.bind(this)
 	}
 
@@ -45,33 +45,40 @@ class AddMeetingAdminForm extends Component {
 		if (prevState.blocked !== this.state.blocked && prevState.blocked)
 			this.setState({ barber: null })
 
-		if (prevState.services.length !== this.state.services.length) {
-			// Deleted service
-			if (prevState.services.length > this.state.services.length) {
-				const deletedServicesIds = prevState.services
-					.filter((service) => !this.state.services.includes(service))
-					.map((service) => service.id)
+		// if (prevState.services.length !== this.state.services.length) {
+		// 	// Deleted service
+		// 	if (prevState.services.length > this.state.services.length) {
+		// 		const deletedServicesIds = prevState.services
+		// 			.filter((service) => !this.state.services.includes(service))
+		// 			.map((service) => service.id)
 
-				// Filter barbers without deleted ones
-				const newBarbers = this.state.barbers.filter(
-					(barber) => !deletedServicesIds.includes(barber.idx)
-				)
+		// 		// Filter barbers without deleted ones
+		// 		const newBarbers = this.state.barbers.filter(
+		// 			(barber) => !deletedServicesIds.includes(barber.idx)
+		// 		)
 
-				this.setState({ barbers: [...newBarbers] })
-			}
-			// Add service
-			else
-				this.setState((state) => ({
-					barbers: [
-						...state.barbers,
-						{
-							// set idx as last service id for item so it can be detected
-							idx: state.services[state.services.length - 1].id,
-							value: {},
-						},
-					],
-				}))
-		}
+		// 		this.setState({ barbers: [...newBarbers] })
+		// 	}
+		// 	// Add service
+		// 	else {
+		// 		const newService =
+		// 			this.state.services[this.state.services.length - 1]
+
+		// 		this.setState((state) => ({
+		// 			barbers: [
+		// 				...state.barbers,
+		// 				{
+		// 					idx: newService.id, // set idx as last service id for item so it can be detected
+		// 					value:
+		// 						this.props.barberChoiceList.find(
+		// 							(barber) =>
+		// 								barber.id === newService.barbers[0]
+		// 						) || null,
+		// 				},
+		// 			],
+		// 		}))
+		// 	}
+		// }
 	}
 
 	onSubmit = async (e) => {
@@ -98,11 +105,6 @@ class AddMeetingAdminForm extends Component {
 		this.setState({ [e.target.name]: value })
 	}
 
-	onChangeSelect = (options, name) =>
-		this.setState({
-			[name]: options,
-		})
-
 	render() {
 		const {
 			loading,
@@ -110,7 +112,7 @@ class AddMeetingAdminForm extends Component {
 			blocked,
 			customer,
 			barber,
-			barbers,
+
 			services,
 			description,
 		} = this.state
@@ -168,62 +170,66 @@ class AddMeetingAdminForm extends Component {
 										display: blocked ? 'none' : 'block',
 									}}
 								>
-									<FormGroup>
-										<CustomerInput
+									<CustomerInput
+										required={!blocked}
+										value={customer}
+										onChange={(option) =>
+											this.setState({ customer: option })
+										}
+										changeForm={() =>
+											this.setState({
+												isAddCustomerForm: true,
+											})
+										}
+									/>
+
+									{services.length === 0 && (
+										<BarberInput
 											required={!blocked}
-											value={customer}
-											onChange={(options) =>
-												this.onChangeSelect(
-													options,
-													'customer'
-												)
-											}
-											changeForm={() =>
+											value={barber}
+											onChange={(option) =>
 												this.setState({
-													isAddCustomerForm: true,
+													barber: option,
 												})
 											}
 										/>
-
-										{services.length === 0 && (
-											<BarberInput
-												required={!blocked}
-												value={barber}
-												onChange={(options) =>
-													this.onChangeSelect(
-														options,
-														'barber'
-													)
-												}
-											/>
-										)}
-									</FormGroup>
+									)}
 
 									<ServicesInput
 										required={!blocked}
 										value={services}
-										barberValues={barbers}
-										onChange={(options) =>
-											this.onChangeSelect(
-												options,
-												'services'
-											)
+										// barberValues={barbers}
+										onChange={(option) =>
+											this.setState({
+												services: [...services, option],
+											})
 										}
-										onChangeBarberInput={(options, idx) =>
-											this.setState((state) => ({
-												barbers: state.barbers.map(
-													(barber) => {
-														if (barber.idx !== idx)
-															return barber
+										// onChangeBarberInput={(option) => {
 
-														return {
-															...barber,
-															value: options,
-														}
-													}
+										// }}
+										removeValue={(option) =>
+											this.setState({
+												services: services.filter(
+													(service) =>
+														service.id !== option.id
 												),
-											}))
+											})
 										}
+										// onChangeBarberInput={(options, idx) =>
+										// 	this.setState((state) => ({
+										// 		barbers: state.barbers.map(
+										// 			(barber) => {
+										// 				if (barber.idx !== idx)
+										// 					return barber
+
+										// 				return {
+										// 					...barber,
+										// 					value: options,
+										// 				}
+										// 			}
+										// 		),
+										// 	}))
+										// }
 									/>
 								</div>
 							</>
@@ -233,8 +239,8 @@ class AddMeetingAdminForm extends Component {
 							<BarberInput
 								required={blocked}
 								value={barber}
-								onChange={(options) =>
-									this.onChangeSelect(options, 'barber')
+								onChange={(option) =>
+									this.setState({ barber: option })
 								}
 								extraChoices={[
 									{
@@ -277,4 +283,8 @@ class AddMeetingAdminForm extends Component {
 	}
 }
 
-export default AddMeetingAdminForm
+const mapStateToProps = (state) => ({
+	barberChoiceList: state.data.barbers,
+})
+
+export default connect(mapStateToProps, null)(AddMeetingAdminForm)
