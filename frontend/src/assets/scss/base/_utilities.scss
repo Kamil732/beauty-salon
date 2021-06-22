@@ -10,6 +10,12 @@
 	margin: auto;
 }
 
+.space-between {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
 .text-broken {
 	font-size: 0.8em;
 	opacity: 0.6;

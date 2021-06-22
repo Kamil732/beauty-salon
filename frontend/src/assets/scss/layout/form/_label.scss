@@ -3,7 +3,7 @@
 }
 
 .#{$prefix} {
-	& > &__label {
+	&__label {
 		cursor: text;
 		color: inherit;
 		font-size: 1.1rem;

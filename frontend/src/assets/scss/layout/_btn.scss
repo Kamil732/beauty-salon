@@ -39,7 +39,8 @@
 	cursor: pointer;
 	width: fit-content;
 	text-align: center;
-	transition: background-color 0.1s ease-in, border-color 0.1s ease-in;
+	transition: background-color 0.1s ease-in, border-color 0.1s ease-in,
+		border-radius 0.1s ease-in;
 	font-size: 1.1rem;
 
 	&__small {
@@ -75,7 +76,8 @@
 		background-color: $primary-color;
 		color: set-text-color($primary-color);
 
-		&:hover {
+		&:hover,
+		&:focus {
 			border-color: $primary-color-hover;
 			border-bottom-color: $primary-color;
 			background-color: $primary-color-hover;
@@ -87,7 +89,8 @@
 		background-color: $secondary-color;
 		color: set-text-color($secondary-color);
 
-		&:hover {
+		&:hover,
+		&:focus {
 			border-color: transparent;
 			border-bottom-color: grey;
 			background-color: transparent;
@@ -100,7 +103,8 @@
 		background-color: $success-color;
 		color: set-text-color($success-color);
 
-		&:hover {
+		&:hover,
+		&:focus {
 			$hover-color: darken($success-color, 15%);
 			border-color: $hover-color;
 			border-bottom-color: $success-color;
@@ -114,7 +118,8 @@
 		background-color: $error-color;
 		color: set-text-color($error-color);
 
-		&:hover {
+		&:hover,
+		&:focus {
 			$hover-color: darken($error-color, 15%);
 			border-color: $hover-color;
 			border-bottom-color: $error-color;

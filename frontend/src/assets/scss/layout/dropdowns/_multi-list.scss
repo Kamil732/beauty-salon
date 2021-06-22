@@ -1,0 +1,25 @@
+.multi-list {
+	&__container {
+		margin: 2.5rem 0 1rem 0;
+		width: 100%;
+		font-size: 0.9em;
+	}
+
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	background-color: $secondary-color;
+
+	&__item {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: nowrap;
+		padding: 0.2rem 0.5rem;
+		border-bottom: 1px solid #ccc;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+}
