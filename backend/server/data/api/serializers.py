@@ -12,7 +12,6 @@ class ServiceBarberSerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     group = serializers.StringRelatedField(read_only=True)
-    barbers = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     display_time = serializers.SerializerMethodField('get_display_time')
 
     def get_display_time(self, obj):

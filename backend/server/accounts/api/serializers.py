@@ -6,26 +6,32 @@ from accounts.models import Account, Barber, CustomerImage, Customer
 from data.api.serializers import ServiceBarberSerializer
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+    # account = AccountSerializer()
+    full_name = serializers.ReadOnlyField(source='get_full_name')
+
+    class Meta:
+        model = Customer
+        # fields = '__all__'
+        exclude = ('account',)
+
+
 class AccountSerializer(serializers.ModelSerializer):
+    # Return profile
+    profile = CustomerSerializer()
+
     class Meta:
         model = Account
         exclude = ('password', 'is_superuser', 'is_staff',)
 
 
-class CustomerSerializer(serializers.ModelSerializer):
-    account = AccountSerializer()
-
-    class Meta:
-        model = Customer
-        fields = '__all__'
-
-
 class BarberSerializer(serializers.ModelSerializer):
     services_data = ServiceBarberSerializer(source='service_barber_data', many=True)
+    full_name = serializers.ReadOnlyField(source='get_full_name')
 
     class Meta:
         model = Barber
-        fields = ('first_name', 'last_name', 'color', 'services_data',)
+        fields = '__all__'
 
 
 class RegisterSerializer(serializers.ModelSerializer):

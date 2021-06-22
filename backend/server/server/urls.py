@@ -4,10 +4,13 @@ from django.conf.urls.static import static
 from django.urls import path, re_path, include
 from django.views.generic import TemplateView
 
+from . import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include([
+        path('csrf_cookie/', views.GetCSRFToken.as_view(), name='set-csrf-cookie'),
         path('accounts/', include('accounts.api.urls')),
         path('meetings/', include('meetings.api.urls')),
         path('data/', include('data.api.urls')),

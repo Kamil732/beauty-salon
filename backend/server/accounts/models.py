@@ -114,6 +114,9 @@ class Barber(models.Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
 
 class CustomerImage(models.Model):
     image = models.ImageField(upload_to='customer_images/%Y/%m/%d/')

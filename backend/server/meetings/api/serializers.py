@@ -1,5 +1,4 @@
-from datetime import date, datetime, timedelta
-from typing import SupportsRound
+from datetime import datetime, timedelta
 from django.utils import timezone
 
 from channels.layers import get_channel_layer
@@ -8,16 +7,30 @@ from rest_framework import serializers
 
 
 from server.utilities import get_working_hours
-from meetings.models import Meeting
-from accounts.models import Account, Barber
-from data.models import Data, Service, Notification
+from meetings.models import Meeting, ServiceData
+from accounts.models import Account, Customer, Barber
+from data.models import Data, Notification
+
+
+class ServiceDataSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='service.id')
+
+    class Meta:
+        model = ServiceData
+        fields = ('barber', 'id')
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    barber = serializers.SlugRelatedField(queryset=Barber.objects.all(), slug_field='slug')
+    barber = serializers.PrimaryKeyRelatedField(queryset=Barber.objects.all())
     barber_first_name = serializers.ReadOnlyField(source='barber.first_name')
     barber_last_name = serializers.ReadOnlyField(source='barber.last_name')
-    services = serializers.PrimaryKeyRelatedField(queryset=Service.objects.all(), many=True)
+    # services = serializers.PrimaryKeyRelatedField(
+    #     queryset=Service.objects.all(), many=True, allow_null=True, required=False)
+    services = ServiceDataSerializer(source='services_data', many=True)
+    blocked = serializers.SerializerMethodField('get_blocked')
+
+    def get_blocked(self, obj):
+        return not(obj.customer) and not(obj.services.exists())
 
     def validate(self, data, pass_cached_data=False):
         # Cannot create meeting WHEN it's not between 2 slots, but maybe in the middle of them []
@@ -78,7 +91,8 @@ class MeetingSerializer(serializers.ModelSerializer):
             'start',
             'end',
             'services',
-            'confirmed'
+            'confirmed',
+            'blocked',
         )
         read_only_fields = ('id',)
 
@@ -148,16 +162,17 @@ class CustomerMeetingSerializer(MeetingSerializer):
 
         return instance
 
-    class Meta(MeetingSerializer.Meta):
-        fields = (
-            *MeetingSerializer.Meta.fields,
-            'customer_id',
-        )
+    def to_representation(self, instance):
+        data = super(CustomerMeetingSerializer, self).to_representation(instance)
+        data['customer'] = instance.customer_id
+
+        return data
 
 
 class AdminMeetingSerializer(MeetingSerializer):
-    customer = serializers.SlugRelatedField(queryset=Account.objects.filter(
-        is_admin=False), slug_field='slug', allow_null=True)
+    customer = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all(), allow_null=True)
+    customer_first_name = serializers.ReadOnlyField(source='customer.first_name')
+    customer_last_name = serializers.ReadOnlyField(source='customer.last_name')
 
     def validate(self, data):
         data = super(AdminMeetingSerializer, self).validate(data, True)
@@ -252,5 +267,7 @@ class AdminMeetingSerializer(MeetingSerializer):
     class Meta(MeetingSerializer.Meta):
         fields = (
             *MeetingSerializer.Meta.fields,
+            'customer_first_name',
+            'customer_last_name',
             'description',
         )

@@ -46,7 +46,7 @@ class MeetingListAPIView(generics.ListCreateAPIView):
 
         if user.is_authenticated and not(user.is_admin):
             for i in range(len(data)):
-                if data[i]['customer_id'] == user.id:
+                if data[i]['customer'] == user.profile.id:
                     data[i] = serializers.AdminMeetingSerializer(Meeting.objects.get(id=data[i]['id']), many=False).data
 
         return Response(data)

@@ -1,14 +1,13 @@
 from django.db.models import Q
 from django.db.models import Value as V
 from django.db.models.functions import Concat
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib import auth
-from rest_framework import views
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, generics, status, viewsets, mixins
+from rest_framework import permissions, generics, status, mixins
 from rest_framework.exceptions import ValidationError
 
 from . import serializers
@@ -23,12 +22,6 @@ class CurrentAccountAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-
-
-@method_decorator(ensure_csrf_cookie, name='dispatch')
-class GetCSRFToken(APIView):
-    def get(self, request, format=None):
-        return Response({'success': 'CSRF cookie set'})
 
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -119,37 +112,18 @@ class CustomerImageDetailAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMix
         return self.destroy(request, *args, **kwargs)
 
 
-class CustomerListAPIView(APIView):
-    permission_classes = (IsAdmin,)
+class CustomerListAPIView(generics.ListCreateAPIView):
+    # permission_classes = (IsAdmin,)
+    serializer_class = serializers.CustomerSerializer
 
-    def get(self, request, *args, **kwargs):
-        search_field = request.query_params.get('search', '')
+    def get_queryset(self):
+        search_field = self.request.query_params.get('search', '')
 
-        customers = Customer.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
+        return Customer.objects.annotate(full_name=Concat('first_name', V(' '), 'last_name')).filter(Q(full_name__istartswith=search_field) | Q(
             first_name__istartswith=search_field) | Q(last_name__istartswith=search_field))[:10]
 
-        res = [
-            {
-                'label': customer.get_full_name(),
-                'value': serializers.CustomerSerializer(customer).data,
-            }
-            for customer in customers
-        ]
 
-        return Response(res)
-
-
-class BarberListAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        barbers = Barber.objects.prefetch_related('service_barber_data')
-
-        res = [
-            {
-                'label': f"{barber.first_name} {barber.last_name}",
-                'value': barber.slug,
-                'data': serializers.BarberSerializer(barber).data,
-            }
-            for barber in barbers
-        ]
-
-        return Response(res)
+class BarberListAPIView(generics.ListCreateAPIView):
+    # permission_classes = (IsAdminOrReadOnly,)
+    serializer_class = serializers.BarberSerializer
+    queryset = Barber.objects.prefetch_related('service_barber_data')
