@@ -19,7 +19,7 @@ function CustomerInput({
 	loadCustomers,
 	...props
 }) {
-	const [id] = useId('customer-')
+	const [id] = useId(1, 'customer-')
 
 	return (
 		<FormGroup>

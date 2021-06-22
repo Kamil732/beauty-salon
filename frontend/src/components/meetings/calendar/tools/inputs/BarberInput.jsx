@@ -17,7 +17,7 @@ function BarberInput({
 	onChange,
 	...props
 }) {
-	const [id] = useId('barber-')
+	const [id] = useId(1, 'barber-')
 
 	useEffect(() => {
 		if (barbers.length === 0) loadBarbers()

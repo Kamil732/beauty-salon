@@ -15,6 +15,7 @@ import ButtonContainer from '../buttons/ButtonContainer'
 import CSRFToken from '../../components/CSRFToken'
 import FormControl from './FormControl'
 import ReactTooltip from 'react-tooltip'
+import { useId } from 'react-id-generator'
 
 function EditBox({
 	dispatch,
@@ -32,6 +33,7 @@ function EditBox({
 	const [loading, setLoading] = useState(false)
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [newValue, setNewValue] = useState(value)
+	const [tipId] = useId(1, 'editbox-')
 
 	if (!isAdmin) return children
 
@@ -159,14 +161,14 @@ function EditBox({
 					rounded
 					onClick={() => setIsEditMode(true)}
 					data-tip="Edytuj"
-					data-for={`${name}Tip`}
+					data-for={tipId}
 				>
 					<FaRegEdit />
 				</Button>
 				<ReactTooltip
 					type="dark"
 					place="right"
-					id={`${name}Tip`}
+					id={tipId}
 					effect="solid"
 				/>
 			</div>

@@ -15,9 +15,12 @@ function ServicesMenu({ serviceGroups }) {
 			value={group.id}
 			activeValue={activeItem}
 			onChange={() => setActiveItem(group.id)}
-			key={group.id}
 		>
-			{group.subgroups.map((_group) => getServiceGroup(_group))}
+			{group.subgroups.map((_group) => (
+				<React.Fragment key={group.id}>
+					{getServiceGroup(_group)}
+				</React.Fragment>
+			))}
 		</RootMenu>
 	)
 
@@ -37,7 +40,11 @@ function ServicesMenu({ serviceGroups }) {
 			activeValue={activeItem}
 			onChange={() => setActiveItem(null)}
 		>
-			{serviceGroups.map((group) => getServiceGroup(group))}
+			{serviceGroups.map((group) => (
+				<React.Fragment key={group.id}>
+					{getServiceGroup(group)}
+				</React.Fragment>
+			))}
 		</RootMenu>
 	)
 }

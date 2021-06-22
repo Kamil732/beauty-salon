@@ -56,8 +56,8 @@ function CalendarMenu({
 			<div className="tools-menu__item">
 				<h4 className="tools-menu__item__title">Pracownicy:</h4>
 
-				{barbers.map((barber, idx) => (
-					<div className="legend__item" key={idx}>
+				{barbers.map((barber) => (
+					<div className="legend__item" key={barber.id}>
 						<span
 							className={barber.color}
 							style={{

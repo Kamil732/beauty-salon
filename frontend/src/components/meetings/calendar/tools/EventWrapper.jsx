@@ -7,11 +7,11 @@ import getEventTooltip from '../../../../helpers/getEventTooltip'
 function EventWrapper({ event, children, services }) {
 	return (
 		<>
-			<div data-tip="wef" data-for={`${event.id}Tip`}>
+			<div data-tip data-for={`eventTip-${event.id}`}>
 				{children}
 			</div>
 			<ReactTooltip
-				id={`${event.id}Tip`}
+				id={`eventTip-${event.id}`}
 				place="right"
 				type="light"
 				borderColor="grey"
