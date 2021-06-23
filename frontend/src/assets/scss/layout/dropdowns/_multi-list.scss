@@ -1,6 +1,6 @@
 .multi-list {
 	&__container {
-		margin: 2.5rem 0 1rem 0;
+		margin-bottom: 1rem;
 		width: 100%;
 		font-size: 0.9em;
 	}
@@ -10,6 +10,7 @@
 	background-color: $secondary-color;
 
 	&__item {
+		position: relative;
 		width: 100%;
 		display: flex;
 		align-items: center;

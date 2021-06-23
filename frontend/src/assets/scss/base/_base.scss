@@ -16,7 +16,7 @@ body {
 	overflow-x: hidden;
 	position: relative;
 
-	background: url(../images/bg.jpg), linear-gradient(transparent, transparent);
+	background: url(../images/bg.jpg);
 	background-repeat: no-repeat;
 	background-size: 100% auto;
 
@@ -80,8 +80,12 @@ a {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	opacity: 0.5;
-	background-color: #000;
+	overflow: auto;
+	background-color: rgba(#000000, 0.3);
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 1rem;
 }
 
 .header {
