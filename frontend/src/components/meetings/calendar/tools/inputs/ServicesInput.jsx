@@ -72,9 +72,9 @@ function ServicesInput({
 	)
 
 	return (
-		<>
+		<FormControl>
 			{Object.keys(selected).length > 0 && (
-				<Modal closeModal={() => setSelected({})}>
+				<Modal closeModal={() => setSelected({})} isChild>
 					<Modal.Body>
 						<ErrorBoundary>
 							<Suspense fallback={'Ładowanie...'}>
@@ -136,13 +136,13 @@ function ServicesInput({
 				value.length > 0 ? (
 					input
 				) : (
-					<FormControl>
+					<>
 						<FormControl.Label htmlFor={dropdownId}>
 							Usługi
 						</FormControl.Label>
 
 						{input}
-					</FormControl>
+					</>
 				)
 			) : (
 				<div className="space-between">
@@ -172,7 +172,7 @@ function ServicesInput({
 					)}
 				</div>
 			)}
-		</>
+		</FormControl>
 	)
 }
 

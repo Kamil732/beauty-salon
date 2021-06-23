@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { CloseButton } from '../../layout/buttons/Button'
 
+import { useId } from 'react-id-generator'
+
+import ReactTooltip from 'react-tooltip'
+import { CloseButton } from '../../layout/buttons/Button'
 import BrickLoader from '../../layout/loaders/BrickLoader'
 
 function ImageList({ loading, images }) {
 	const [zoom, setZoom] = useState(null)
+	const [closeBtnTipId] = useId(1, 'closeBtnTip-')
 
 	useEffect(() => {
 		document.querySelector('body').style.overflowY =
@@ -20,6 +24,14 @@ function ImageList({ loading, images }) {
 							<CloseButton
 								trCorner
 								onClick={() => setZoom(null)}
+								data-tip="Wróć do galeri"
+								data-for={closeBtnTipId}
+							/>
+							<ReactTooltip
+								id={closeBtnTipId}
+								place="left"
+								effect="solid"
+								delayShow={250}
 							/>
 
 							<img

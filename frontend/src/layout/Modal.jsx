@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { CloseButton } from './buttons/Button'
 
-function Modal({ children, closeModal, ...props }) {
+function Modal({ children, isOpen, closeModal, isChild, ...props }) {
+	const modalRef = useRef(null)
+
 	useEffect(() => {
 		const body = document.querySelector('body')
 		body.style.overflowY = 'hidden'
@@ -11,16 +13,34 @@ function Modal({ children, closeModal, ...props }) {
 		return () => (body.style.overflowY = 'auto')
 	}, [])
 
-	return ReactDOM.createPortal(
-		<>
-			<div className="dark-bg" onClick={closeModal}></div>
-			<div className="modal" {...props}>
+	useEffect(() => {
+		const handleClickOutside = (e) => {
+			if (modalRef.current && !modalRef.current.contains(e.target))
+				closeModal()
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+
+		return () =>
+			document.removeEventListener('mousedown', handleClickOutside)
+	}, [closeModal])
+
+	const modal = (
+		<div className="dark-bg">
+			<div
+				className={`modal${!isOpen ? ' close' : ''}`}
+				{...props}
+				ref={modalRef}
+			>
 				<CloseButton trCorner onClick={closeModal} />
 				{children}
 			</div>
-		</>,
-		document.getElementById('root')
+		</div>
 	)
+
+	if (isChild) return modal
+
+	return ReactDOM.createPortal(modal, document.querySelector('body'))
 }
 
 function Header(props) {
@@ -32,6 +52,8 @@ function Body(props) {
 }
 
 Modal.prototype.propTypes = {
+	isOpen: PropTypes.bool,
+	isChild: PropTypes.bool,
 	closeModal: PropTypes.func.isRequired,
 }
 

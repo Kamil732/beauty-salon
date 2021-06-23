@@ -40,9 +40,13 @@ import EventWrapper from './tools/EventWrapper'
 import getEventTooltip from '../../../helpers/getEventTooltip'
 
 const AddMeetingAdminForm = lazy(() => import('./forms/AddMeetingAdminForm'))
-const AddMeetingCustomerForm = lazy(() => import('./forms/AddMeetingCustomerForm'))
+const AddMeetingCustomerForm = lazy(() =>
+	import('./forms/AddMeetingCustomerForm')
+)
 const EditMeetingAdminForm = lazy(() => import('./forms/EditMeetingAdminForm'))
-const EditMeetingCustomerForm = lazy(() => import('./forms/EditMeetingCustomerForm'))
+const EditMeetingCustomerForm = lazy(() =>
+	import('./forms/EditMeetingCustomerForm')
+)
 
 moment.locale('PL')
 const localizer = momentLocalizer(moment)
