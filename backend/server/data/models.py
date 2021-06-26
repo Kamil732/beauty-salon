@@ -1,6 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from server.abstract.models import Group, Color
 from accounts.models import Account
 from meetings.models import Meeting
 
@@ -49,20 +50,8 @@ class Data(models.Model):
         return Data.objects.filter(id=self.id).exists()
 
 
-class ServiceGroup(models.Model):
-    name = models.CharField(max_length=30, unique=True)
+class ServiceGroup(Group):
     barbers = models.ManyToManyField('accounts.Barber', related_name='service_groups')
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
-
-    def __str__(self):
-        full_path = [self.name]
-        k = self.parent
-
-        while k is not None:
-            full_path.append(k.name)
-            k = k.parent
-
-        return ' -> '.join(full_path[::-1])
 
 
 class Service(models.Model):
@@ -87,6 +76,11 @@ class Service(models.Model):
         return f'{self.name} - {self.price} zł'
 
 
+class ServiceResources(models.Model):
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='resources_data')
+    resources = models.ManyToManyField('Resource', related_name='service_data')
+
+
 class ServiceImage(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='service_images/%Y/%m/%d/')
@@ -99,6 +93,19 @@ class ServiceBarber(models.Model):
 
     def __str__(self):
         return f'{self.barber} - {self.service}'
+
+
+class ResourceGroup(Group):
+    pass
+
+
+class Resource(Color):
+    name = models.CharField(max_length=30)
+    group = models.ForeignKey(ResourceGroup, on_delete=models.CASCADE, blank=True, null=True, related_name='resources')
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Notification(models.Model):

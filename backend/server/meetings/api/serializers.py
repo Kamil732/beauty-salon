@@ -91,6 +91,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             'start',
             'end',
             'services',
+            'resources',
             'confirmed',
             'blocked',
         )

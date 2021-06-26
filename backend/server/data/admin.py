@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline
 
-from .models import Data, Notification, Service, ServiceGroup, ServiceBarber, ServiceImage
+from .models import Data, Notification, Resource, ResourceGroup, ServiceResources, Service, ServiceGroup, ServiceBarber, ServiceImage
 
 
 @admin.register(Data)
@@ -33,6 +33,21 @@ class ServiceAdmin(ModelAdmin):
 
 @admin.register(ServiceBarber)
 class ServiceBarberAdmin(ModelAdmin):
+    readonly_fields = ('id',)
+
+
+@admin.register(ResourceGroup)
+class ResourceGroupAdmin(ModelAdmin):
+    readonly_fields = ('id',)
+
+
+@admin.register(Resource)
+class ResourceAdmin(ModelAdmin):
+    readonly_fields = ('id',)
+
+
+@admin.register(ServiceResources)
+class ServiceResourcesAdmin(ModelAdmin):
     readonly_fields = ('id',)
 
 

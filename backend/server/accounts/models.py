@@ -3,6 +3,7 @@ from django.db.models.fields.related import OneToOneField
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+from server.abstract.models import Color
 from autoslug import AutoSlugField
 
 
@@ -92,23 +93,10 @@ class Customer(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
-class Barber(models.Model):
-    COLORS = (
-        ('black', 'Czarny'),
-        ('light-blue', 'Jasny niebieski'),
-        ('blue', 'Niebieski'),
-        ('light-green', 'Jasny Zielony'),
-        ('green', 'Zielony'),
-        ('pink', 'Różowy'),
-        ('purple', 'Fioletowy'),
-        ('brown', 'Brązowy'),
-        ('yellow', 'Żółty'),
-        ('orange', 'Pomarańczowy'),
-    )
+class Barber(Color):
 
     first_name = models.CharField(verbose_name='Imię', max_length=20)
     last_name = models.CharField(verbose_name='Nazwisko', max_length=20)
-    color = models.CharField(max_length=15, choices=COLORS, default=COLORS[0][1])
     slug = AutoSlugField(populate_from='first_name', unique=True)
 
     def __str__(self):

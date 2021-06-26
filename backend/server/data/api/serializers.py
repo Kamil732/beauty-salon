@@ -1,18 +1,51 @@
+from django.db import models
 from rest_framework import serializers
 
-from accounts.models import Barber
-from data.models import Data, Service, ServiceGroup, ServiceBarber, Notification
+from server.abstract.serializers import Subgroups
+from data.models import Data, Service, ServiceGroup, ServiceBarber, Notification, Resource, ResourceGroup, ServiceResources
+
+
+class ResourceGroupSerializer(Subgroups):
+    class Meta(Subgroups.Meta):
+        model = ResourceGroup
+
+
+class ResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        fields = '__all__'
+
+
+class ServiceResourcesSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        return data['resources']
+
+    class Meta:
+        model = ServiceResources
+        fields = ('resources',)
 
 
 class ServiceBarberSerializer(serializers.ModelSerializer):
+    display_time = serializers.SerializerMethodField('get_display_time')
+
+    def get_display_time(self, obj):
+        hours = obj.time // 60
+        minutes = obj.time % 60
+
+        if hours:
+            return f'{hours}h {minutes}min'
+        return f'{minutes} min'
+
     class Meta:
         model = ServiceBarber
-        fields = ('time', 'service',)
+        fields = ('display_time', 'time', 'service',)
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    group = serializers.StringRelatedField(read_only=True)
     display_time = serializers.SerializerMethodField('get_display_time')
+    resources = ServiceResourcesSerializer(source='resources_data', many=True)
 
     def get_display_time(self, obj):
         hours = obj.time // 60
@@ -36,21 +69,18 @@ class ServiceSerializerCustomer(ServiceSerializer):
         exclude = ('private_description', 'choosen_times',)
 
 
-class ServiceGroupSerializer(serializers.ModelSerializer):
+class ServiceGroupSerializer(Subgroups):
     services = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    subgroups = serializers.SerializerMethodField('get_subgroups')
 
-    def get_subgroups(self, obj):
-        return ServiceGroupSerializer(ServiceGroup.objects.filter(parent=obj.id), many=True).data
-
-    class Meta:
+    class Meta(Subgroups.Meta):
         model = ServiceGroup
-        exclude = ('parent',)
 
 
 class DataSerializer(serializers.ModelSerializer):
     service_groups = serializers.SerializerMethodField('get_service_groups')
     services = serializers.SerializerMethodField('get_services')
+    resource_groups = serializers.SerializerMethodField('get_resource_groups')
+    resources = serializers.SerializerMethodField('get_resources')
 
     def get_services(self, obj):
         user = self.context.get('request').user
@@ -60,6 +90,12 @@ class DataSerializer(serializers.ModelSerializer):
 
     def get_service_groups(self, obj):
         return ServiceGroupSerializer(ServiceGroup.objects.filter(parent=None), many=True).data
+
+    def get_resources(self, obj):
+        return ResourceSerializer(Resource.objects.all(), many=True).data
+
+    def get_resource_groups(self, obj):
+        return ResourceGroupSerializer(ResourceGroup.objects.filter(parent=None), many=True).data
 
     def to_internal_value(self, data):
         if 'start_work_sunday' in data and not(data['start_work_sunday']):
