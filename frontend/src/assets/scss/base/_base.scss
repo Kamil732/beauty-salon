@@ -59,8 +59,8 @@ a {
 
 .badge {
 	position: absolute;
-	top: 2px;
-	right: 4px;
+	top: -4px;
+	right: -6px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -71,6 +71,11 @@ a {
 	font-weight: 700;
 	font-size: 12px;
 	border-radius: 30px;
+
+	&.rounded {
+		top: 0;
+		right: 0;
+	}
 }
 
 .dark-bg {

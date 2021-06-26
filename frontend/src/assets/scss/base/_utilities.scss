@@ -10,6 +10,10 @@
 	margin: auto;
 }
 
+.word-break-all {
+	white-space: pre;
+}
+
 .space-between {
 	display: flex;
 	justify-content: space-between;

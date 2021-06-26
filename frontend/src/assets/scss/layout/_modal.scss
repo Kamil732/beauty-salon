@@ -20,24 +20,17 @@
 		padding: 2rem;
 	}
 
-	animation: show 0.25s;
+	animation: show 0.4s;
 }
 
 @keyframes show {
 	from {
-		transform: scale(0) translateY(-100vh);
+		opacity: 0;
+		transform: translateY(-25%);
 	}
 	to {
-		transform: scale(1) translateY(0);
-	}
-}
-
-@keyframes close {
-	from {
-		transform: scale(1) translateY(0);
-	}
-	to {
-		transform: scale(0) translateY(-100vh);
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
 
