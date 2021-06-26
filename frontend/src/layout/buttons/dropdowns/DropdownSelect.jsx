@@ -66,10 +66,8 @@ function DropdownSelect({
 			>
 				{btnContent}
 				{unReadItems > 0 && (
-					<div className="badge">
-						<div>
-							<div>{unReadItems}</div>
-						</div>
+					<div className="badge rounded">
+						<div>{unReadItems}</div>
 					</div>
 				)}
 			</Button>

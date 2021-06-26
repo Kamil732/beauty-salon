@@ -18,6 +18,8 @@ function Button({
 	className,
 	...props
 }) {
+	className = className ? className : ''
+
 	if (to) {
 		return (
 			<Link

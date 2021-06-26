@@ -61,7 +61,7 @@ function ServicesPricing({ serviceGroups, services, barbers }) {
 	)
 
 	const getService = (service, showDetailBtn = true) => (
-		<CollapseMenu.Item>
+		<CollapseMenu.Item key={service.id}>
 			<div>
 				<h5>
 					{service.name}
@@ -156,11 +156,7 @@ function ServicesPricing({ serviceGroups, services, barbers }) {
 
 			{services
 				.filter((service) => !service.group)
-				.map((service) => (
-					<React.Fragment key={service.id}>
-						{getService(service)}
-					</React.Fragment>
-				))}
+				.map((service) => getService(service))}
 
 			{serviceGroups.map((group) => getServiceGroup(group))}
 		</>

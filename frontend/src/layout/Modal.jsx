@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { CloseButton } from './buttons/Button'
 
-function Modal({ children, isOpen, closeModal, isChild, ...props }) {
+function Modal({ children, closeModal, isChild, ...props }) {
 	const modalRef = useRef(null)
 
 	useEffect(() => {
@@ -27,11 +27,7 @@ function Modal({ children, isOpen, closeModal, isChild, ...props }) {
 
 	const modal = (
 		<div className="dark-bg">
-			<div
-				className={`modal${!isOpen ? ' close' : ''}`}
-				{...props}
-				ref={modalRef}
-			>
+			<div className="modal" {...props} ref={modalRef}>
 				<CloseButton trCorner onClick={closeModal} />
 				{children}
 			</div>
@@ -52,7 +48,6 @@ function Body(props) {
 }
 
 Modal.prototype.propTypes = {
-	isOpen: PropTypes.bool,
 	isChild: PropTypes.bool,
 	closeModal: PropTypes.func.isRequired,
 }
