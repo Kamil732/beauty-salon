@@ -8,7 +8,7 @@ import Button from '../../../../layout/buttons/Button'
 import CSRFToken from '../../../CSRFToken'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
-import { connect } from 'react-redux'
+import moment from 'moment'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -17,9 +17,10 @@ const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
 
 class AddMeetingAdminForm extends Component {
 	static propTypes = {
-		barberChoiceList: PropTypes.array.isRequired,
-		addMeeting: PropTypes.func.isRequired,
 		isBlocked: PropTypes.bool,
+		startDate: PropTypes.instanceOf(Date),
+		addMeeting: PropTypes.func.isRequired,
+		changeEndDate: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
@@ -32,7 +33,6 @@ class AddMeetingAdminForm extends Component {
 			blocked: props.isBlocked,
 			customer: null,
 			barber: null,
-			// barbers: [],
 			services: [],
 			description: '',
 		}
@@ -44,41 +44,24 @@ class AddMeetingAdminForm extends Component {
 	componentDidUpdate(_, prevState) {
 		if (prevState.blocked !== this.state.blocked && prevState.blocked)
 			this.setState({ barber: null })
+		if (prevState.services.length !== this.state.services.length) {
+			this.props.changeEndDate(
+				moment(this.props.startDate).add(
+					this.state.services.reduce(
+						(prev, { barber, value: { id, time } }) => {
+							time =
+								barber?.services_data.find(
+									({ service }) => service === id
+								)?.time || time
 
-		// if (prevState.services.length !== this.state.services.length) {
-		// 	// Deleted service
-		// 	if (prevState.services.length > this.state.services.length) {
-		// 		const deletedServicesIds = prevState.services
-		// 			.filter((service) => !this.state.services.includes(service))
-		// 			.map((service) => service.id)
-
-		// 		// Filter barbers without deleted ones
-		// 		const newBarbers = this.state.barbers.filter(
-		// 			(barber) => !deletedServicesIds.includes(barber.idx)
-		// 		)
-
-		// 		this.setState({ barbers: [...newBarbers] })
-		// 	}
-		// 	// Add service
-		// 	else {
-		// 		const newService =
-		// 			this.state.services[this.state.services.length - 1]
-
-		// 		this.setState((state) => ({
-		// 			barbers: [
-		// 				...state.barbers,
-		// 				{
-		// 					idx: newService.id, // set idx as last service id for item so it can be detected
-		// 					value:
-		// 						this.props.barberChoiceList.find(
-		// 							(barber) =>
-		// 								barber.id === newService.barbers[0]
-		// 						) || null,
-		// 				},
-		// 			],
-		// 		}))
-		// 	}
-		// }
+							return prev + time
+						},
+						15
+					),
+					'minutes'
+				)
+			)
+		}
 	}
 
 	onSubmit = async (e) => {
@@ -196,40 +179,12 @@ class AddMeetingAdminForm extends Component {
 									)}
 
 									<ServicesInput
+										isAdminPanel
 										required={!blocked}
 										value={services}
-										// barberValues={barbers}
-										onChange={(option) =>
-											this.setState({
-												services: [...services, option],
-											})
+										updateState={(state) =>
+											this.setState({ services: state })
 										}
-										// onChangeBarberInput={(option) => {
-
-										// }}
-										removeValue={(option) =>
-											this.setState({
-												services: services.filter(
-													(service) =>
-														service.id !== option.id
-												),
-											})
-										}
-										// onChangeBarberInput={(options, idx) =>
-										// 	this.setState((state) => ({
-										// 		barbers: state.barbers.map(
-										// 			(barber) => {
-										// 				if (barber.idx !== idx)
-										// 					return barber
-
-										// 				return {
-										// 					...barber,
-										// 					value: options,
-										// 				}
-										// 			}
-										// 		),
-										// 	}))
-										// }
 									/>
 								</div>
 							</>
@@ -283,8 +238,4 @@ class AddMeetingAdminForm extends Component {
 	}
 }
 
-const mapStateToProps = (state) => ({
-	barberChoiceList: state.data.barbers,
-})
-
-export default connect(mapStateToProps, null)(AddMeetingAdminForm)
+export default AddMeetingAdminForm

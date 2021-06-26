@@ -12,7 +12,7 @@ import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 
 function CustomerInput({
 	value,
-	choices,
+	options,
 	customers,
 	onChange,
 	changeForm,
@@ -35,15 +35,12 @@ function CustomerInput({
 					<Dropdown
 						id={id}
 						getOptionLabel={(option) => option.full_name}
-						getOptionValue={(option) => option.id}
+						getOptionValue={(option) => option}
+						getOptionUnique={(option) => option.id}
 						onChange={onChange}
 						value={value}
 						searchAsync
-						options={
-							choices?.length > 0
-								? [...choices, ...customers]
-								: customers
-						}
+						options={options?.length > 0 ? options : customers}
 						loadOptions={loadCustomers}
 						{...props}
 					/>
@@ -61,7 +58,7 @@ function CustomerInput({
 
 CustomerInput.prototype.propTypes = {
 	value: PropTypes.any.isRequired,
-	choices: PropTypes.array,
+	options: PropTypes.array,
 	customers: PropTypes.array,
 	loadCustomers: PropTypes.func.isRequired,
 	onChange: PropTypes.func.isRequired,

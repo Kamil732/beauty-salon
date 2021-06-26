@@ -718,7 +718,11 @@ class Calendar extends Component {
 				{Object.keys(selected).length > 0 && (
 					<Modal closeModal={() => this.setState({ selected: {} })}>
 						<Modal.Header>
-							{selected.blocked ? (
+							{moment(selected.end).diff(
+								moment(selected.start),
+								'days'
+							) > 0 ||
+							parseInt(moment(selected.end).hours()) === 0 ? (
 								<>
 									{moment(selected.start).format(
 										'DD/MM/YYYY'
@@ -769,6 +773,15 @@ class Calendar extends Component {
 													).length >=
 														this.props
 															.one_slot_max_meetings
+												}
+												startDate={selected.start}
+												changeEndDate={(date) =>
+													this.setState({
+														selected: {
+															...selected,
+															end: date,
+														},
+													})
 												}
 											/>
 										)

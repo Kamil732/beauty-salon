@@ -41,12 +41,6 @@ class EditMeetingAdminForm extends Component {
 			barber: props.barberChoiceList.find(
 				(barber) => barber.id === props.selected.barber
 			),
-			// barbers: props.selected.services.map((service) => ({
-			// 	idx: service.id,
-			// 	value: props.barberChoiceList.find(
-			// 		(barber) => barber.id === service.barber
-			// 	),
-			// })),
 			services: props.selected.services.map((service) =>
 				props.servicesData.find(
 					(_service) => _service.id === service.id
@@ -91,39 +85,6 @@ class EditMeetingAdminForm extends Component {
 					(customer) => customer.id === this.props.selected.customer
 				),
 			})
-
-		// if (prevState.services.length !== this.state.services.length) {
-		// 	// Deleted service
-		// 	if (prevState.services.length > this.state.services.length) {
-		// 		const deletedServicesIds = prevState.services
-		// 			.filter((service) => !this.state.services.includes(service))
-		// 			.map((service) => service.id)
-
-		// 		// Filter barbers without deleted ones
-		// 		const newBarbers = this.state.barbers.filter(
-		// 			(barber) => !deletedServicesIds.includes(barber.idx)
-		// 		)
-
-		// 		this.setState({ barbers: [...newBarbers] })
-		// 	}
-		// 	// Add service
-		// 	else {
-		// 		const newService =
-		// 			this.state.services[this.state.services.length - 1]
-
-		// 		this.setState((state) => ({
-		// 			barbers: [
-		// 				...state.barbers,
-		// 				{
-		// 					idx: newService.id, // set idx as last service id for item so it can be detected
-		// 					value: this.props.barberChoiceList.find(
-		// 						(barber) => barber.id === newService.barbers[0]
-		// 					),
-		// 				},
-		// 			],
-		// 		}))
-		// 	}
-		// }
 	}
 
 	render() {
@@ -224,11 +185,21 @@ class EditMeetingAdminForm extends Component {
 								<ServicesInput
 									required={!selected.blocked}
 									value={services}
-									onChange={(option) =>
+									onChange={(option) => {
+										option = {
+											value: option,
+											barber:
+												this.props.barberChoiceList.find(
+													(barber) =>
+														barber.id ===
+														option.barbers[0]
+												) || null,
+										}
+
 										this.setState({
 											services: [...services, option],
 										})
-									}
+									}}
 									removeValue={(option) =>
 										this.setState({
 											services: services.filter(
@@ -237,21 +208,24 @@ class EditMeetingAdminForm extends Component {
 											),
 										})
 									}
-									// onChangeBarberInput={(options, idx) =>
-									// 	this.setState((state) => ({
-									// 		barbers: state.barbers.map(
-									// 			(barber) => {
-									// 				if (barber.idx !== idx)
-									// 					return barber
+									onChangeBarberInput={(option, serviceId) =>
+										this.setState({
+											services: services.map(
+												(service) => {
+													if (
+														service.value.id !==
+														serviceId
+													)
+														return service
 
-									// 				return {
-									// 					...barber,
-									// 					value: options,
-									// 				}
-									// 			}
-									// 		),
-									// 	}))
-									// }
+													return {
+														...service,
+														barber: option,
+													}
+												}
+											),
+										})
+									}
 								/>
 							</>
 						)}

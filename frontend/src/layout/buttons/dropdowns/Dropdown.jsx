@@ -13,12 +13,12 @@ function Dropdown({
 	searchAsync,
 	loadOptions,
 	isMulti,
-	addOptionBtnText,
 	options,
 	value,
 	onChange,
 	getOptionLabel,
 	getOptionValue,
+	getOptionUnique,
 	formatOptionLabel,
 	setShowInput,
 	...props
@@ -32,11 +32,23 @@ function Dropdown({
 	const container = useRef(null)
 
 	const isNotSelected = useCallback(
-		(option) =>
-			(isMulti &&
-				!JSON.stringify(value).includes(JSON.stringify(option))) ||
-			(!isMulti && JSON.stringify(value) !== JSON.stringify(option)),
-		[isMulti, value]
+		(option) => {
+			const _value = !isMulti
+				? getOptionValue(value)
+				: value.map((option) => getOptionValue(option))
+
+			return (
+				(isMulti &&
+					!JSON.stringify(_value).includes(JSON.stringify(option))) ||
+				(!isMulti && JSON.stringify(_value) !== JSON.stringify(option))
+			)
+		},
+		[isMulti, value, getOptionValue]
+	)
+
+	const searchOptions = useCallback(
+		(value) => value.toLowerCase().includes(inputValue.toLowerCase()),
+		[inputValue]
 	)
 
 	useEffect(() => setLoading(options.length === 0), [options])
@@ -54,29 +66,28 @@ function Dropdown({
 
 		return () =>
 			document.removeEventListener('mousedown', handleClickOutside)
-	}, [isOpen, isMulti, value, setShowInput])
+	}, [isMulti, value, setShowInput])
 
-	useEffect(() => {
-		if (searchAsync) {
-			const asyncLoadOptions = async () => {
-				try {
-					setLoading(true)
+	// useEffect(() => {
+	// 	if (searchAsync) {
+	// 		const asyncLoadOptions = async () => {
+	// 			try {
+	// 				setLoading(true)
 
-					const filteredOptions = await loadOptions(inputValue)
-					setFilteredOptions(
-						filteredOptions.filter((option) =>
-							isNotSelected(option)
-						)
-					)
-				} finally {
-					setLoading(false)
-				}
-			}
+	// 				const filteredOptions = await loadOptions(inputValue)
+	// 				setFilteredOptions(
+	// 					filteredOptions.filter((option) =>
+	// 						isNotSelected(option)
+	// 					)
+	// 				)
+	// 			} finally {
+	// 				setLoading(false)
+	// 			}
+	// 		}
 
-			asyncLoadOptions()
-			return
-		}
-	}, [searchAsync, inputValue, isNotSelected, loadOptions])
+	// 		asyncLoadOptions()
+	// 	}
+	// }, [searchAsync, inputValue, isNotSelected, loadOptions])
 
 	useEffect(() => {
 		if (!searchAsync)
@@ -84,14 +95,15 @@ function Dropdown({
 				options.filter(
 					(option) =>
 						isNotSelected(option) &&
-						getOptionLabel(option)
-							.toLowerCase()
-							.includes(inputValue.toLowerCase())
+						searchOptions(getOptionLabel(option))
 				)
 			)
-	}, [inputValue, options, getOptionLabel, isNotSelected, searchAsync])
+	}, [options, getOptionLabel, isNotSelected, searchOptions, searchAsync])
 
-	useEffect(() => setNavigatedIndex(0), [filteredOptions])
+	// useEffect(() => {
+	// 	console.log('5')
+	// 	setNavigatedIndex(0)
+	// }, [filteredOptions])
 
 	const handleOnChange = (option) => {
 		setInputValue('')
@@ -144,7 +156,9 @@ function Dropdown({
 			onKeyDown={handleKeyDown}
 		>
 			{!isMulti && value && inputValue === '' && (
-				<div className="dropdown__value">{getOptionLabel(value)}</div>
+				<div className="dropdown__value">
+					{getOptionLabel(getOptionValue(value))}
+				</div>
 			)}
 
 			<div className="dropdown__input-container">
@@ -174,7 +188,7 @@ function Dropdown({
 										if (navigatedIndex !== index)
 											setNavigatedIndex(index)
 									}}
-									key={getOptionValue(option)}
+									key={getOptionUnique(option)}
 								>
 									{formatOptionLabel
 										? formatOptionLabel(option)
@@ -202,12 +216,12 @@ Dropdown.prototype.propTypes = {
 	searchAsync: PropTypes.bool,
 	loadOptions: PropTypes.func,
 	isMulti: PropTypes.bool,
-	addOptionBtnText: PropTypes.string,
 	options: PropTypes.array,
 	value: PropTypes.oneOfType(PropTypes.object, PropTypes.array),
 	onChange: PropTypes.func.isRequired,
 	getOptionLabel: PropTypes.func,
 	getOptionValue: PropTypes.func,
+	getOptionUnique: PropTypes.func,
 	formatOptionLabel: PropTypes.func,
 	setShowInput: PropTypes.func,
 }
