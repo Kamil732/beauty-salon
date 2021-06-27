@@ -81,40 +81,6 @@ function ServicesInput({
 		)
 	}
 
-	const input = (
-		<Dropdown
-			id={dropdownId}
-			onChange={(option) => {
-				const newOption = {
-					value: option,
-					barber:
-						barbers.find(
-							(barber) => barber.id === option.barbers[0]
-						) || null,
-					resources: [],
-					// option.resources.map((resourceData) =>
-					// 	resources.find(
-					// 		(_resource) => _resource.id === resourceId
-					// 	)
-					// )
-				}
-
-				updateState([...value, newOption])
-				setShowInput(false)
-			}}
-			autoFocus={value.length > 0}
-			value={value}
-			options={services}
-			getOptionLabel={(option) => option.name}
-			getOptionValue={(option) => option.value}
-			getOptionUnique={(option) => option.id}
-			formatOptionLabel={formatOptionLabel}
-			isMulti
-			setShowInput={(state) => setShowInput(state)}
-			{...props}
-		/>
-	)
-
 	return (
 		<FormControl>
 			{Object.keys(selected).length > 0 && (
@@ -300,17 +266,46 @@ function ServicesInput({
 				</div>
 			)}
 			{showInput ? (
-				value.length > 0 ? (
-					input
-				) : (
-					<>
+				<>
+					{value.length === 0 && (
 						<FormControl.Label htmlFor={dropdownId}>
 							Usługi
 						</FormControl.Label>
+					)}
 
-						{input}
-					</>
-				)
+					<Dropdown
+						id={dropdownId}
+						onChange={(option) => {
+							const newOption = {
+								value: option,
+								barber:
+									barbers.find(
+										(barber) =>
+											barber.id === option.barbers[0]
+									) || null,
+								resources: [],
+								// option.resources.map((resourceData) =>
+								// 	resources.find(
+								// 		(_resource) => _resource.id === resourceId
+								// 	)
+								// )
+							}
+
+							updateState([...value, newOption])
+							setShowInput(false)
+						}}
+						autoFocus={value.length > 0}
+						value={value}
+						options={services}
+						getOptionLabel={(option) => option.name}
+						getOptionValue={(option) => option.id}
+						getValuesValue={(option) => option.value.id}
+						formatOptionLabel={formatOptionLabel}
+						isMulti
+						setShowInput={(state) => setShowInput(state)}
+						{...props}
+					/>
+				</>
 			) : (
 				<div className="space-between">
 					{value.length !== services.length && (

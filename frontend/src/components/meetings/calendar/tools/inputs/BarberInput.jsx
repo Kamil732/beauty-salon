@@ -32,8 +32,8 @@ function BarberInput({
 				id={id}
 				value={value}
 				getOptionLabel={(option) => option.full_name}
-				getOptionValue={(option) => option}
-				getOptionUnique={(option) => option.id}
+				getOptionValue={(option) => option.id}
+				getValuesValue={(option) => option.id}
 				onChange={onChange}
 				options={
 					extraOptions?.length > 0

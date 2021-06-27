@@ -31,8 +31,8 @@ function ResourcesInput({
 			id={dropdownId}
 			value={value}
 			getOptionLabel={(option) => option.name}
-			getOptionValue={(option) => option}
-			getOptionUnique={(option) => option.id}
+			getOptionValue={(option) => option.id}
+			getValuesValue={(option) => option.id}
 			options={options?.length > 0 ? options : resources}
 			isMulti
 			autoFocus={value.length > 0}
