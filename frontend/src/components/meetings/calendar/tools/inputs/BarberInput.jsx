@@ -51,8 +51,8 @@ function BarberInput({
 BarberInput.prototype.propTypes = {
 	value: PropTypes.any.isRequired,
 	barbers: PropTypes.array,
-	extraChoices: PropTypes.array,
-	choices: PropTypes.array,
+	extraOptions: PropTypes.array,
+	options: PropTypes.array,
 	onChange: PropTypes.func.isRequired,
 }
 

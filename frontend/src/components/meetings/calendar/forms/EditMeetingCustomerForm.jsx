@@ -9,6 +9,7 @@ import ButtonContainer from '../../../../layout/buttons/ButtonContainer'
 import Button from '../../../../layout/buttons/Button'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
+import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
 
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
@@ -20,6 +21,9 @@ class EditMeetingCustomerForm extends Component {
 		barberChoiceList: PropTypes.array,
 		servicesData: PropTypes.array.isRequired,
 		loadBarbers: PropTypes.func.isRequired,
+		startDate: PropTypes.instanceOf(Date),
+		calendarStep: PropTypes.number,
+		changeEndDate: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
@@ -40,6 +44,16 @@ class EditMeetingCustomerForm extends Component {
 		}
 
 		this.onSubmit = this.onSubmit.bind(this)
+	}
+
+	componentDidUpdate(_, prevState) {
+		setMeetingEndDate(
+			prevState,
+			this.state,
+			this.props.startDate,
+			this.props.calendarStep,
+			this.props.changeEndDate
+		)
 	}
 
 	onSubmit = async (e) => {
@@ -84,36 +98,8 @@ class EditMeetingCustomerForm extends Component {
 						<ServicesInput
 							required={!selected.blocked}
 							value={services}
-							onChange={(option) => {
-								option = {
-									value: option,
-									barber:
-										this.props.barberChoiceList.find(
-											(barber) =>
-												barber.id === option.barbers[0]
-										) || null,
-								}
-
-								this.setState({
-									services: [...services, option],
-								})
-							}}
-							removeValue={(option) =>
-								this.setState({
-									services: services.filter(
-										(service) => service.id !== option.id
-									),
-								})
-							}
-							onChangeBarberInput={(option, serviceId) =>
-								this.setState({
-									services: services.map((service) => {
-										if (service.value.id !== serviceId)
-											return service
-
-										return { ...service, barber: option }
-									}),
-								})
+							updateState={(state) =>
+								this.setState({ services: state })
 							}
 						/>
 

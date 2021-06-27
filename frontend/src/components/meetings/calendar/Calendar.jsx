@@ -78,7 +78,8 @@ class Calendar extends Component {
 
 		serivces: PropTypes.array,
 		one_slot_max_meetings: PropTypes.number.isRequired,
-		work_time: PropTypes.number,
+		calendar_step: PropTypes.number,
+		calendar_timeslots: PropTypes.number,
 		end_work_sunday: PropTypes.string,
 		start_work_sunday: PropTypes.string,
 		end_work_saturday: PropTypes.string,
@@ -171,7 +172,7 @@ class Calendar extends Component {
 			const convertedDate = date.getHours() * 60 + date.getMinutes()
 			isDisabled =
 				convertedDate < workingHours.start ||
-				convertedDate > workingHours.end - this.props.work_time
+				convertedDate > workingHours.end - this.props.calendar_step
 		}
 
 		return isDisabled
@@ -249,7 +250,7 @@ class Calendar extends Component {
 				today.getMonth(),
 				today.getDate(),
 				minDate.hours(),
-				minDate.minutes() - this.props.work_time
+				minDate.minutes() - this.props.calendar_step
 			),
 
 			maxDate: new Date(
@@ -313,7 +314,7 @@ class Calendar extends Component {
 
 	getCountOfFreeSlotsAndMyMeetings = () => {
 		const {
-			work_time,
+			calendar_step,
 			calendarData: {
 				startOfMonth,
 				startOfWeek,
@@ -367,7 +368,7 @@ class Calendar extends Component {
 						freeSlots[date] += 1
 
 					currentTime = moment(currentTime)
-						.add(work_time, 'minutes')
+						.add(calendar_step, 'minutes')
 						.toDate()
 				}
 			}
@@ -516,7 +517,7 @@ class Calendar extends Component {
 		if (loading) loading(true)
 
 		try {
-			const body = JSON.stringify({ ...data })
+			const body = JSON.stringify(data)
 
 			const res = await axios.patch(
 				`${process.env.REACT_APP_API_URL}/meetings/${selected.id}/`,
@@ -648,7 +649,6 @@ class Calendar extends Component {
 			loading,
 			isAdminPanel,
 			userId,
-
 			visibleMeetings,
 			services,
 			calendarData: {
@@ -660,6 +660,8 @@ class Calendar extends Component {
 				startOf3days,
 				endOf3days,
 			},
+			calendar_timeslots,
+			calendar_step,
 		} = this.props
 		const { windowWidth, view, selected, minDate, maxDate, freeSlots } =
 			this.state
@@ -754,6 +756,16 @@ class Calendar extends Component {
 													this.deleteMeeting
 												}
 												selected={selected}
+												startDate={selected.start}
+												calendarStep={calendar_step}
+												changeEndDate={(date) =>
+													this.setState({
+														selected: {
+															...selected,
+															end: date,
+														},
+													})
+												}
 											/>
 										) : (
 											<AddMeetingAdminForm
@@ -775,6 +787,7 @@ class Calendar extends Component {
 															.one_slot_max_meetings
 												}
 												startDate={selected.start}
+												calendarStep={calendar_step}
 												changeEndDate={(date) =>
 													this.setState({
 														selected: {
@@ -790,10 +803,30 @@ class Calendar extends Component {
 											saveMeeting={this.saveMeeting}
 											deleteMeeting={this.deleteMeeting}
 											selected={selected}
+											startDate={selected.start}
+											calendarStep={calendar_step}
+											changeEndDate={(date) =>
+												this.setState({
+													selected: {
+														...selected,
+														end: date,
+													},
+												})
+											}
 										/>
 									) : (
 										<AddMeetingCustomerForm
 											addMeeting={this.addMeeting}
+											startDate={selected.start}
+											calendarStep={calendar_step}
+											changeEndDate={(date) =>
+												this.setState({
+													selected: {
+														...selected,
+														end: date,
+													},
+												})
+											}
 										/>
 									)}
 								</Suspense>
@@ -815,8 +848,8 @@ class Calendar extends Component {
 						onRangeChange={this.onRangeChange}
 						localizer={localizer}
 						events={meetings}
-						step={15}
-						timeslots={4}
+						step={calendar_step}
+						timeslots={calendar_timeslots}
 						views={{
 							week: true,
 							month: true,
@@ -910,7 +943,8 @@ const mapStateToProps = (state) => ({
 	barbers: state.data.barbers,
 	services: state.data.cms.data.services,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,
-	work_time: state.data.cms.data.work_time || 30,
+	calendar_step: state.data.cms.data.calendar_step,
+	calendar_timeslots: state.data.cms.data.calendar_timeslots,
 	end_work_sunday: state.data.cms.data.end_work_sunday || '',
 	start_work_sunday: state.data.cms.data.start_work_sunday || '',
 	end_work_saturday: state.data.cms.data.end_work_saturday || '',

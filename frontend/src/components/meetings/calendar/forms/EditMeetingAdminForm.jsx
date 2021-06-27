@@ -11,6 +11,7 @@ import FormControl from '../../../../layout/forms/FormControl'
 import FormGroup from '../../../../layout/forms/FormGroup'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
+import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -25,6 +26,9 @@ class EditMeetingAdminForm extends Component {
 		customerChoiceList: PropTypes.array,
 		servicesData: PropTypes.array.isRequired,
 		loadCustomers: PropTypes.func.isRequired,
+		startDate: PropTypes.instanceOf(Date),
+		calendarStep: PropTypes.number,
+		changeEndDate: PropTypes.func.isRequired,
 	}
 
 	constructor(props) {
@@ -51,6 +55,16 @@ class EditMeetingAdminForm extends Component {
 
 		this.onChange = this.onChange.bind(this)
 		this.onSubmit = this.onSubmit.bind(this)
+	}
+
+	componentDidUpdate(_, prevState) {
+		setMeetingEndDate(
+			prevState,
+			this.state,
+			this.props.startDate,
+			this.props.calendarStep,
+			this.props.changeEndDate
+		)
 	}
 
 	onChange = (e) => this.setState({ [e.target.name]: e.target.value })
@@ -183,48 +197,11 @@ class EditMeetingAdminForm extends Component {
 								</FormGroup>
 
 								<ServicesInput
+									isAdminPanel
 									required={!selected.blocked}
 									value={services}
-									onChange={(option) => {
-										option = {
-											value: option,
-											barber:
-												this.props.barberChoiceList.find(
-													(barber) =>
-														barber.id ===
-														option.barbers[0]
-												) || null,
-										}
-
-										this.setState({
-											services: [...services, option],
-										})
-									}}
-									removeValue={(option) =>
-										this.setState({
-											services: services.filter(
-												(service) =>
-													service.id !== option.id
-											),
-										})
-									}
-									onChangeBarberInput={(option, serviceId) =>
-										this.setState({
-											services: services.map(
-												(service) => {
-													if (
-														service.value.id !==
-														serviceId
-													)
-														return service
-
-													return {
-														...service,
-														barber: option,
-													}
-												}
-											),
-										})
+									updateState={(state) =>
+										this.setState({ services: state })
 									}
 								/>
 							</>

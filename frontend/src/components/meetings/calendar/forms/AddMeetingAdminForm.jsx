@@ -8,7 +8,7 @@ import Button from '../../../../layout/buttons/Button'
 import CSRFToken from '../../../CSRFToken'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
-import moment from 'moment'
+import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -19,6 +19,7 @@ class AddMeetingAdminForm extends Component {
 	static propTypes = {
 		isBlocked: PropTypes.bool,
 		startDate: PropTypes.instanceOf(Date),
+		calendarStep: PropTypes.number,
 		addMeeting: PropTypes.func.isRequired,
 		changeEndDate: PropTypes.func.isRequired,
 	}
@@ -44,24 +45,14 @@ class AddMeetingAdminForm extends Component {
 	componentDidUpdate(_, prevState) {
 		if (prevState.blocked !== this.state.blocked && prevState.blocked)
 			this.setState({ barber: null })
-		if (prevState.services.length !== this.state.services.length) {
-			this.props.changeEndDate(
-				moment(this.props.startDate).add(
-					this.state.services.reduce(
-						(prev, { barber, value: { id, time } }) => {
-							time =
-								barber?.services_data.find(
-									({ service }) => service === id
-								)?.time || time
 
-							return prev + time
-						},
-						15
-					),
-					'minutes'
-				)
-			)
-		}
+		setMeetingEndDate(
+			prevState,
+			this.state,
+			this.props.startDate,
+			this.props.calendarStep,
+			this.props.changeEndDate
+		)
 	}
 
 	onSubmit = async (e) => {
@@ -197,7 +188,7 @@ class AddMeetingAdminForm extends Component {
 								onChange={(option) =>
 									this.setState({ barber: option })
 								}
-								extraChoices={[
+								extraOptions={[
 									{
 										full_name: 'Wszystkich',
 										id: null,

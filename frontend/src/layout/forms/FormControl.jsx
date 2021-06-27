@@ -36,16 +36,14 @@ function Input(props) {
 	)
 }
 
-function Textarea({ value, ...props }) {
+function Textarea(props) {
 	return (
 		<>
 			<TextareaAutosize
 				className="form-control__input form-control__textarea"
 				title={props.required ? 'Proszę wypełnij to pole' : ''}
 				{...props}
-			>
-				{value}
-			</TextareaAutosize>
+			/>
 			<span className="form-control__input__border"></span>
 		</>
 	)

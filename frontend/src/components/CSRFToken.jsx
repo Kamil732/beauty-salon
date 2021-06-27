@@ -21,7 +21,11 @@ class CSRFToken extends Component {
 		const { csrftoken } = this.state
 
 		return (
-			<input type="hidden" name="csrfmiddlewaretoken" value={csrftoken} />
+			<input
+				type="hidden"
+				name="csrfmiddlewaretoken"
+				defaultValue={csrftoken}
+			/>
 		)
 	}
 }
