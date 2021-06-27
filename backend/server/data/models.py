@@ -9,7 +9,7 @@ from meetings.models import Meeting
 class Data(models.Model):
     meeting_bail = models.DecimalField(decimal_places=2, default=10, max_digits=4)
     meeting_prepayment = models.DecimalField(decimal_places=2, default=15, max_digits=4)
-    free_cancel_hours = models.PositiveIntegerField(default=2)
+    free_cancel_hours = models.PositiveSmallIntegerField(default=2)
     message = models.CharField(max_length=100, blank=True)
     contact_content_second = models.TextField(blank=True)
     gallery_content = models.TextField(blank=True)
@@ -19,7 +19,8 @@ class Data(models.Model):
     home_content = models.TextField(blank=True)
     home_title = models.CharField(max_length=100, blank=True)
     one_slot_max_meetings = models.PositiveIntegerField(default=0)
-    # work_time = models.PositiveIntegerField(default=30)
+    calendar_step = models.PositiveSmallIntegerField(default=15)
+    calendar_timeslots = models.PositiveSmallIntegerField(default=4)
     end_work_sunday = models.TimeField(null=True, blank=True)
     start_work_sunday = models.TimeField(null=True, blank=True)
     end_work_saturday = models.TimeField(null=True, blank=True)
