@@ -9,10 +9,11 @@ from accounts.models import Customer, Barber
 class Meeting(models.Model):
     barber = models.ForeignKey(verbose_name='Fryzjer', to=Barber, on_delete=models.CASCADE,
                                blank=True, null=True, related_name='meetings')
+    resource = models.ForeignKey('data.Resource', blank=True, null=True,
+                                 on_delete=models.CASCADE, related_name='meetings')
     customer = models.ForeignKey(verbose_name='Klient', to=Customer, on_delete=models.CASCADE,
                                  blank=True, null=True, related_name='meetings')
     services = models.ManyToManyField('data.Service', blank=True, through='ServiceData', related_name='meetings')
-    resources = models.ManyToManyField('data.Resource', blank=True, related_name='meetings')
     start = models.DateTimeField(verbose_name='Zaczyna się o')
     end = models.DateTimeField(verbose_name='Kończy się o')
     description = models.TextField(blank=True)

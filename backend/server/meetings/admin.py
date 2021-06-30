@@ -7,7 +7,7 @@ from .models import Meeting, ServiceData
 @admin.register(Meeting)
 class MeetingAdmin(ModelAdmin):
     empty_value_display = '-?-'
-    list_display = ('barber', 'start', 'end',)
+    list_display = ('customer', 'start', 'end',)
     readonly_fields = ('id',)
 
 
