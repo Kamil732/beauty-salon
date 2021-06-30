@@ -250,7 +250,8 @@ class Calendar extends Component {
 				today.getMonth(),
 				today.getDate(),
 				minDate.hours(),
-				minDate.minutes() - this.props.calendar_step
+				minDate.minutes() -
+					this.props.calendar_step * this.props.calendar_timeslots
 			),
 
 			maxDate: new Date(
@@ -480,12 +481,10 @@ class Calendar extends Component {
 		data.start = start
 		data.end = end
 
-		if (data.blocked && data.barber === 'everyone') data.barber = ''
-
 		if (loading) loading(true)
 
 		try {
-			const body = JSON.stringify({ ...data })
+			const body = JSON.stringify(data)
 			const res = await axios.post(
 				`${process.env.REACT_APP_API_URL}/meetings/`,
 				body,
@@ -511,9 +510,14 @@ class Calendar extends Component {
 	}
 
 	saveMeeting = async (data, loading = null) => {
-		const { selected } = this.state
+		const {
+			selected,
+			selected: { start, end },
+		} = this.state
 
-		if (selected.blocked && data.barber === 'everyone') data.barber = ''
+		data.start = start
+		data.end = end
+
 		if (loading) loading(true)
 
 		try {
@@ -609,9 +613,11 @@ class Calendar extends Component {
 					: ''
 			} ${
 				!event.blocked
-					? barbers.find(
-							(barber) => barber.id === event.services[0]?.barber
-					  ).color
+					? barbers.find((barber) => {
+							if (event.services.length > 0)
+								return barber.id === event.services[0]?.barber
+							return barber.id === event.barber
+					  })?.color
 					: ''
 			}`,
 		}

@@ -24,6 +24,7 @@ class EditMeetingAdminForm extends Component {
 		saveMeeting: PropTypes.func.isRequired,
 		barberChoiceList: PropTypes.array,
 		customerChoiceList: PropTypes.array,
+		resources: PropTypes.array,
 		servicesData: PropTypes.array.isRequired,
 		loadCustomers: PropTypes.func.isRequired,
 		startDate: PropTypes.instanceOf(Date),
@@ -45,11 +46,22 @@ class EditMeetingAdminForm extends Component {
 			barber: props.barberChoiceList.find(
 				(barber) => barber.id === props.selected.barber
 			),
-			services: props.selected.services.map((service) =>
-				props.servicesData.find(
-					(_service) => _service.id === service.id
-				)
+			resource: props.resources.find(
+				(resource) => resource.id === props.selected.resource
 			),
+			services: props.selected.services.map((service) => ({
+				resources: service.resources.map((resourceId) =>
+					props.resources.find(
+						(resource) => resource.id === resourceId
+					)
+				),
+				barber: props.barberChoiceList.find(
+					(barber) => barber.id === service.barber
+				),
+				value: props.servicesData.find(
+					(_service) => _service.id === service.id
+				),
+			})),
 			description: props.selected.description,
 		}
 
@@ -57,7 +69,17 @@ class EditMeetingAdminForm extends Component {
 		this.onSubmit = this.onSubmit.bind(this)
 	}
 
-	componentDidUpdate(_, prevState) {
+	componentDidUpdate(prevProps, prevState) {
+		if (
+			prevProps.customerChoiceList !== this.props.customerChoiceList &&
+			this.state.customer == null
+		)
+			this.setState({
+				customer: this.props.customerChoiceList.find(
+					(customer) => customer.id === this.props.selected.customer
+				),
+			})
+
 		setMeetingEndDate(
 			prevState,
 			this.state,
@@ -71,34 +93,29 @@ class EditMeetingAdminForm extends Component {
 
 	onSubmit = async (e) => {
 		e.preventDefault()
-		// const { selected } = this.props
 
+		const {
+			selected: { blocked },
+		} = this.props
 		const { customer, barber, services, description } = this.state
 
 		const payload = {
-			// start: selected.start,
-			// end: selected.end,
-			customer: customer?.id,
 			barber: barber?.id,
-			services: services.map((service) => service.id),
 			description,
+		}
+
+		if (!blocked) {
+			payload.customer = customer.id
+			payload.services = services.map((service) => ({
+				id: service.value.id,
+				barber: service.barber.id,
+				resources: service.resources.map((resource) => resource.id),
+			}))
 		}
 
 		await this.props.saveMeeting(payload, (state) =>
 			this.setState({ saveLoading: state })
 		)
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		if (
-			prevProps.customerChoiceList !== this.props.customerChoiceList &&
-			this.state.customer == null
-		)
-			this.setState({
-				customer: this.props.customerChoiceList.find(
-					(customer) => customer.id === this.props.selected.customer
-				),
-			})
 	}
 
 	render() {
@@ -170,11 +187,8 @@ class EditMeetingAdminForm extends Component {
 									<CustomerInput
 										required={!selected.blocked}
 										value={customer}
-										onChange={(options) =>
-											this.onChangeSelect(
-												options,
-												'customer'
-											)
+										onChange={(option) =>
+											this.setState({ customer: option })
 										}
 										changeForm={() =>
 											this.setState({
@@ -229,8 +243,8 @@ class EditMeetingAdminForm extends Component {
 								type="button"
 								danger
 								small
-								onClick={(state) =>
-									this.props.deleteMeeting(
+								onClick={() =>
+									this.props.deleteMeeting((state) =>
 										this.setState({ deleteLoading: state })
 									)
 								}
@@ -248,8 +262,7 @@ class EditMeetingAdminForm extends Component {
 								loadingText="Zapisywanie"
 								disabled={
 									deleteLoading ||
-									(barber ===
-										(selected.barber || 'everyone') &&
+									(barber === selected.barber &&
 										customer === selected.customer &&
 										services === selected.services)
 								}
@@ -267,6 +280,7 @@ class EditMeetingAdminForm extends Component {
 const mapStateToProps = (state) => ({
 	barberChoiceList: state.data.barbers,
 	customerChoiceList: state.data.customers,
+	resources: state.data.cms.data.resources,
 	servicesData: state.data.cms.data.services,
 })
 

@@ -50,6 +50,18 @@ function ServicesInput({
 		[barbers, selected]
 	)
 
+	const getServicesPriceSum = useCallback(
+		() =>
+			value
+				.reduce(
+					(n, { value: { price } }) =>
+						parseFloat(n) + parseFloat(price),
+					0
+				)
+				.toFixed(2),
+		[value]
+	)
+
 	useEffect(() => {
 		if (value.length === 0 && !showInput) setShowInput(true)
 	}, [value, showInput])
@@ -319,17 +331,7 @@ function ServicesInput({
 					)}
 					{value.length > 0 && (
 						<div style={{ marginLeft: 'auto' }}>
-							Łącznie:{' '}
-							<b>
-								{value
-									.reduce(
-										(n, { value: { price } }) =>
-											parseFloat(n) + parseFloat(price),
-										0
-									)
-									.toFixed(2)}{' '}
-								zł
-							</b>
+							Łącznie: <b>{getServicesPriceSum()} zł</b>
 						</div>
 					)}
 				</div>

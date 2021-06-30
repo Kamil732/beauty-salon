@@ -7,7 +7,6 @@ import CircleLoader from '../../../../layout/loaders/CircleLoader'
 import { connect } from 'react-redux'
 import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
 
-const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
 
 class AddMeetingCustomerForm extends Component {
@@ -23,8 +22,6 @@ class AddMeetingCustomerForm extends Component {
 
 		this.state = {
 			loading: false,
-			barber: null,
-			// barbers: [],
 			services: [],
 		}
 
@@ -44,10 +41,12 @@ class AddMeetingCustomerForm extends Component {
 	onSubmit = async (e) => {
 		e.preventDefault()
 
-		const { barber, services } = this.state
+		const { services } = this.state
 		const payload = {
-			barber: barber.data.id,
-			service: services.map((service) => service.id),
+			services: services.map((service) => ({
+				id: service.value.id,
+				barber: service.barber.id,
+			})),
 		}
 
 		this.props.addMeeting(payload, (state) =>
@@ -56,20 +55,12 @@ class AddMeetingCustomerForm extends Component {
 	}
 
 	render() {
-		const { loading, barber, services } = this.state
+		const { loading, services } = this.state
 
 		return (
 			<ErrorBoundary>
 				<Suspense fallback={<CircleLoader />}>
 					<form onSubmit={this.onSubmit}>
-						<BarberInput
-							required
-							value={barber}
-							onChange={(option) =>
-								this.setState({ barber: option })
-							}
-						/>
-
 						<ServicesInput
 							required
 							value={services}

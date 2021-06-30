@@ -1,14 +1,13 @@
 import React, { Component, lazy, Suspense } from 'react'
 import PropTypes from 'prop-types'
 
-import { BiLeftArrowAlt } from 'react-icons/bi'
-
 import FormControl from '../../../../layout/forms/FormControl'
 import Button from '../../../../layout/buttons/Button'
 import CSRFToken from '../../../CSRFToken'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
 import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
+import Modal from '../../../../layout/Modal'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -60,11 +59,17 @@ class AddMeetingAdminForm extends Component {
 		const { blocked, customer, barber, services, description } = this.state
 
 		const payload = {
-			blocked,
-			customer: !blocked ? customer.id : null,
 			barber: barber?.id,
-			services: !blocked ? services.map((service) => service.id) : null,
 			description,
+		}
+
+		if (!blocked) {
+			payload.customer = customer.id
+			payload.services = services.map((service) => ({
+				id: service.value.id,
+				barber: service.barber.id,
+				resources: service.resources.map((resource) => resource.id),
+			}))
 		}
 
 		await this.props.addMeeting(payload, (state) =>
@@ -97,134 +102,139 @@ class AddMeetingAdminForm extends Component {
 			</div>
 		)
 
-		return isAddCustomerForm ? (
+		return (
 			<>
-				<Button
-					primary
-					rounded
-					small
-					onClick={() => this.setState({ isAddCustomerForm: false })}
-				>
-					<BiLeftArrowAlt size="23" />
-					Wróć
-				</Button>
-
-				<ErrorBoundary>
-					<Suspense fallback={loader}>
-						<AddCustomerForm
-							setCustomer={(state) =>
-								this.setState({
-									customer: state,
-									isAddCustomerForm: false,
-								})
-							}
-						/>
-					</Suspense>
-				</ErrorBoundary>
-			</>
-		) : (
-			<ErrorBoundary>
-				<Suspense fallback={loader}>
-					<form onSubmit={this.onSubmit}>
-						<CSRFToken />
-
-						{!this.props.isBlocked ? (
-							<>
-								<FormControl.CheckBoxLabel>
-									Blokada
-									<FormControl.CheckBox
-										name="blocked"
-										checked={blocked}
-										onChange={this.onChange}
-									/>
-								</FormControl.CheckBoxLabel>
-
-								<div
-									style={{
-										display: blocked ? 'none' : 'block',
-									}}
-								>
-									<CustomerInput
-										required={!blocked}
-										value={customer}
-										onChange={(option) =>
-											this.setState({ customer: option })
-										}
-										changeForm={() =>
+				{isAddCustomerForm && (
+					<Modal
+						closeModal={() =>
+							this.setState({ isAddCustomerForm: false })
+						}
+						isChild
+					>
+						<Modal.Header>Dodaj nowego klienta</Modal.Header>
+						<Modal.Body>
+							<ErrorBoundary>
+								<Suspense fallback={loader}>
+									<AddCustomerForm
+										setCustomer={(state) =>
 											this.setState({
-												isAddCustomerForm: true,
+												customer: state,
+												isAddCustomerForm: false,
 											})
 										}
 									/>
+								</Suspense>
+							</ErrorBoundary>
+						</Modal.Body>
+					</Modal>
+				)}
+				<ErrorBoundary>
+					<Suspense fallback={loader}>
+						<form onSubmit={this.onSubmit}>
+							<CSRFToken />
 
-									{services.length === 0 && (
-										<BarberInput
+							{!this.props.isBlocked ? (
+								<>
+									<FormControl.CheckBoxLabel>
+										Blokada
+										<FormControl.CheckBox
+											name="blocked"
+											checked={blocked}
+											onChange={this.onChange}
+										/>
+									</FormControl.CheckBoxLabel>
+
+									<div
+										style={{
+											display: blocked ? 'none' : 'block',
+										}}
+									>
+										<CustomerInput
 											required={!blocked}
-											value={barber}
+											value={customer}
 											onChange={(option) =>
 												this.setState({
-													barber: option,
+													customer: option,
+												})
+											}
+											changeForm={() =>
+												this.setState({
+													isAddCustomerForm: true,
 												})
 											}
 										/>
-									)}
 
-									<ServicesInput
-										isAdminPanel
-										required={!blocked}
-										value={services}
-										updateState={(state) =>
-											this.setState({ services: state })
-										}
-									/>
-								</div>
-							</>
-						) : null}
+										{services.length === 0 && (
+											<BarberInput
+												required={!blocked}
+												value={barber}
+												onChange={(option) =>
+													this.setState({
+														barber: option,
+													})
+												}
+											/>
+										)}
 
-						{blocked && (
-							<BarberInput
-								required={blocked}
-								value={barber}
-								onChange={(option) =>
-									this.setState({ barber: option })
-								}
-								extraOptions={[
-									{
-										full_name: 'Wszystkich',
-										id: null,
-									},
-								]}
-							/>
-						)}
+										<ServicesInput
+											isAdminPanel
+											required={!blocked}
+											value={services}
+											updateState={(state) =>
+												this.setState({
+													services: state,
+												})
+											}
+										/>
+									</div>
+								</>
+							) : null}
 
-						<FormControl>
-							<FormControl.Label
-								htmlFor="description"
-								inputValue={description}
+							{blocked && (
+								<BarberInput
+									required={blocked}
+									value={barber}
+									onChange={(option) =>
+										this.setState({ barber: option })
+									}
+									extraOptions={[
+										{
+											full_name: 'Wszystkich',
+											id: null,
+										},
+									]}
+								/>
+							)}
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor="description"
+									inputValue={description}
+								>
+									{blocked ? 'Powód' : 'Opis'}
+								</FormControl.Label>
+								<FormControl.Textarea
+									id="description"
+									name="description"
+									onChange={this.onChange}
+									value={description}
+								/>
+							</FormControl>
+
+							<Button
+								type="submit"
+								success={!blocked}
+								danger={blocked}
+								loading={loading}
+								loadingText="Zapisywanie"
+								className="center-item"
 							>
-								{blocked ? 'Powód' : 'Opis'}
-							</FormControl.Label>
-							<FormControl.Textarea
-								id="description"
-								name="description"
-								onChange={this.onChange}
-								value={description}
-							/>
-						</FormControl>
-
-						<Button
-							type="submit"
-							success={!blocked}
-							danger={blocked}
-							loading={loading}
-							loadingText="Zapisywanie"
-							className="center-item"
-						>
-							Zapisz {blocked ? 'blokadę' : 'wizytę'}
-						</Button>
-					</form>
-				</Suspense>
-			</ErrorBoundary>
+								Zapisz {blocked ? 'blokadę' : 'wizytę'}
+							</Button>
+						</form>
+					</Suspense>
+				</ErrorBoundary>
+			</>
 		)
 	}
 }

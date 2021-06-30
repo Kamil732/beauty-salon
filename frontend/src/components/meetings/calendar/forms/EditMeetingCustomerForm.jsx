@@ -11,7 +11,6 @@ import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
 import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
 
-const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
 
 class EditMeetingCustomerForm extends Component {
@@ -33,14 +32,14 @@ class EditMeetingCustomerForm extends Component {
 			saveLoading: false,
 			deleteLoading: false,
 
-			barber: props.barberChoiceList.find(
-				(barber) => barber.id === props.selected.barber
-			),
-			services: props.selected.services.map((service) =>
-				props.servicesData.find(
+			services: props.selected.services.map((service) => ({
+				barber: props.barberChoiceList.find(
+					(barber) => barber.id === service.barber
+				),
+				value: props.servicesData.find(
 					(_service) => _service.id === service.id
-				)
-			),
+				),
+			})),
 		}
 
 		this.onSubmit = this.onSubmit.bind(this)
@@ -59,13 +58,13 @@ class EditMeetingCustomerForm extends Component {
 	onSubmit = async (e) => {
 		e.preventDefault()
 
-		const { barber, services } = this.state
+		const { services } = this.state
 
 		const payload = {
-			// start: this.props.selected.start,
-			// end: this.props.selected.end,
-			barber: barber.id,
-			services: services.map((service) => service.id),
+			services: services.map((service) => ({
+				id: service.value.id,
+				barber: service.barber.id,
+			})),
 		}
 
 		await this.props.saveMeeting(payload, (state) =>
@@ -86,14 +85,6 @@ class EditMeetingCustomerForm extends Component {
 				<Suspense fallback={<CircleLoader />}>
 					<form onSubmit={this.onSubmit}>
 						<CSRFToken />
-
-						<BarberInput
-							required={!selected.blocked}
-							value={barber}
-							onChange={(option) =>
-								this.setState({ barber: option })
-							}
-						/>
 
 						<ServicesInput
 							required={!selected.blocked}
