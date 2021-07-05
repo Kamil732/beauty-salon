@@ -1,7 +1,11 @@
 import moment from 'moment'
 import React from 'react'
 
-export default function getEventTooltip(event, services, showTime = true) {
+export default function getEventTooltip(
+	{ data: event },
+	services,
+	showTime = true
+) {
 	const start = moment(event.start)
 	const end = moment(event.end)
 	const eventDays = end.diff(start, 'days')

@@ -137,8 +137,8 @@ function ServicesPricing({ serviceGroups, services, barbers }) {
 										{
 											barbers.find(
 												(_barber) =>
-													_barber.value === barber
-											).label
+													_barber.id === barber
+											).full_name
 										}
 									</h6>
 								</CollapseMenu.Item>
@@ -172,7 +172,7 @@ ServicesPricing.prototype.propTypes = {
 const mapStateToProps = (state) => ({
 	serviceGroups: state.data.cms.data.service_groups,
 	services: state.data.cms.data.services,
-	barbers: state.meetings.barberChoiceList,
+	barbers: state.data.barbers,
 })
 
 export default connect(mapStateToProps, null)(ServicesPricing)

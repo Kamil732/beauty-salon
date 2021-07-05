@@ -8,6 +8,7 @@ import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
 import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
 import Modal from '../../../../layout/Modal'
+import FormGroup from '../../../../layout/forms/FormGroup'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -34,7 +35,8 @@ class AddMeetingAdminForm extends Component {
 			customer: null,
 			barber: null,
 			services: [],
-			description: '',
+			private_description: '',
+			customer_description: '',
 		}
 
 		this.onChange = this.onChange.bind(this)
@@ -56,11 +58,19 @@ class AddMeetingAdminForm extends Component {
 
 	onSubmit = async (e) => {
 		e.preventDefault()
-		const { blocked, customer, barber, services, description } = this.state
+		const {
+			blocked,
+			customer,
+			barber,
+			services,
+			private_description,
+			customer_description,
+		} = this.state
 
 		const payload = {
 			barber: barber?.id,
-			description,
+			private_description,
+			customer_description,
 		}
 
 		if (!blocked) {
@@ -91,9 +101,9 @@ class AddMeetingAdminForm extends Component {
 			blocked,
 			customer,
 			barber,
-
 			services,
-			description,
+			private_description,
+			customer_description,
 		} = this.state
 
 		const loader = (
@@ -164,28 +174,46 @@ class AddMeetingAdminForm extends Component {
 											}
 										/>
 
-										{services.length === 0 && (
-											<BarberInput
+										<FormGroup>
+											<ServicesInput
+												isAdminPanel
 												required={!blocked}
-												value={barber}
-												onChange={(option) =>
+												value={services}
+												updateState={(state) =>
 													this.setState({
-														barber: option,
+														services: state,
 													})
 												}
 											/>
-										)}
+											{services.length === 0 && (
+												<BarberInput
+													required={!blocked}
+													value={barber}
+													onChange={(option) =>
+														this.setState({
+															barber: option,
+														})
+													}
+												/>
+											)}
+										</FormGroup>
 
-										<ServicesInput
-											isAdminPanel
-											required={!blocked}
-											value={services}
-											updateState={(state) =>
-												this.setState({
-													services: state,
-												})
-											}
-										/>
+										<FormControl>
+											<FormControl.Label
+												htmlFor="customer_description"
+												inputValue={
+													customer_description
+												}
+											>
+												Wiadomość dla klienta
+											</FormControl.Label>
+											<FormControl.Textarea
+												id="customer_description"
+												name="customer_description"
+												onChange={this.onChange}
+												value={customer_description}
+											/>
+										</FormControl>
 									</div>
 								</>
 							) : null}
@@ -208,16 +236,18 @@ class AddMeetingAdminForm extends Component {
 
 							<FormControl>
 								<FormControl.Label
-									htmlFor="description"
-									inputValue={description}
+									htmlFor="private_description"
+									inputValue={private_description}
 								>
-									{blocked ? 'Powód' : 'Opis'}
+									{blocked
+										? 'Powód'
+										: 'Opis (widoczny dla personelu)'}
 								</FormControl.Label>
 								<FormControl.Textarea
-									id="description"
-									name="description"
+									id="private_description"
+									name="private_description"
 									onChange={this.onChange}
-									value={description}
+									value={private_description}
 								/>
 							</FormControl>
 

@@ -10,8 +10,10 @@ function Modal({ children, closeModal, isChild, ...props }) {
 		const body = document.querySelector('body')
 		body.style.overflowY = 'hidden'
 
-		return () => (body.style.overflowY = 'auto')
-	}, [])
+		return () => {
+			if (!isChild) body.style.overflowY = 'auto'
+		}
+	}, [isChild])
 
 	useEffect(() => {
 		const handleClickOutside = (e) => {

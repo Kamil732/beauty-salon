@@ -1,8 +1,11 @@
 import React from 'react'
+import { connect } from 'react-redux'
 
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
-
 import { Views } from 'react-big-calendar'
+
+import { updateResourceMap } from '../../../../redux/actions/meetings'
+
 import ButtonContainer from '../../../../layout/buttons/ButtonContainer'
 import Button from '../../../../layout/buttons/Button'
 
@@ -12,11 +15,20 @@ const Toolbar = ({
 	views,
 	onView,
 	onNavigate,
-
 	localizer,
 	label,
+	resourceMapIsMany,
+	updateResourceMap,
 }) => {
-	const goToView = (view) => onView(view)
+	const goToView = (view) => {
+		localStorage.setItem('view', view)
+		if (resourceMapIsMany && view !== 'reception')
+			updateResourceMap('isMany', false)
+		if (!resourceMapIsMany && view === 'reception')
+			updateResourceMap('isMany', true)
+
+		onView(view)
+	}
 
 	if (windowWidth < 768 && view !== Views.DAY) goToView(Views.DAY)
 	else if (windowWidth >= 768 && view === Views.DAY) goToView('threedays')
@@ -67,4 +79,12 @@ const Toolbar = ({
 	)
 }
 
-export default Toolbar
+const mapStateToProps = (state) => ({
+	resourceMapIsMany: state.meetings.resourceMap.isMany,
+})
+
+const mapStateToDispatch = {
+	updateResourceMap,
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(Toolbar)

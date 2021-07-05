@@ -151,6 +151,7 @@ function Home({
 			) : null}
 
 			<div ref={calendarContainer}>
+				<h5>Najpierw wybierz usługi a potem pokaż wolne terminy</h5>
 				{window.innerWidth > 768 && isCalendarVisible && (
 					<PageHero vertical>
 						<PageHero.Title>Kalendarz z wizytami</PageHero.Title>
@@ -158,7 +159,6 @@ function Home({
 						{getCalendar()}
 					</PageHero>
 				)}
-
 				{window.innerWidth <= 768 && isCalendarVisible && (
 					<>
 						<PageHero.Title style={{ textAlign: 'center' }}>

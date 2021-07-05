@@ -142,7 +142,7 @@ class Dropdown extends Component {
 	componentDidMount = () => {
 		document.addEventListener('mousedown', this.handleClickOutside)
 
-		if (this.props.searchAsync) {
+		if (this.props.searchAsync && this.props.options.length === 0) {
 			this.asyncLoadOptions()
 		} else {
 			this.setState({

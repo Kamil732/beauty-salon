@@ -9,7 +9,7 @@ import { NotificationManager } from 'react-notifications'
 
 import axios from 'axios'
 import {
-	ADD_MEETING,
+	LOAD_MEETINGS,
 	REMOVE_MEETING,
 	UPDATE_MEETING,
 } from '../../../redux/actions/types'
@@ -18,6 +18,7 @@ import {
 	loadMeetings,
 	changeVisibleMeetings,
 	updateCalendarDates,
+	updateResourceMap,
 } from '../../../redux/actions/meetings'
 import getWorkHours from '../../../helpers/getWorkHours'
 
@@ -31,11 +32,13 @@ import {
 	momentLocalizer,
 	Views,
 } from 'react-big-calendar'
+import Day from 'react-big-calendar/lib/Day'
+
 import Toolbar from './tools/Toolbar'
 import TouchCellWrapper from './tools/TouchCellWrapper'
 import WeekHeader from './tools/WeekHeader'
 import MonthDateHeader from './tools/MonthDateHeader'
-import ThreeDaysView from './tools/ThreeDaysView'
+import ThreeDaysView from './tools/views/ThreeDaysView'
 import EventWrapper from './tools/EventWrapper'
 import getEventTooltip from '../../../helpers/getEventTooltip'
 
@@ -60,9 +63,10 @@ class Calendar extends Component {
 		meetings: PropTypes.array,
 		loadedDates: PropTypes.array,
 		visibleMeetings: PropTypes.array,
+		resourceMap: PropTypes.object.isRequired,
 		barbers: PropTypes.array,
 
-		calendarData: PropTypes.shape({
+		calendarDates: PropTypes.shape({
 			currentDate: PropTypes.instanceOf(Date),
 			startOfMonth: PropTypes.instanceOf(Date),
 			endOfMonth: PropTypes.instanceOf(Date),
@@ -75,8 +79,10 @@ class Calendar extends Component {
 		changeVisibleMeetings: PropTypes.func.isRequired,
 		connectMeetingWS: PropTypes.func.isRequired,
 		loadMeetings: PropTypes.func.isRequired,
+		updateResourceMap: PropTypes.func.isRequired,
 
 		serivces: PropTypes.array,
+		resourcesLength: PropTypes.number,
 		one_slot_max_meetings: PropTypes.number.isRequired,
 		calendar_step: PropTypes.number,
 		calendar_timeslots: PropTypes.number,
@@ -100,12 +106,25 @@ class Calendar extends Component {
 		super(props)
 
 		const calendarDates = this.getCalendarMinAndMaxTime()
+		let view = localStorage.getItem('view')
+		if (
+			(view !== Views.WEEK &&
+				view !== Views.MONTH &&
+				view !== 'threedays' &&
+				view !== 'reception') ||
+			(view === 'reception' &&
+				props.barbers.length + props.resourcesLength <= 1) ||
+			(view === 'reception' && !props.isAdminPanel)
+		) {
+			view = Views.WEEK
+			localStorage.setItem('view', view)
+		}
 
 		this.state = {
 			ws: null,
 			windowWidth: window.innerWidth,
 
-			view: window.innerWidth >= 768 ? Views.WEEK : Views.DAY,
+			view: window.innerWidth >= 768 ? view : Views.DAY,
 			freeSlots: {},
 
 			minDate: calendarDates.minDate,
@@ -143,30 +162,26 @@ class Calendar extends Component {
 		let isDisabled = workingHours.isNonWorkingDay
 
 		// Check if on the slot can be added meeting for non admin
-		let notWorkingHours = []
-		let eventsOnSlot = []
+		if (!isAdminPanel) {
+			let eventsOnSlot = 0
 
-		if (date < new Date()) isDisabled = true
-		else
-			for (let i = 0; i < visibleMeetings.length; i++) {
-				if (
-					visibleMeetings[i].start <= date &&
-					visibleMeetings[i].end > date
-				) {
-					if (visibleMeetings[i].blocked)
-						notWorkingHours.push(visibleMeetings[i])
-					else if (!isAdminPanel && !visibleMeetings[i].blocked)
-						eventsOnSlot.push(visibleMeetings[i])
+			if (date < new Date()) isDisabled = true
+			else
+				for (let i = 0; i < visibleMeetings.length; i++) {
+					if (
+						visibleMeetings[i].start <= date &&
+						visibleMeetings[i].end > date
+					) {
+						if (
+							visibleMeetings[i].blocked ||
+							eventsOnSlot.length >= one_slot_max_meetings
+						) {
+							isDisabled = true
+							break
+						} else eventsOnSlot += 1
+					}
 				}
-
-				if (
-					notWorkingHours.length > 0 ||
-					eventsOnSlot.length >= one_slot_max_meetings
-				) {
-					isDisabled = true
-					break
-				}
-			}
+		}
 
 		if (!isDisabled) {
 			const convertedDate = date.getHours() * 60 + date.getMinutes()
@@ -267,7 +282,7 @@ class Calendar extends Component {
 	getVisibleMeetings = () => {
 		const {
 			meetings,
-			calendarData: {
+			calendarDates: {
 				startOfMonth,
 				startOfWeek,
 				startOf3days,
@@ -316,7 +331,7 @@ class Calendar extends Component {
 	getCountOfFreeSlotsAndMyMeetings = () => {
 		const {
 			calendar_step,
-			calendarData: {
+			calendarDates: {
 				startOfMonth,
 				startOfWeek,
 				startOf3days,
@@ -391,11 +406,21 @@ class Calendar extends Component {
 	}
 
 	componentDidMount = () => {
-		window.addEventListener('resize', this.updateWindowDimensions)
+		const { view } = this.state
+		const {
+			ws,
+			loading,
+			loadedDates,
+			updateResourceMap,
+			loadMeetings,
+			connectMeetingWS,
+		} = this.props
 
-		if (this.props.ws === null) this.props.connectMeetingWS()
-		if (!this.props.loading && this.props.loadedDates.length === 0)
-			this.props.loadMeetings()
+		window.addEventListener('resize', this.updateWindowDimensions)
+		updateResourceMap('isMany', view === 'reception')
+
+		if (ws === null) connectMeetingWS()
+		if (!loading && loadedDates.length === 0) loadMeetings()
 
 		this.getVisibleMeetings()
 		this.getCountOfFreeSlotsAndMyMeetings()
@@ -440,8 +465,8 @@ class Calendar extends Component {
 
 		if (
 			prevProps.meetings !== this.props.meetings ||
-			prevProps.calendarData.currentDate !==
-				this.props.calendarData.currentDate
+			prevProps.calendarDates.currentDate !==
+				this.props.calendarDates.currentDate
 		)
 			this.getVisibleMeetings()
 
@@ -493,7 +518,7 @@ class Calendar extends Component {
 
 			this.props.ws.send(
 				JSON.stringify({
-					event: ADD_MEETING,
+					event: LOAD_MEETINGS,
 					payload: {
 						id: res.data.id,
 						from: res.data.start,
@@ -511,8 +536,9 @@ class Calendar extends Component {
 
 	saveMeeting = async (data, loading = null) => {
 		const {
-			selected,
-			selected: { start, end },
+			selected: {
+				data: { id, start, end },
+			},
 		} = this.state
 
 		data.start = start
@@ -524,7 +550,7 @@ class Calendar extends Component {
 			const body = JSON.stringify(data)
 
 			const res = await axios.patch(
-				`${process.env.REACT_APP_API_URL}/meetings/${selected.id}/`,
+				`${process.env.REACT_APP_API_URL}/meetings/${id}/`,
 				body,
 				getHeaders(true)
 			)
@@ -551,13 +577,13 @@ class Calendar extends Component {
 
 		if (view === Views.MONTH)
 			await this.onRangeChange([
-				this.props.calendarData.startOfMonth,
-				this.props.calendarData.endOfMonth,
+				this.props.calendarDates.startOfMonth,
+				this.props.calendarDates.endOfMonth,
 			])
 		else if (view === 'threedays')
 			await this.onRangeChange([
-				this.props.calendarData.startOf3days,
-				this.props.calendarData.endOf3days,
+				this.props.calendarDates.startOf3days,
+				this.props.calendarDates.endOf3days,
 			])
 
 		setTimeout(this.getVisibleMeetings, 0)
@@ -603,29 +629,21 @@ class Calendar extends Component {
 		}
 	}
 
-	eventPropGetter = (event) => {
-		const { barbers, isAdminPanel, userId } = this.props
+	eventPropGetter = ({ color: eventColor, data: event }) => {
+		const { isAdminPanel, userId } = this.props
 
 		return {
 			className: `${event.blocked ? 'doNotWork' : ''} ${
 				isAdminPanel || (event.customer === userId && !event.blocked)
 					? 'selectable'
 					: ''
-			} ${
-				!event.blocked
-					? barbers.find((barber) => {
-							if (event.services.length > 0)
-								return barber.id === event.services[0]?.barber
-							return barber.id === event.barber
-					  })?.color
-					: ''
-			}`,
+			} ${!event.blocked ? eventColor : ''}`,
 		}
 	}
 
 	onSelecting = () => (this.props.isAdminPanel ? true : false)
 
-	onSelectEvent = (event) => {
+	onSelectEvent = ({ data: event }) => {
 		const { isAdminPanel, userId } = this.props
 
 		if (isAdminPanel || (event.customer === userId && !event.blocked))
@@ -654,10 +672,13 @@ class Calendar extends Component {
 		const {
 			loading,
 			isAdminPanel,
+			barbers,
 			userId,
 			visibleMeetings,
 			services,
-			calendarData: {
+			resourcesLength,
+			resourceMap,
+			calendarDates: {
 				currentDate,
 				startOfMonth,
 				endOfMonth,
@@ -679,9 +700,9 @@ class Calendar extends Component {
 				</h1>
 			)
 
+		// Filter meetings that should be displayed
 		let meetings = []
 
-		// Filter meetings that should be displayed
 		for (let i = 0; i < visibleMeetings.length; i++) {
 			const start =
 				view === Views.MONTH
@@ -695,6 +716,7 @@ class Calendar extends Component {
 					: view === 'threedays'
 					? endOf3days
 					: endOfWeek
+			// !isAdminPanel || (isAdminPanel && ((resourceMap.isMany && visibleMeetings[i].services.find(service => resourceMap.data.find(resource => resource.id === `barber-${service.barber}`) ) || (!resourceMap.isMany)))
 
 			if (
 				(visibleMeetings[i].start >= start &&
@@ -706,19 +728,52 @@ class Calendar extends Component {
 				(visibleMeetings[i].end <= end &&
 					start < visibleMeetings[i].end)
 			) {
+				// If NOT `isAdminPanel`, do nothing
+				// Otherwise if `resourceMap.isMany` is false get only meetings related to the `resourceMap.selected`
+				// && (!isAdminPanel ||
+				// 	(isAdminPanel &&
+				// 		!resourceMap.isMany &&
+				// 		// if barber is in `visibleMeetings[i].services`
+				// 		(visibleMeetings[i].data.services.find(
+				// 			(service) =>
+				// 				resourceMap.selected?.id ===
+				// 					`barber-${service.barber}` ||
+				// 				// if resource is in `service.resources`
+				// 				service.resources.find(
+				// 					(id) =>
+				// 						`resource-${id}` ===
+				// 						resourceMap.selected?.id
+				// 				)
+				// 		) != null || // if barber or resource is in `visibleMeetings[i]`
+				// 			`barber-${visibleMeetings[i].barber}` ===
+				// 				resourceMap.selected?.id ||
+				// 			`resource-${visibleMeetings[i].resource}` ===
+				// 				resourceMap.selected?.id)))
 				if (
 					// MONTH and allDay meeting
-					(view === Views.MONTH && visibleMeetings[i].allDay) ||
-					// Not MONTH and IsAdminPanel
-					(view !== Views.MONTH && isAdminPanel) ||
-					// Not MONTH is blocked
-					(view !== Views.MONTH && visibleMeetings[i].blocked) ||
-					// Is owner of meeting
-					visibleMeetings[i].customer === userId
+					((view === Views.MONTH && visibleMeetings[i].data.allDay) ||
+						// Not MONTH and IsAdminPanel
+						(view !== Views.MONTH && isAdminPanel) ||
+						// Not MONTH is blocked
+						(view !== Views.MONTH &&
+							visibleMeetings[i].data.blocked) ||
+						// Is owner of meeting
+						visibleMeetings[i].data.customer === userId) &&
+					// Filter by resources
+					((!resourceMap.isMany &&
+						visibleMeetings[i].resourceId ===
+							resourceMap.selected?.id) ||
+						(resourceMap.isMany &&
+							resourceMap.data.some(
+								(resource) =>
+									visibleMeetings[i].resourceId ===
+									resource.id
+							)))
 				)
 					meetings.push(visibleMeetings[i])
 			}
 		}
+
 		console.log(view, meetings.length, visibleMeetings.length)
 
 		return (
@@ -856,12 +911,17 @@ class Calendar extends Component {
 						events={meetings}
 						step={calendar_step}
 						timeslots={calendar_timeslots}
-						views={{
-							week: true,
-							month: true,
-							threedays: ThreeDaysView,
-							day: true,
-						}}
+						views={Object.assign(
+							{
+								week: true,
+								month: true,
+								threedays: ThreeDaysView,
+								day: true,
+							},
+							barbers.length + resourcesLength > 1 && isAdminPanel
+								? { reception: Day }
+								: {}
+						)}
 						view={view}
 						date={currentDate}
 						min={minDate}
@@ -887,6 +947,11 @@ class Calendar extends Component {
 									{...props}
 									onSelectSlot={this.onSelectSlot}
 								/>
+							),
+							timeGutterHeader: (props) => (
+								<b style={{ margin: '0.5rem' }}>
+									tydz. {moment(currentDate).week()}
+								</b>
 							),
 							week: {
 								header: (props) => (
@@ -916,11 +981,24 @@ class Calendar extends Component {
 						titleAccessor={(event) =>
 							getEventTooltip(event, services, false)
 						}
+						startAccessor={(event) =>
+							event.data.blocked ? event.data.start : event.start
+						}
+						endAccessor={(event) =>
+							event.data.blocked ? event.data.end : event.end
+						}
+						allDayAccessor={(event) => event.data.allDay}
 						tooltipAccessor={null}
+						resources={
+							isAdminPanel && view === 'reception'
+								? resourceMap.data
+								: null
+						}
 						messages={{
 							month: 'Miesiąc',
 							week: 'Tydzień',
 							day: 'Dzień',
+							reception: 'Recepcja',
 							date: 'Data',
 							event: 'Spotkanie',
 							threedays: '3 Dni',
@@ -945,8 +1023,10 @@ const mapStateToProps = (state) => ({
 	meetings: state.meetings.data,
 	loadedDates: state.meetings.loadedDates,
 	visibleMeetings: state.meetings.visibleData,
-	calendarData: state.meetings.calendarData,
+	calendarDates: state.meetings.calendarDates,
+	resourceMap: state.meetings.resourceMap,
 	barbers: state.data.barbers,
+	resourcesLength: state.data.cms.data.resources.length,
 	services: state.data.cms.data.services,
 	one_slot_max_meetings: state.data.cms.data.one_slot_max_meetings,
 	calendar_step: state.data.cms.data.calendar_step,
@@ -972,6 +1052,7 @@ const mapDispatchToProps = {
 	loadMeetings,
 	changeVisibleMeetings,
 	updateCalendarDates,
+	updateResourceMap,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar)

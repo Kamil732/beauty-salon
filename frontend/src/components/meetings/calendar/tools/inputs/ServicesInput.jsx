@@ -10,6 +10,7 @@ import FormControl from '../../../../../layout/forms/FormControl'
 import Button from '../../../../../layout/buttons/Button'
 import Modal from '../../../../../layout/Modal'
 import ErrorBoundary from '../../../../ErrorBoundary'
+import CircleLoader from '../../../../../layout/loaders/CircleLoader'
 import ReactTooltip from 'react-tooltip'
 import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 
@@ -99,7 +100,13 @@ function ServicesInput({
 				<Modal closeModal={() => setSelected({})} isChild>
 					<Modal.Body>
 						<ErrorBoundary>
-							<Suspense fallback={'Ładowanie...'}>
+							<Suspense
+								fallback={
+									<div className="center-container">
+										<CircleLoader />
+									</div>
+								}
+							>
 								<BarberInput
 									value={findValueBySelectedId().barber}
 									onChange={(option) =>

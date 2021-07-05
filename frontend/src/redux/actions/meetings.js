@@ -1,5 +1,4 @@
 import {
-	ADD_MEETING,
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
@@ -8,6 +7,7 @@ import {
 	CHANGE_VISIBLE_MEETINGS,
 	UPDATE_MEETING,
 	UPDATE_CALENDAR_DATES,
+	UPDATE_RESOURCE_MAP,
 } from './types'
 
 import moment from 'moment'
@@ -16,9 +16,10 @@ import { NotificationManager } from 'react-notifications'
 import axios from 'axios'
 
 // Helper functions
-const setMeeting = (data) => {
-	data.start = moment.utc(data.start).toDate()
-	data.end = moment.utc(data.end).toDate()
+const setMeeting = (data, getState) => {
+	// Convert data
+	data.start = moment(data.start).toDate()
+	data.end = moment(data.end).toDate()
 
 	if (
 		data.do_not_work &&
@@ -27,7 +28,35 @@ const setMeeting = (data) => {
 	)
 		data.allDay = true
 
-	return data
+	// Create support data
+	let res = []
+	for (let i = 0; i < data.services.length; i++) {
+		const eventData = {
+			id: data.services[i].id,
+			start: moment(data.services[i].start).toDate(),
+			end: moment(data.services[i].end).toDate(),
+			data,
+		}
+
+		for (let j = 0; j < data.services[i].resources.length; j++)
+			res.push({
+				...eventData,
+				color: getState().data.cms.data.resources.find(
+					({ id }) => id === data.services[i].resources[j]
+				).color,
+				resourceId: `resource-${data.services[i].resources[j]}`,
+			})
+
+		res.push({
+			...eventData,
+			color: getState().data.barbers.find(
+				({ id }) => id === data.services[i].barber
+			).color,
+			resourceId: `barber-${data.services[i].barber}`,
+		})
+	}
+
+	return res
 }
 
 const getDates = (from, to, loadedDates) => {
@@ -65,6 +94,16 @@ export const updateCalendarDates = (data) => (dispatch) => {
 	})
 }
 
+export const updateResourceMap = (name, value) => (dispatch) => {
+	if (name !== 'isMany')
+		localStorage.setItem(`resource-map-${name}`, JSON.stringify(value))
+
+	dispatch({
+		type: UPDATE_RESOURCE_MAP,
+		payload: { name, value },
+	})
+}
+
 export const addLoadedDates = (dates) => (dispatch) => {
 	dispatch({
 		type: ADD_LOADED_DATES,
@@ -84,6 +123,7 @@ export const loadMeetings =
 			dispatch({ type: MEETINGS_LOADING })
 
 			try {
+				let data = []
 				let res = await axios.get(
 					`${process.env.REACT_APP_API_URL}/meetings/?from=${
 						dates[0]
@@ -91,13 +131,13 @@ export const loadMeetings =
 				)
 
 				for (let i = 0; i < res.data.length; i++)
-					res.data[i] = setMeeting(res.data[i])
+					data.push(...setMeeting(res.data[i], getState))
 
+				dispatch(addLoadedDates(dates))
 				dispatch({
 					type: LOAD_MEETINGS,
-					payload: res.data,
+					payload: data,
 				})
-				dispatch(addLoadedDates(dates))
 			} catch (err) {
 				NotificationManager.error(
 					'Nie udało się załadować wizyt',
@@ -118,8 +158,8 @@ export const addMeeting = (data) => async (dispatch, getState) => {
 
 		if (meeting)
 			dispatch({
-				type: ADD_MEETING,
-				payload: setMeeting(meeting),
+				type: LOAD_MEETINGS,
+				payload: setMeeting(meeting, getState),
 			})
 	}
 }
@@ -134,13 +174,16 @@ export const removeMeeting = (id) => (dispatch) => {
 }
 
 export const updateMeeting = (id) => async (dispatch, getState) => {
-	if (getState().meetings.data.some((meeting) => meeting.id === id)) {
+	if (getState().meetings.data.some((meeting) => meeting.data.id === id)) {
 		const meeting = await getMeeting(id)
 
 		if (meeting)
 			dispatch({
 				type: UPDATE_MEETING,
-				payload: setMeeting(meeting),
+				payload: {
+					id: meeting.id,
+					data: setMeeting(meeting, getState),
+				},
 			})
 	}
 }
@@ -183,7 +226,7 @@ export const connectMeetingWS = () => (dispatch) => {
 			case REMOVE_MEETING:
 				dispatch(removeMeeting(data.payload))
 				break
-			case ADD_MEETING:
+			case LOAD_MEETINGS:
 				dispatch(addMeeting(data.payload))
 				break
 			case UPDATE_MEETING:

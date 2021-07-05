@@ -1,6 +1,5 @@
 import moment from 'moment'
 import {
-	ADD_MEETING,
 	REMOVE_MEETING,
 	MEETINGS_LOADING,
 	MEETINGS_CONNECT_WS,
@@ -10,14 +9,21 @@ import {
 	CHANGE_VISIBLE_MEETINGS,
 	UPDATE_MEETING,
 	UPDATE_CALENDAR_DATES,
+	UPDATE_RESOURCE_MAP,
 } from '../actions/types'
 
 const initialState = {
 	loading: false,
 	data: [],
-	loadedDates: [],
 	visibleData: [],
-	calendarData: {
+	loadedDates: [],
+	resourceMap: {
+		isMany: null,
+		selected:
+			JSON.parse(localStorage.getItem(`resource-map-selected`)) || {},
+		data: JSON.parse(localStorage.getItem(`resource-map-data`)) || [],
+	},
+	calendarDates: {
 		currentDate: new Date(),
 		startOfMonth: moment().startOf('month').startOf('week').toDate(),
 		endOfMonth: moment().endOf('month').endOf('week').toDate(),
@@ -66,8 +72,7 @@ export default function (state = initialState, action) {
 				...state,
 				data: [...state.data, ...action.payload],
 			}
-		case ADD_MEETING:
-			return { ...state, data: [...state.data, action.payload] }
+
 		case REMOVE_MEETING:
 			return {
 				...state,
@@ -78,17 +83,18 @@ export default function (state = initialState, action) {
 		case UPDATE_MEETING:
 			return {
 				...state,
-				data: state.data.map((item) => {
-					if (item.id !== action.payload.id) return item
-
-					return action.payload
-				}),
+				data: [
+					...state.data.filter(
+						(item) => item.data.id !== action.payload.id
+					),
+					...action.payload.data,
+				],
 			}
 		case UPDATE_CALENDAR_DATES:
 			return {
 				...state,
-				calendarData: {
-					currentDate: action.payload,
+				calendarDates: {
+					currentDate: moment(action.payload).toDate(),
 					startOfMonth: moment(action.payload)
 						.startOf('month')
 						.startOf('week')
@@ -96,15 +102,11 @@ export default function (state = initialState, action) {
 					endOfMonth: moment(action.payload)
 						.endOf('month')
 						.endOf('week')
-
 						.toDate(),
 					startOfWeek: moment(action.payload)
 						.startOf('week')
 						.toDate(),
-					endOfWeek: moment(action.payload)
-						.endOf('week')
-
-						.toDate(),
+					endOfWeek: moment(action.payload).endOf('week').toDate(),
 					startOf3days: moment(action.payload)
 						.startOf('day')
 						.subtract(1, 'days')
@@ -113,6 +115,14 @@ export default function (state = initialState, action) {
 						.endOf('day')
 						.add(1, 'days')
 						.toDate(),
+				},
+			}
+		case UPDATE_RESOURCE_MAP:
+			return {
+				...state,
+				resourceMap: {
+					...state.resourceMap,
+					[action.payload.name]: action.payload.value,
 				},
 			}
 		default:
