@@ -9,7 +9,7 @@
 @mixin color($color) {
 	color: set-text-color($color);
 	background-color: $color !important;
-	border: 1px solid $color !important;
+	border: 1px solid darken($color, 10%) !important;
 }
 
 @mixin box-shadow {

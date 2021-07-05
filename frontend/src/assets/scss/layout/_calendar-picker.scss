@@ -2,7 +2,6 @@
 	background-color: $surface-color !important;
 	border: none !important;
 	width: 100% !important;
-	height: 15.5rem !important;
 
 	& > &__navigation {
 		margin-bottom: 4px !important;
@@ -28,7 +27,7 @@
 	}
 
 	&__tile {
-		padding: 0.5em !important;
+		padding: 0.3rem !important;
 		border: 1px solid transparent !important;
 
 		&--now {
@@ -38,7 +37,8 @@
 
 		&--active,
 		&--hasActive,
-		&:enabled:hover {
+		&:enabled:hover,
+		&:enabled:focus {
 			background: transparent !important;
 			border-color: $active-element !important;
 			color: $active-element !important;

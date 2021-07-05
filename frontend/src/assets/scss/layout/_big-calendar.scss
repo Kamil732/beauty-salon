@@ -143,8 +143,27 @@ $rbc-css-prefix: calendar;
 	}
 }
 
+.rbc-time-gutter {
+	.rbc-time-slot {
+		cursor: default;
+		background-color: inherit;
+
+		&:hover {
+			background-color: inherit;
+		}
+	}
+}
+
 .rbc-time-header-cell {
 	min-height: auto !important;
+}
+
+.rbc-time-header-gutter {
+	font-size: 0.7em;
+	white-space: nowrap;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .rbc-current-time-indicator {

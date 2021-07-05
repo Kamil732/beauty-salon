@@ -4,12 +4,40 @@
 	align-items: center;
 }
 
+.btn-resources-container {
+	cursor: default;
+
+	user-select: none;
+	font-size: 0.85em;
+
+	&:hover {
+		background-color: $shadow-color;
+	}
+
+	& > label {
+		padding: 4px 0.3rem;
+		width: 100%;
+		display: flex;
+		gap: 0.2rem;
+
+		& > span {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		& > div {
+			margin-left: auto;
+		}
+	}
+}
+
 .btn-group-container {
 	display: flex;
 	align-items: center;
 
 	button {
 		border-radius: 0;
+		white-space: nowrap;
 
 		&:first-of-type {
 			border-radius: 4px 0 0 4px;
@@ -90,7 +118,7 @@
 
 	&__extraSmall {
 		color: $active-element;
-		padding: 0 0 0 0.5rem;
+		padding: 0;
 		border: none;
 		background-color: transparent;
 	}

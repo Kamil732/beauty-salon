@@ -56,12 +56,41 @@
 	border-radius: 12px;
 }
 
+.black {
+	@include color($black-color);
+}
+.light-blue {
+	@include color($light-blue-color);
+}
+.blue {
+	@include color($blue-color);
+}
+.light-green {
+	@include color($light-green-color);
+}
+.green {
+	@include color($green-color);
+}
+.pink {
+	@include color($pink-color);
+}
+.purple {
+	@include color($purple-color);
+}
 .brown {
 	@include color($brown-color);
 }
+.yellow {
+	@include color($yellow-color);
+}
+.orange {
+	@include color($orange-color);
+}
 
-.green {
-	@include color($green-color);
+.box-color {
+	width: 1rem;
+	height: 1rem;
+	border-radius: 4px;
 }
 
 @include media-tablet {
