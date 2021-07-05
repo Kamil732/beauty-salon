@@ -35,6 +35,8 @@ class Meeting(models.Model):
 
 class ServiceData(models.Model):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name='services_data')
+    start = models.DateTimeField(verbose_name='Zaczyna się o')
+    end = models.DateTimeField(verbose_name='Kończy się o')
     service = models.ForeignKey('data.Service', on_delete=models.CASCADE, related_name='services_data')
     barber = models.ForeignKey(Barber, on_delete=models.CASCADE, related_name='services_data')
     resources = models.ManyToManyField('data.Resource', blank=True, related_name='services_data')

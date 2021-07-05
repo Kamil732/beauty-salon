@@ -61,6 +61,8 @@ class Account(AbstractBaseUser):
     objects = AccountManager()
 
     def __str__(self):
+        if self.profile:
+            return self.profile
         return self.email
 
     @property

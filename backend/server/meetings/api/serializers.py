@@ -20,7 +20,7 @@ class ServiceDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ServiceData
-        fields = ('id', 'barber', 'resources')
+        fields = ('id', 'start', 'end', 'barber', 'resources')
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class MeetingSerializer(serializers.ModelSerializer):
 
     #     # Get meetings in the same slot
     #     same_slot_meetings = Meeting.objects.filter(
-    #         start__lte=data['start'], end__gt=data['start']).exclude(id=self.context.get('meeting_id')).select_related('barber')
+    #         start__lte=data['start'], end__gt=data['start']).exclude(id=self.context.get('meeting_id')).select_related('customer', 'barber', 'resource')
 
     #     working_hours = get_working_hours(data['start'].weekday())
     #     start_meeting = int(data['start'].hour) * 60 + int(data['start'].minute)

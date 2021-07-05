@@ -33,10 +33,7 @@ class MeetingListAPIView(generics.ListCreateAPIView):
         to = datetime.strptime(self.request.query_params.get(
             'to', monday + timedelta(days=7)), '%Y-%m-%d') + timedelta(days=1)
 
-        if from_ < today:
-            from_ = today
-
-        return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('customer').prefetch_related('services')
+        return Meeting.objects.filter(start__gte=from_, start__lte=to).select_related('customer', 'barber', 'resource').prefetch_related('services')
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -56,7 +53,7 @@ class MeetingListAPIView(generics.ListCreateAPIView):
 @method_decorator(csrf_protect, name='destroy')
 class MeetingDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrIsAdminOrReadOnly,)
-    queryset = Meeting.objects.select_related('customer').prefetch_related('services')
+    queryset = Meeting.objects.select_related('customer', 'barber', 'resource').prefetch_related('services')
     lookup_field = 'id'
     lookup_url_kwarg = 'meeting_id'
 
