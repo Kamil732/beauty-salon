@@ -1,8 +1,10 @@
+import React, { useCallback } from 'react'
 import moment from 'moment'
-import React from 'react'
+
+import { GrResources } from 'react-icons/gr'
 
 export default function getEventTooltip(
-	{ data: event },
+	{ id: eventServiceId, data: event },
 	services,
 	showTime = true
 ) {
@@ -30,14 +32,28 @@ export default function getEventTooltip(
 						{event.customer_first_name} {event.customer_last_name}
 					</span>
 					<b>Usługi:</b>
-					<ol>
-						{event.services.map((_service, index) => (
-							<li key={index}>
+					<ol style={{ listStyle: 'none' }}>
+						{event.services.map((service, index) => (
+							<li
+								key={service.id}
+								style={{
+									fontWeight:
+										service.id === eventServiceId
+											? 600
+											: 400,
+								}}
+							>
+								{index + 1}/{event.services.length}{' '}
 								{
-									services.find(
-										(service) => service.id === _service.id
-									).name
-								}
+									services.find(({ id }) => id === service.id)
+										.name
+								}{' '}
+								{service.resources.length > 0 && (
+									<>
+										<GrResources />{' '}
+										{service.resources.length}
+									</>
+								)}
 							</li>
 						))}
 					</ol>

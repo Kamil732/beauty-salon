@@ -1,17 +1,21 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { useId } from 'react-id-generator'
+
 import ReactTooltip from 'react-tooltip'
 import getEventTooltip from '../../../../helpers/getEventTooltip'
 
 function EventWrapper({ event, children, services }) {
+	const [id] = useId(1, 'eventTip-')
+
 	return (
 		<>
-			<div data-tip data-for={`eventTip-${event.id}`}>
+			<div data-tip data-for={id}>
 				{children}
 			</div>
 			<ReactTooltip
-				id={`eventTip-${event.id}`}
+				id={id}
 				place="right"
 				type="light"
 				borderColor="grey"
