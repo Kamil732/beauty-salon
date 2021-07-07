@@ -2,13 +2,14 @@
 @import '../../abstarct/config';
 
 $prefix: form-control;
+$form-control-vertical-margin: 2.5rem;
 
 .form-group {
 	display: flex;
 	align-items: baseline;
 	gap: 1rem;
 	width: 100%;
-	margin: -2.5rem 0;
+	margin: -#{$form-control-vertical-margin} 0;
 
 	&:first-of-type {
 		margin-top: 0;
@@ -21,7 +22,7 @@ $prefix: form-control;
 
 .#{$prefix} {
 	position: relative;
-	margin: 2.5rem 0;
+	margin: $form-control-vertical-margin 0;
 	width: 100%;
 }
 
