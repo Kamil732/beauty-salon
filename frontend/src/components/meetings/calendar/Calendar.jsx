@@ -643,7 +643,7 @@ class Calendar extends Component {
 
 	onSelecting = () => (this.props.isAdminPanel ? true : false)
 
-	onSelectEvent = ({ data: event }) => {
+	onSelectEvent = (event) => {
 		const { isAdminPanel, userId } = this.props
 
 		if (isAdminPanel || (event.customer === userId && !event.blocked))
@@ -831,21 +831,13 @@ class Calendar extends Component {
 										) : (
 											<AddMeetingAdminForm
 												addMeeting={this.addMeeting}
+												resourceId={selected.resourceId}
 												isBlocked={
 													selected.slots.length > 2 ||
 													selected.start.getHours() *
 														60 +
 														selected.start.getMinutes() ===
-														0 ||
-													meetings.filter(
-														(meeting) =>
-															meeting.start >=
-																selected.start &&
-															meeting.end <=
-																selected.end
-													).length >=
-														this.props
-															.one_slot_max_meetings
+														0
 												}
 												startDate={selected.start}
 												calendarStep={calendar_step}

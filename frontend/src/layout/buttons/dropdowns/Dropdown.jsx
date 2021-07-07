@@ -285,7 +285,7 @@ class Dropdown extends Component {
 }
 
 function ClearBtn({ clear, value, ...props }) {
-	const [tooltipId] = useId('clearableTip')
+	const [tooltipId] = useId(1, 'clearableTip')
 
 	if (!value) return null
 

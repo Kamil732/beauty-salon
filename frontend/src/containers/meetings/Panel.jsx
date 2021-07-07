@@ -56,7 +56,7 @@ function Panel() {
 						<span className="dashboard__btn__icon">
 							<FaCalendarAlt />
 						</span>
-						Kalendarz
+						kalendarz
 					</NavLink>
 					<NavLink
 						to={process.env.REACT_APP_PANEL_CUSTOMERS_URL}
@@ -65,7 +65,7 @@ function Panel() {
 						<span className="dashboard__btn__icon">
 							<ImUsers />
 						</span>
-						Klienci
+						klienci
 					</NavLink>
 					<NavLink
 						to={process.env.REACT_APP_PANEL_STATISTICS_URL}
@@ -74,7 +74,7 @@ function Panel() {
 						<span className="dashboard__btn__icon">
 							<FaChartPie />
 						</span>
-						Statystki
+						statystki
 					</NavLink>
 					<NavLink
 						to={process.env.REACT_APP_PANEL_COMMUNICATION_URL}
@@ -83,7 +83,7 @@ function Panel() {
 						<span className="dashboard__btn__icon">
 							<IoChatbubbles />
 						</span>
-						Łączność
+						łączność
 					</NavLink>
 					<NavLink
 						to={process.env.REACT_APP_PANEL_SERVICES_URL}
@@ -92,7 +92,7 @@ function Panel() {
 						<span className="dashboard__btn__icon">
 							<FaListAlt />
 						</span>
-						Usługi
+						usługi
 					</NavLink>
 					<NavLink
 						to={process.env.REACT_APP_PANEL_SETTINGS_URL}
@@ -101,7 +101,7 @@ function Panel() {
 						<span className="dashboard__btn__icon">
 							<IoSettingsSharp />
 						</span>
-						Ustawienia
+						ustawienia
 					</NavLink>
 				</Dashboard.Nav>
 

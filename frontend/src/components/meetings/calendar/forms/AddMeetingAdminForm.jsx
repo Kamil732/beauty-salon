@@ -1,25 +1,35 @@
 import React, { Component, lazy, Suspense } from 'react'
+import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
-import FormControl from '../../../../layout/forms/FormControl'
-import Button from '../../../../layout/buttons/Button'
+import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
+
 import CSRFToken from '../../../CSRFToken'
+import FormControl from '../../../../layout/forms/FormControl'
+import FormGroup from '../../../../layout/forms/FormGroup'
+import Button from '../../../../layout/buttons/Button'
+import Modal from '../../../../layout/Modal'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
-import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
-import Modal from '../../../../layout/Modal'
-import FormGroup from '../../../../layout/forms/FormGroup'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
 const CustomerInput = lazy(() => import('../tools/inputs/CustomerInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
+const BarberAndResourcesInputs = lazy(() =>
+	import('../tools/inputs/BarberAndResourcesInputs')
+)
 
 class AddMeetingAdminForm extends Component {
 	static propTypes = {
+		resourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+			.isRequired,
 		isBlocked: PropTypes.bool,
 		startDate: PropTypes.instanceOf(Date),
 		calendarStep: PropTypes.number,
+		barbers: PropTypes.array,
+		resources: PropTypes.array,
+		resourceMap: PropTypes.object,
 		addMeeting: PropTypes.func.isRequired,
 		changeEndDate: PropTypes.func.isRequired,
 	}
@@ -27,13 +37,26 @@ class AddMeetingAdminForm extends Component {
 	constructor(props) {
 		super(props)
 
+		// Get barber's id from resources
+		const selectedResourceMap = props.resourceMap.isMany
+			? props.resourceMap.data.find(({ id }) => id === props.resourceId)
+			: props.resourceMap.selected
+
 		this.state = {
 			loading: false,
 			isAddCustomerForm: false,
-
 			blocked: props.isBlocked,
+			barber: selectedResourceMap?.barberId
+				? props.barbers.find(
+						({ id }) => id === selectedResourceMap.barberId
+				  )
+				: null,
+			resource: selectedResourceMap?.resourceId
+				? props.resources.find(
+						({ id }) => id === selectedResourceMap.resourceId
+				  )
+				: null,
 			customer: null,
-			barber: null,
 			services: [],
 			private_description: '',
 			customer_description: '',
@@ -101,6 +124,7 @@ class AddMeetingAdminForm extends Component {
 			blocked,
 			customer,
 			barber,
+			resource,
 			services,
 			private_description,
 			customer_description,
@@ -114,6 +138,7 @@ class AddMeetingAdminForm extends Component {
 
 		return (
 			<>
+				{' '}
 				{isAddCustomerForm && (
 					<Modal
 						closeModal={() =>
@@ -177,6 +202,8 @@ class AddMeetingAdminForm extends Component {
 										<FormGroup>
 											<ServicesInput
 												isAdminPanel
+												defaultBarber={barber}
+												defaultResource={resource}
 												required={!blocked}
 												value={services}
 												updateState={(state) =>
@@ -185,13 +212,19 @@ class AddMeetingAdminForm extends Component {
 													})
 												}
 											/>
+
 											{services.length === 0 && (
-												<BarberInput
-													required={!blocked}
-													value={barber}
-													onChange={(option) =>
+												<BarberAndResourcesInputs
+													barber={barber}
+													updateBarber={(state) =>
 														this.setState({
-															barber: option,
+															barber: state,
+														})
+													}
+													resource={resource}
+													updateResource={(state) =>
+														this.setState({
+															resource: state,
 														})
 													}
 												/>
@@ -269,4 +302,10 @@ class AddMeetingAdminForm extends Component {
 	}
 }
 
-export default AddMeetingAdminForm
+const mapStateToProps = (state) => ({
+	barbers: state.data.barbers,
+	resources: state.data.cms.data.resources,
+	resourceMap: state.meetings.resourceMap,
+})
+
+export default connect(mapStateToProps, null)(AddMeetingAdminForm)

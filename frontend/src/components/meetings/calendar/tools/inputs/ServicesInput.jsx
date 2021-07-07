@@ -18,9 +18,10 @@ const BarberInput = lazy(() => import('./BarberInput'))
 const ResourcesInput = lazy(() => import('./ResourcesInput'))
 
 function ServicesInput({
+	defaultBarber,
+	defaultResource,
 	value,
 	services,
-	barbers,
 	resources,
 	updateState,
 	isAdminPanel,
@@ -31,24 +32,16 @@ function ServicesInput({
 	const [dropdownId] = useId(1, 'service-')
 	const [multiListId] = useId(1, 'multiList-')
 
-	const getServiceBarberTime = useCallback(
-		(barber, id) =>
-			barber.services_data.find(({ service }) => service === id)
-				?.display_time,
-		[]
-	)
+	const getServiceBarberTime = useCallback((barber, id) => {
+		if (barber === null) return null
+
+		return barber.services_data.find(({ service }) => service === id)
+			?.display_time
+	}, [])
 
 	const findValueBySelectedId = useCallback(
 		() => value.find((option) => option.value.id === selected.value.id),
 		[value, selected]
-	)
-
-	const getBarberOpitionsFromSelected = useCallback(
-		() =>
-			selected.value.barbers.map((barberId) =>
-				barbers.find((barber) => barber.id === barberId)
-			),
-		[barbers, selected]
 	)
 
 	const getServicesPriceSum = useCallback(
@@ -94,10 +87,39 @@ function ServicesInput({
 		)
 	}
 
+	const getBarberInput = () => (
+		<BarberInput
+			value={findValueBySelectedId().barber}
+			onChange={(option) =>
+				updateState(
+					value.map((service) => {
+						if (service.value.id !== selected.value.id)
+							return service
+
+						return {
+							...service,
+							barber: option,
+						}
+					})
+				)
+			}
+		/>
+	)
+
 	return (
 		<FormControl>
 			{Object.keys(selected).length > 0 && (
 				<Modal closeModal={() => setSelected({})} isChild>
+					<Modal.Header>
+						<span className="text-broken">
+							{selected.value.name} (
+							{getServiceBarberTime(
+								selected.barber,
+								selected.value.id
+							) || selected.value.display_time}
+							, {selected.value.price} zł)
+						</span>
+					</Modal.Header>
 					<Modal.Body>
 						<ErrorBoundary>
 							<Suspense
@@ -107,26 +129,35 @@ function ServicesInput({
 									</div>
 								}
 							>
-								<BarberInput
-									value={findValueBySelectedId().barber}
-									onChange={(option) =>
-										updateState(
-											value.map((service) => {
-												if (
-													service.value.id !==
-													selected.value.id
-												)
-													return service
+								{findValueBySelectedId().resources.length ===
+								0 ? (
+									getBarberInput()
+								) : (
+									<Dropdown.InputContainer>
+										{getBarberInput()}
+										<Dropdown.ClearBtn
+											clear={() =>
+												updateState(
+													value.map((service) => {
+														if (
+															service.value.id !==
+															selected.value.id
+														)
+															return service
 
-												return {
-													...service,
-													barber: option,
-												}
-											})
-										)
-									}
-									options={getBarberOpitionsFromSelected()} // Get barbers related to service
-								/>
+														return {
+															...service,
+															barber: null,
+														}
+													})
+												)
+											}
+											value={
+												findValueBySelectedId().barber
+											}
+										/>
+									</Dropdown.InputContainer>
+								)}
 
 								<ResourcesInput
 									value={findValueBySelectedId().resources}
@@ -297,12 +328,11 @@ function ServicesInput({
 						onChange={(option) => {
 							const newOption = {
 								value: option,
-								barber:
-									barbers.find(
-										(barber) =>
-											barber.id === option.barbers[0]
-									) || null,
-								resources: [],
+								barber: defaultBarber ? defaultBarber : null,
+								resources: defaultResource
+									? [defaultResource]
+									: [],
+
 								// option.resources.map((resourceData) =>
 								// 	resources.find(
 								// 		(_resource) => _resource.id === resourceId
@@ -348,10 +378,11 @@ function ServicesInput({
 }
 
 ServicesInput.prototype.propTypes = {
+	defaultBarber: PropTypes.object,
+	defaultResource: PropTypes.object,
 	value: PropTypes.any.isRequired,
 	isAdminPanel: PropTypes.bool,
 	services: PropTypes.array,
-	barbers: PropTypes.array,
 	resources: PropTypes.array,
 	updateState: PropTypes.func.isRequired,
 }
@@ -359,7 +390,6 @@ ServicesInput.prototype.propTypes = {
 const mapStateToProps = (state) => ({
 	services: state.data.cms.data.services,
 	resources: state.data.cms.data.resources,
-	barbers: state.data.barbers,
 })
 
 export default connect(mapStateToProps, null)(ServicesInput)

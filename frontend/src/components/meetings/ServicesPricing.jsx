@@ -132,12 +132,11 @@ function ServicesPricing({ serviceGroups, services, barbers }) {
 						{getService(modalData, false)}
 						<CollapseMenu header={<h4>Przydzieleni fryzjerzy</h4>}>
 							{modalData.barbers.map((barber) => (
-								<CollapseMenu.Item key={barber.id}>
+								<CollapseMenu.Item key={barber}>
 									<h6>
 										{
 											barbers.find(
-												(_barber) =>
-													_barber.id === barber
+												({ id }) => id === barber
 											).full_name
 										}
 									</h6>

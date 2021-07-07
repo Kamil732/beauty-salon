@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import moment from 'moment'
 
 import { GrResources } from 'react-icons/gr'

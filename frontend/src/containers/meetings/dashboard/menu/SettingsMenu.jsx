@@ -3,6 +3,7 @@ import React from 'react'
 import { RiBarChartHorizontalFill } from 'react-icons/ri'
 import { FaDatabase, FaCalendarAlt, FaIdCardAlt } from 'react-icons/fa'
 import { ImUsers } from 'react-icons/im'
+import { GrResources } from 'react-icons/gr'
 import { IoChatbubbles, IoCard } from 'react-icons/io5'
 import { NavLink } from 'react-router-dom'
 
@@ -43,6 +44,13 @@ function CalendarMenu() {
 			>
 				<ImUsers className="icon-container__icon" />
 				Klienci
+			</NavLink>
+			<NavLink
+				to={process.env.REACT_APP_PANEL_SETTINGS_RESOURCES_URL}
+				className="select-menu__item icon-container"
+			>
+				<GrResources className="icon-container__icon" />
+				Zasoby
 			</NavLink>
 			<NavLink
 				to={process.env.REACT_APP_PANEL_SETTINGS_COMMUNICATION_URL}

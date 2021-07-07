@@ -1,17 +1,20 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import 'react-calendar/dist/Calendar.css'
 
 import moment from 'moment'
-import { connect } from 'react-redux'
 import { loadBarbers } from '../../../../redux/actions/data'
 import {
 	updateCalendarDates,
 	updateResourceMap,
 } from '../../../../redux/actions/meetings'
 
+import Button from '../../../../layout/buttons/Button'
 import ErorrBoundary from '../../../../components/ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
+import { NotificationManager } from 'react-notifications'
+
 const Calendar = lazy(() => import('react-calendar'))
 
 function CalendarMenu({
@@ -42,28 +45,40 @@ function CalendarMenu({
 	const onChangeResource = (e) => {
 		const resourceId = e.target.getAttribute('data-id')
 		const resourceTitle = e.target.getAttribute('data-title')
-		const isRadioBtn = e.target.type === 'radio'
+		const resourceBarberId =
+			parseInt(e.target.getAttribute('data-barber')) || null
+		const resourceResourceId =
+			parseInt(e.target.getAttribute('data-resource')) || null
 
-		if (isRadioBtn) {
-			updateResourceMap('selected', {
-				id: resourceId,
-				title: resourceTitle,
-			})
+		const data = {
+			id: resourceId,
+			title: resourceTitle,
+			barberId: resourceBarberId,
+			resourceId: resourceResourceId,
+		}
+
+		if (!resourceMap.isMany) {
+			updateResourceMap('selected', data)
 			return
 		}
 
-		if (e.target.checked) {
-			updateResourceMap('data', [
-				...resourceMap.data,
-				{ id: resourceId, title: resourceTitle },
-			])
+		if (resourceMap.data.some(({ id }) => id === resourceId)) {
+			if (resourceMap.data.length <= 1) {
+				NotificationManager.error(
+					'W widoku recepcji należy wybrać przynajmniej jednego pracownika.',
+					'Błąd'
+				)
+				return
+			}
+
+			updateResourceMap(
+				'data',
+				resourceMap.data.filter(({ id }) => id !== resourceId)
+			)
 			return
 		}
 
-		updateResourceMap(
-			'data',
-			resourceMap.data.filter((resource) => resource.id !== resourceId)
-		)
+		updateResourceMap('data', [...resourceMap.data, data])
 	}
 
 	return (
@@ -109,13 +124,14 @@ function CalendarMenu({
 											}
 											data-id={`barber-${barber.id}`}
 											data-title={barber.full_name}
+											data-barber={barber.id}
 											checked={
 												resourceMap.isMany
-													? resourceMap.data.find(
+													? resourceMap.data.some(
 															({ id }) =>
 																id ===
 																`barber-${barber.id}`
-													  )?.id
+													  )
 													: resourceMap.selected
 															?.id ===
 													  `barber-${barber.id}`
@@ -133,11 +149,11 @@ function CalendarMenu({
 						</div>
 					)}
 
-					{resources.length > 0 && (
-						<div className="tools-menu__item">
-							<h4 className="tools-menu__item__title">ZASOBY</h4>
+					<div className="tools-menu__item">
+						<h4 className="tools-menu__item__title">ZASOBY</h4>
 
-							{resources.map((resource) => (
+						{resources.length > 0 ? (
+							resources.map((resource) => (
 								<div
 									className="btn-resources-container"
 									key={resource.id}
@@ -151,13 +167,14 @@ function CalendarMenu({
 											}
 											data-id={`resource-${resource.id}`}
 											data-title={resource.name}
+											data-resource={resource.id}
 											checked={
 												resourceMap.isMany
-													? resourceMap.data.find(
+													? resourceMap.data.some(
 															({ id }) =>
 																id ===
 																`resource-${resource.id}`
-													  )?.id
+													  )
 													: resourceMap.selected
 															?.id ===
 													  `resource-${resource.id}`
@@ -171,9 +188,24 @@ function CalendarMenu({
 										></div>
 									</label>
 								</div>
-							))}
-						</div>
-					)}
+							))
+						) : (
+							<Button
+								small
+								primary
+								to={
+									process.env
+										.REACT_APP_PANEL_SETTINGS_RESOURCES_URL
+								}
+								style={{
+									fontSize: '0.75em',
+								}}
+								className="center-item"
+							>
+								Dodaj pierwszy zasób
+							</Button>
+						)}
+					</div>
 				</>
 			)}
 		</div>
