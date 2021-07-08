@@ -62,7 +62,7 @@ function ServicesInput({
 
 	const formatOptionLabel = (
 		{ id, name, display_time, price },
-		barber = null
+		barber = defaultBarber
 	) => {
 		const time = barber ? getServiceBarberTime(barber, id) : null
 
@@ -87,24 +87,28 @@ function ServicesInput({
 		)
 	}
 
-	const getBarberInput = () => (
-		<BarberInput
-			value={findValueBySelectedId().barber}
-			onChange={(option) =>
-				updateState(
-					value.map((service) => {
-						if (service.value.id !== selected.value.id)
-							return service
+	const getBarberInput = () => {
+		return (
+			<BarberInput
+				value={findValueBySelectedId().barber}
+				serviceId={selected.value.id}
+				serviceDisplayTime={selected.value.display_time}
+				onChange={(option) =>
+					updateState(
+						value.map((service) => {
+							if (service.value.id !== selected.value.id)
+								return service
 
-						return {
-							...service,
-							barber: option,
-						}
-					})
-				)
-			}
-		/>
-	)
+							return {
+								...service,
+								barber: option,
+							}
+						})
+					)
+				}
+			/>
+		)
+	}
 
 	return (
 		<FormControl>
