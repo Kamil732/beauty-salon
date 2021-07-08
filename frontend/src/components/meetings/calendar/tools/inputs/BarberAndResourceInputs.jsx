@@ -14,7 +14,7 @@ import CircleLoader from '../../../../../layout/loaders/CircleLoader'
 const BarberInput = lazy(() => import('./BarberInput'))
 const ResourceInput = lazy(() => import('./ResourceInput'))
 
-function BarberAndResourcesInputs({
+function BarberAndResourceInputs({
 	barber,
 	updateBarber,
 	resource,
@@ -160,4 +160,4 @@ const mapStateToProps = (state) => ({
 	resources: state.data.cms.data.resources,
 })
 
-export default connect(mapStateToProps, null)(BarberAndResourcesInputs)
+export default connect(mapStateToProps, null)(BarberAndResourceInputs)

@@ -16,8 +16,8 @@ const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
 const CustomerInput = lazy(() => import('../tools/inputs/CustomerInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
-const BarberAndResourcesInputs = lazy(() =>
-	import('../tools/inputs/BarberAndResourcesInputs')
+const BarberAndResourceInputs = lazy(() =>
+	import('../tools/inputs/BarberAndResourceInputs')
 )
 
 class AddMeetingAdminForm extends Component {
@@ -214,7 +214,7 @@ class AddMeetingAdminForm extends Component {
 											/>
 
 											{services.length === 0 && (
-												<BarberAndResourcesInputs
+												<BarberAndResourceInputs
 													barber={barber}
 													updateBarber={(state) =>
 														this.setState({
