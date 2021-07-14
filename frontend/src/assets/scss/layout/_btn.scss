@@ -283,6 +283,7 @@
 
 			&.active {
 				border-bottom-color: $secondary-color;
+				cursor: default;
 			}
 		}
 	}

@@ -1,0 +1,183 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
+
+# testing
+/frontend/coverage
+
+# production
+/frontend/frontend/build
+
+# misc
+/frontend/.DS_Store
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+
+# JavaScript build
+/backend/project/build/
+/frontend/build/
+
+# Django #
+backend/*.log
+backend/*.pot
+backend/*.pyc
+backend/__pycache__
+backend/db.sqlite3
+backend/media
+backend/
+backend/# Compiled source #
+backend/###################
+backend/*.com
+backend/*.class
+backend/*.dll
+backend/*.exe
+backend/*.o
+backend/*.so
+backend/*.pyc
+backend/
+backend/# Packages #
+backend/############
+backend/*.7z
+backend/*.dmg
+backend/*.gz
+backend/*.iso
+backend/*.jar
+backend/*.rar
+backend/*.tar
+backend/*.zip
+backend/
+backend/# Logs and databases #
+backend/######################
+backend/*.db
+backend/*.log
+backend/*.sql
+backend/*.sqlite
+backend/
+backend/# virtualenv generated files #
+backend/##############################
+backend/Scripts
+backend/Lib
+backend/Include
+backend/
+backend/# virtualenv folders #
+backend/######################
+backend/env
+backend/
+backend/# Backup files #
+backend/*.bak
+backend/
+backend/# If you are using PyCharm #
+backend/.idea/**/workspace.xml
+backend/.idea/**/tasks.xml
+backend/.idea/dictionaries
+backend/.idea/**/dataSources/
+backend/.idea/**/dataSources.ids
+backend/.idea/**/dataSources.xml
+backend/.idea/**/dataSources.local.xml
+backend/.idea/**/sqlDataSources.xml
+backend/.idea/**/dynamic.xml
+backend/.idea/**/uiDesigner.xml
+backend/.idea/**/gradle.xml
+backend/.idea/**/libraries
+backend/*.iws /out/
+backend/
+backend/# Python #
+backend/*.py[cod]
+backend/*$py.class
+backend/
+backend/# Distribution / packaging
+backend/.Python build/
+backend/develop-eggs/
+backend/dist/
+backend/downloads/
+backend/eggs/
+backend/.eggs/
+backend/lib/
+backend/lib64/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/wheels/
+backend/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
+backend/*.manifest
+backend/*.spec
+backend/
+backend/# Installer logs
+backend/pip-log.txt
+backend/pip-delete-this-directory.txt
+backend/
+backend/# Unit test / coverage reports
+backend/htmlcov/
+backend/.tox/
+backend/.coverage
+backend/.coverage.*
+backend/.cache
+backend/.pytest_cache/
+backend/nosetests.xml
+backend/coverage.xml
+backend/*.cover
+backend/.hypothesis/
+backend/
+backend/# Jupyter Notebook
+backend/.ipynb_checkpoints
+backend/
+backend/# pyenv
+backend/.python-version
+backend/
+backend/# celery
+backend/celerybeat-schedule.*
+backend/
+backend/# SageMath parsed files
+backend/*.sage.py
+backend/
+backend/# Environments
+backend/.env
+backend/.venv
+backend/env/
+backend/venv/
+backend/ENV/
+backend/env.bak/
+backend/venv.bak/
+backend/
+backend/# mkdocs documentation
+backend//site
+backend/
+backend/# mypy
+backend/.mypy_cache/
+backend/
+backend/# Sublime Text #
+backend/*.tmlanguage.cache
+backend/*.tmPreferences.cache
+backend/*.stTheme.cache
+backend/*.sublime-workspace
+backend/*.sublime-project
+backend/
+backend/# sftp configuration file
+backend/sftp-config.json
+backend/
+backend/# Package control specific files Package
+backend/Control.last-run
+backend/Control.ca-list
+backend/Control.ca-bundle
+backend/Control.system-ca-bundle
+backend/GitHub.sublime-settings
+backend/
+backend/# Visual Studio Code #
+backend/.vscode/*
+backend/!.vscode/settings.json
+backend/!.vscode/tasks.json
+backend/!.vscode/launch.json
+backend/!.vscode/extensions.json
+backend/.history
