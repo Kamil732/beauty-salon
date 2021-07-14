@@ -6,7 +6,7 @@ $form-control-vertical-margin: 2.5rem;
 
 .form-group {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	gap: 1rem;
 	width: 100%;
 	margin: -#{$form-control-vertical-margin} 0;

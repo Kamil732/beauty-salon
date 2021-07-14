@@ -2,9 +2,10 @@
 	$border-radius: 6px;
 
 	z-index: 999;
-	max-width: 90%;
+	min-width: 90%;
 	margin: 0 auto;
 	background-color: $surface-color;
+	border: 1px solid $border-color;
 	border-radius: $border-radius;
 	position: relative;
 
@@ -17,10 +18,11 @@
 	}
 
 	& > &__body {
-		padding: 2rem;
+		padding: 1rem;
 	}
 
 	animation: show 0.4s;
+	@include box-shadow;
 }
 
 @keyframes show {
@@ -36,6 +38,10 @@
 
 @include media-tablet {
 	.modal {
-		min-width: 50%;
+		min-width: 60%;
+
+		& > &__body {
+			padding: 2rem;
+		}
 	}
 }

@@ -5,23 +5,36 @@
 		font-size: 0.9em;
 	}
 
-	border: 1px solid #ccc;
+	border: 1px solid $border-color;
 	border-radius: 6px;
+	width: 100%;
 	background-color: $secondary-color;
+	border-spacing: 0;
 
-	&__item {
+	tr {
 		position: relative;
 		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		flex-wrap: nowrap;
-		padding: 0.2rem 0.5rem;
-		border-bottom: 1px solid #ccc;
+		height: 47px;
 
-		&:last-child {
+		padding: 0.2rem 1rem;
+
+		&:last-child > td {
 			border-bottom: none;
 		}
+
+		& > td {
+			border-bottom: 1px solid $border-color;
+			padding: 0.2rem 0.5rem;
+		}
+	}
+}
+
+.service-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+
+	&.selected-format {
+		font-size: 0.9em;
 	}
 }

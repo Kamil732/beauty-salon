@@ -76,7 +76,7 @@
 	& > &__body {
 		background-color: $background-color;
 		width: 100%;
-		border-top: 1px solid #ccc;
+		border-top: 1px solid $border-color;
 		margin-top: 4.5rem;
 		padding: 1rem 1rem 0 1rem;
 		overflow-y: auto;
@@ -92,8 +92,8 @@
 			width: 220px;
 			box-shadow: none;
 			margin-top: 4.5rem;
-			border-top: 1px solid #ccc;
-			border-right: 1px solid #ccc;
+			border-top: 1px solid $border-color;
+			border-right: 1px solid $border-color;
 			border-radius: 0;
 		}
 

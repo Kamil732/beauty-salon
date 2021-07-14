@@ -3,7 +3,8 @@
 
 	&__value {
 		position: absolute;
-		padding: 5px 0;
+		padding: 3px 0;
+		font-size: 0.8em;
 	}
 
 	&__input-container {
@@ -16,7 +17,7 @@
 	&-options {
 		background-color: $surface-color;
 		position: absolute;
-		border: 1px solid #ccc;
+		border: 1px solid $border-color;
 		padding: 0.3rem 0;
 		border-radius: 6px;
 		z-index: 4;

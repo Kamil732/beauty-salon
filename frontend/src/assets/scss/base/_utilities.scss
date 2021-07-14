@@ -14,6 +14,20 @@
 	white-space: pre;
 }
 
+.line-break {
+	position: absolute;
+	left: 0;
+	right: 0;
+	border-color: $secondary-color;
+}
+
+.inline-wrap {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+}
+
 .space-between {
 	display: flex;
 	justify-content: space-between;
@@ -21,8 +35,8 @@
 }
 
 .text-broken {
-	font-size: 0.8em;
-	opacity: 0.6;
+	font-size: 0.75em;
+	opacity: 0.8;
 }
 
 .slide-floor {

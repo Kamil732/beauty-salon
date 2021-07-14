@@ -86,7 +86,7 @@ a {
 	right: 0;
 	bottom: 0;
 	overflow: auto;
-	background-color: rgba(#000000, 0.3);
+	background-color: rgba(#000000, 0.1);
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
@@ -119,41 +119,36 @@ a {
 
 		& > .nav-btn {
 			position: relative;
-			line-height: 1.6;
 			opacity: 0.8;
 			display: flex;
-			padding-left: 3rem;
+			align-items: center;
+			gap: 0.5rem;
 			cursor: pointer;
 
-			& > .nav-btn__burger {
-				position: absolute;
-				left: 0.5rem;
-				top: 0.7rem;
+			@mixin burger-sizes {
 				width: 29px;
 				height: 3px;
-				border-radius: 10px;
+				border-radius: 6px;
 				background-color: set-text-color($background-color);
+			}
 
-				&::before {
-					content: '';
-					position: absolute;
-					top: -8px;
-					left: 0;
-					width: 29px;
-					height: 3px;
-					border-radius: 10px;
-					background-color: set-text-color($background-color);
-				}
+			& > .nav-btn__burger {
+				@include burger-sizes;
 
+				&::before,
 				&::after {
 					content: '';
 					position: absolute;
-					bottom: -8px;
 					left: 0;
-					width: 29px;
-					height: 3px;
-					border-radius: 10px;
-					background-color: set-text-color($background-color);
+					@include burger-sizes;
+				}
+
+				&::before {
+					top: 0;
+				}
+
+				&::after {
+					bottom: 0;
 				}
 			}
 		}
