@@ -20,7 +20,7 @@ class Meeting(models.Model):
     confirmed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.barber} - {self.customer}'
+        return f'{self.barber} - {self.customer} - {self.id}'
 
     def clean(self):
         if self.end and self.end <= self.start:
