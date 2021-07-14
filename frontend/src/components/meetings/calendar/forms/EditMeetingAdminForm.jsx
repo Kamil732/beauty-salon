@@ -2,8 +2,6 @@ import React, { Component, lazy, Suspense } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { BiLeftArrowAlt } from 'react-icons/bi'
-
 import CSRFToken from '../../../CSRFToken'
 import ButtonContainer from '../../../../layout/buttons/ButtonContainer'
 import Button from '../../../../layout/buttons/Button'
@@ -12,6 +10,7 @@ import FormGroup from '../../../../layout/forms/FormGroup'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
 import setMeetingEndDate from '../../../../helpers/setMeetingEndDate'
+import Modal from '../../../../layout/Modal'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
@@ -113,21 +112,33 @@ class EditMeetingAdminForm extends Component {
 		const {
 			selected: { blocked },
 		} = this.props
-		const { customer, barber, services, description } = this.state
+		const {
+			customer,
+			barber,
+			resource,
+			services,
+			private_description,
+			customer_description,
+		} = this.state
 
-		const payload = {
-			barber: barber?.id,
-			description,
-		}
-
-		if (!blocked) {
-			payload.customer = customer.id
-			payload.services = services.map((service) => ({
-				id: service.value.id,
-				barber: service.barber.id,
-				resources: service.resources.map((resource) => resource.id),
-			}))
-		}
+		const payload = blocked
+			? {
+					barber: barber?.id,
+					resource: resource?.id,
+					private_description,
+			  }
+			: {
+					customer: customer.id,
+					services: services.map((service) => ({
+						id: service.value.id,
+						barber: service.barber.id,
+						resources: service.resources.map(
+							(resource) => resource.id
+						),
+					})),
+					private_description,
+					customer_description,
+			  }
 
 		await this.props.saveMeeting(payload, (state) =>
 			this.setState({ saveLoading: state })
@@ -154,165 +165,172 @@ class EditMeetingAdminForm extends Component {
 			</div>
 		)
 
-		return isAddCustomerForm ? (
+		return (
 			<>
-				<Button
-					primary
-					rounded
-					small
-					onClick={() => this.setState({ isAddCustomerForm: false })}
-				>
-					<BiLeftArrowAlt size="23" />
-					Wróć
-				</Button>
-
+				{isAddCustomerForm && (
+					<Modal
+						closeModal={() =>
+							this.setState({ isAddCustomerForm: false })
+						}
+						isChild
+					>
+						<Modal.Header>Dodaj nowego klienta</Modal.Header>
+						<Modal.Body>
+							<ErrorBoundary>
+								<Suspense fallback={loader}>
+									<AddCustomerForm
+										setCustomer={(state) =>
+											this.setState({
+												customer: state,
+												isAddCustomerForm: false,
+											})
+										}
+									/>
+								</Suspense>
+							</ErrorBoundary>
+						</Modal.Body>
+					</Modal>
+				)}
 				<ErrorBoundary>
 					<Suspense fallback={loader}>
-						<AddCustomerForm
-							setCustomer={(state) =>
-								this.setState({
-									customer: state,
-									isAddCustomerForm: false,
-								})
-							}
-						/>
+						<form onSubmit={this.onSubmit}>
+							<CSRFToken />
+
+							{selected.blocked ? (
+								<BarberInput
+									required={selected.blocked}
+									value={barber}
+									onChange={(option) =>
+										this.setState({ barber: option })
+									}
+									extraChoices={[
+										{
+											label: 'Wszystkich',
+											value: 'everyone',
+										},
+									]}
+								/>
+							) : (
+								<>
+									<CustomerInput
+										required={!selected.blocked}
+										value={customer}
+										onChange={(option) =>
+											this.setState({ customer: option })
+										}
+										changeForm={() =>
+											this.setState({
+												isAddCustomerForm: true,
+											})
+										}
+									/>
+
+									<FormGroup>
+										<ServicesInput
+											isAdminPanel
+											required={!selected.blocked}
+											value={services}
+											updateState={(state) =>
+												this.setState({
+													services: state,
+												})
+											}
+											defaultBarber={barber}
+											defaultResource={resource}
+										/>
+
+										{services.length === 0 && (
+											<BarberAndResourceInputs
+												barber={barber}
+												updateBarber={(state) =>
+													this.setState({
+														barber: state,
+													})
+												}
+												resource={resource}
+												updateResource={(state) =>
+													this.setState({
+														resource: state,
+													})
+												}
+											/>
+										)}
+									</FormGroup>
+								</>
+							)}
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor="customer_description"
+									inputValue={customer_description}
+								>
+									Wiadomość dla klienta
+								</FormControl.Label>
+								<FormControl.Textarea
+									id="customer_description"
+									name="customer_description"
+									onChange={this.onChange}
+									value={customer_description}
+								/>
+							</FormControl>
+
+							<FormControl>
+								<FormControl.Label
+									htmlFor="private_description"
+									inputValue={private_description}
+								>
+									{selected.blocked
+										? 'Powód'
+										: 'Opis (widoczny dla personelu)'}
+								</FormControl.Label>
+								<FormControl.Textarea
+									id="private_description"
+									name="private_description"
+									onChange={this.onChange}
+									value={private_description}
+								/>
+							</FormControl>
+
+							<ButtonContainer
+								style={{ justifyContent: 'space-between' }}
+							>
+								<Button
+									type="button"
+									danger
+									small
+									onClick={() =>
+										this.props.deleteMeeting((state) =>
+											this.setState({
+												deleteLoading: state,
+											})
+										)
+									}
+									loading={deleteLoading}
+									loadingText="Usuwanie"
+									disabled={saveLoading}
+								>
+									Usuń {selected.blocked ? 'urlop' : 'wizytę'}
+								</Button>
+								<Button
+									type="submit"
+									success
+									small
+									loading={saveLoading}
+									loadingText="Zapisywanie"
+									disabled={
+										deleteLoading ||
+										(barber === selected.barber &&
+											customer === selected.customer &&
+											services === selected.services)
+									}
+								>
+									Zapisz
+								</Button>
+							</ButtonContainer>
+						</form>
 					</Suspense>
 				</ErrorBoundary>
 			</>
-		) : (
-			<ErrorBoundary>
-				<Suspense fallback={loader}>
-					<form onSubmit={this.onSubmit}>
-						<CSRFToken />
-
-						{selected.blocked ? (
-							<BarberInput
-								required={selected.blocked}
-								value={barber}
-								onChange={(option) =>
-									this.setState({ barber: option })
-								}
-								extraChoices={[
-									{
-										label: 'Wszystkich',
-										value: 'everyone',
-									},
-								]}
-							/>
-						) : (
-							<>
-								<CustomerInput
-									required={!selected.blocked}
-									value={customer}
-									onChange={(option) =>
-										this.setState({ customer: option })
-									}
-									changeForm={() =>
-										this.setState({
-											isAddCustomerForm: true,
-										})
-									}
-								/>
-
-								<FormGroup>
-									<ServicesInput
-										isAdminPanel
-										required={!selected.blocked}
-										value={services}
-										updateState={(state) =>
-											this.setState({ services: state })
-										}
-										defaultBarber={barber}
-										defaultResource={resource}
-									/>
-
-									{services.length === 0 && (
-										<BarberAndResourceInputs
-											barber={barber}
-											updateBarber={(state) =>
-												this.setState({
-													barber: state,
-												})
-											}
-											resource={resource}
-											updateResource={(state) =>
-												this.setState({
-													resource: state,
-												})
-											}
-										/>
-									)}
-								</FormGroup>
-							</>
-						)}
-
-						<FormControl>
-							<FormControl.Label
-								htmlFor="customer_description"
-								inputValue={customer_description}
-							>
-								Wiadomość dla klienta
-							</FormControl.Label>
-							<FormControl.Textarea
-								id="customer_description"
-								name="customer_description"
-								onChange={this.onChange}
-								value={customer_description}
-							/>
-						</FormControl>
-
-						<FormControl>
-							<FormControl.Label
-								htmlFor="private_description"
-								inputValue={private_description}
-							>
-								{selected.blocked ? 'Powód' : 'Opis'}
-							</FormControl.Label>
-							<FormControl.Textarea
-								id="private_description"
-								name="private_description"
-								onChange={this.onChange}
-								value={private_description}
-							/>
-						</FormControl>
-
-						<ButtonContainer
-							style={{ justifyContent: 'space-between' }}
-						>
-							<Button
-								type="button"
-								danger
-								small
-								onClick={() =>
-									this.props.deleteMeeting((state) =>
-										this.setState({ deleteLoading: state })
-									)
-								}
-								loading={deleteLoading}
-								loadingText="Usuwanie"
-								disabled={saveLoading}
-							>
-								Usuń {selected.blocked ? 'urlop' : 'wizytę'}
-							</Button>
-							<Button
-								type="submit"
-								success
-								small
-								loading={saveLoading}
-								loadingText="Zapisywanie"
-								disabled={
-									deleteLoading ||
-									(barber === selected.barber &&
-										customer === selected.customer &&
-										services === selected.services)
-								}
-							>
-								Zapisz
-							</Button>
-						</ButtonContainer>
-					</form>
-				</Suspense>
-			</ErrorBoundary>
 		)
 	}
 }

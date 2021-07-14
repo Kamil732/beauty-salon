@@ -8,17 +8,22 @@ import CSRFToken from '../../../CSRFToken'
 import FormControl from '../../../../layout/forms/FormControl'
 import FormGroup from '../../../../layout/forms/FormGroup'
 import Button from '../../../../layout/buttons/Button'
+import ButtonContainer from '../../../../layout/buttons/ButtonContainer'
 import Modal from '../../../../layout/Modal'
 import ErrorBoundary from '../../../ErrorBoundary'
 import CircleLoader from '../../../../layout/loaders/CircleLoader'
+import Dropdown from '../../../../layout/buttons/dropdowns/Dropdown'
+import { options } from '../tools/inputs/RepeatEventInput'
 
 const AddCustomerForm = lazy(() => import('./AddCustomerForm'))
 const BarberInput = lazy(() => import('../tools/inputs/BarberInput'))
+const ResourceInput = lazy(() => import('../tools/inputs/ResourceInput'))
 const CustomerInput = lazy(() => import('../tools/inputs/CustomerInput'))
 const ServicesInput = lazy(() => import('../tools/inputs/ServicesInput'))
 const BarberAndResourceInputs = lazy(() =>
 	import('../tools/inputs/BarberAndResourceInputs')
 )
+const RepeatEventInput = lazy(() => import('../tools/inputs/RepeatEventInput'))
 
 class AddMeetingAdminForm extends Component {
 	static propTypes = {
@@ -45,7 +50,15 @@ class AddMeetingAdminForm extends Component {
 		this.state = {
 			loading: false,
 			isAddCustomerForm: false,
+			showMoreOptions: false,
 			blocked: props.isBlocked,
+
+			repeatData: {
+				repeatTimes: 1,
+				unit: options[0],
+				appearancesNum: 1,
+				endDate: props.startDate,
+			},
 			barber: selectedResourceMap?.barberId
 				? props.barbers.find(
 						({ id }) => id === selectedResourceMap.barberId
@@ -85,25 +98,30 @@ class AddMeetingAdminForm extends Component {
 			blocked,
 			customer,
 			barber,
+			resource,
 			services,
 			private_description,
 			customer_description,
 		} = this.state
 
-		const payload = {
-			barber: barber?.id,
-			private_description,
-			customer_description,
-		}
-
-		if (!blocked) {
-			payload.customer = customer.id
-			payload.services = services.map((service) => ({
-				id: service.value.id,
-				barber: service.barber.id,
-				resources: service.resources.map((resource) => resource.id),
-			}))
-		}
+		const payload = blocked
+			? {
+					barber: barber?.id,
+					resource: resource?.id,
+					private_description,
+			  }
+			: {
+					customer: customer.id,
+					services: services.map((service) => ({
+						id: service.value.id,
+						barber: service.barber.id,
+						resources: service.resources.map(
+							(resource) => resource.id
+						),
+					})),
+					private_description,
+					customer_description,
+			  }
 
 		await this.props.addMeeting(payload, (state) =>
 			this.setState({ loading: state })
@@ -118,10 +136,13 @@ class AddMeetingAdminForm extends Component {
 	}
 
 	render() {
+		const { startDate } = this.props
 		const {
 			loading,
 			isAddCustomerForm,
+			showMoreOptions,
 			blocked,
+			repeatData,
 			customer,
 			barber,
 			resource,
@@ -138,7 +159,6 @@ class AddMeetingAdminForm extends Component {
 
 		return (
 			<>
-				{' '}
 				{isAddCustomerForm && (
 					<Modal
 						closeModal={() =>
@@ -163,12 +183,13 @@ class AddMeetingAdminForm extends Component {
 						</Modal.Body>
 					</Modal>
 				)}
+
 				<ErrorBoundary>
 					<Suspense fallback={loader}>
 						<form onSubmit={this.onSubmit}>
 							<CSRFToken />
 
-							{!this.props.isBlocked ? (
+							{!this.props.isBlocked && (
 								<>
 									<FormControl.CheckBoxLabel>
 										Blokada
@@ -184,6 +205,20 @@ class AddMeetingAdminForm extends Component {
 											display: blocked ? 'none' : 'block',
 										}}
 									>
+										{showMoreOptions && (
+											<RepeatEventInput
+												value={repeatData}
+												updateValue={(name, value) =>
+													this.setState({
+														repeatData: {
+															...repeatData,
+															[name]: value,
+														},
+													})
+												}
+												eventStartDate={startDate}
+											/>
+										)}
 										<CustomerInput
 											required={!blocked}
 											value={customer}
@@ -202,6 +237,9 @@ class AddMeetingAdminForm extends Component {
 										<FormGroup>
 											<ServicesInput
 												isAdminPanel
+												showMoreOptions={
+													showMoreOptions
+												}
 												defaultBarber={barber}
 												defaultResource={resource}
 												required={!blocked}
@@ -249,22 +287,60 @@ class AddMeetingAdminForm extends Component {
 										</FormControl>
 									</div>
 								</>
-							) : null}
+							)}
 
 							{blocked && (
-								<BarberInput
-									required={blocked}
-									value={barber}
-									onChange={(option) =>
-										this.setState({ barber: option })
-									}
-									extraOptions={[
-										{
-											full_name: 'Wszystkich',
-											id: null,
-										},
-									]}
-								/>
+								<>
+									<Dropdown.InputContainer>
+										<BarberInput
+											required={resource == null}
+											value={barber}
+											onChange={(option) =>
+												this.setState({
+													barber: option,
+												})
+											}
+											extraOptions={[
+												{
+													full_name: 'Wszystkich',
+													id: null,
+												},
+											]}
+											disabled={resource != null}
+										/>
+										<Dropdown.ClearBtn
+											clear={() =>
+												this.setState({
+													barber: null,
+												})
+											}
+											value={barber}
+										/>
+									</Dropdown.InputContainer>
+
+									<FormGroup>
+										<Dropdown.InputContainer>
+											<ResourceInput
+												required={barber == null}
+												value={resource}
+												onChange={(option) =>
+													this.setState({
+														resource: option,
+													})
+												}
+												disabled={barber != null}
+											/>
+											<Dropdown.ClearBtn
+												clear={() =>
+													this.setState({
+														resource: null,
+													})
+												}
+												value={resource}
+											/>
+										</Dropdown.InputContainer>
+									</FormGroup>
+								</>
 							)}
 
 							<FormControl>
@@ -284,16 +360,33 @@ class AddMeetingAdminForm extends Component {
 								/>
 							</FormControl>
 
-							<Button
-								type="submit"
-								success={!blocked}
-								danger={blocked}
-								loading={loading}
-								loadingText="Zapisywanie"
-								className="center-item"
+							<ButtonContainer
+								style={{ justifyContent: 'space-between' }}
 							>
-								Zapisz {blocked ? 'blokadę' : 'wizytę'}
-							</Button>
+								<Button
+									type="submit"
+									success={!blocked}
+									danger={blocked}
+									small
+									loading={loading}
+									loadingText="Zapisywanie"
+								>
+									Zapisz {blocked ? 'blokadę' : 'wizytę'}
+								</Button>
+
+								<Button
+									type="button"
+									primary
+									small
+									onClick={() =>
+										this.setState({
+											showMoreOptions: !showMoreOptions,
+										})
+									}
+								>
+									{showMoreOptions ? 'Mniej' : 'Więcej'} opcji
+								</Button>
+							</ButtonContainer>
 						</form>
 					</Suspense>
 				</ErrorBoundary>

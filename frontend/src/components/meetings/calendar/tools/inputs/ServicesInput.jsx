@@ -3,19 +3,26 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { useId } from 'react-id-generator'
 
-import { FiTrash2 } from 'react-icons/fi'
+import { FiMenu, FiTrash2 } from 'react-icons/fi'
 import { GrUserWorker, GrResources } from 'react-icons/gr'
+import { GiOfficeChair } from 'react-icons/gi'
+import { BiTime } from 'react-icons/bi'
+import { BsBoxArrowInDown } from 'react-icons/bs'
 
 import FormControl from '../../../../../layout/forms/FormControl'
+import FormGroup from '../../../../../layout/forms/FormGroup'
 import Button from '../../../../../layout/buttons/Button'
 import Modal from '../../../../../layout/Modal'
 import ErrorBoundary from '../../../../ErrorBoundary'
 import CircleLoader from '../../../../../layout/loaders/CircleLoader'
 import ReactTooltip from 'react-tooltip'
 import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
+import ButtonContainer from '../../../../../layout/buttons/ButtonContainer'
 
 const BarberInput = lazy(() => import('./BarberInput'))
 const ResourcesInput = lazy(() => import('./ResourcesInput'))
+
+const CATEOGRIES = [0, 1, 2]
 
 function ServicesInput({
 	defaultBarber,
@@ -25,9 +32,12 @@ function ServicesInput({
 	resources,
 	updateState,
 	isAdminPanel,
+	showMoreOptions,
 	...props
 }) {
 	const [selected, setSelected] = useState({})
+	const [category, setCategory] = useState(CATEOGRIES[0])
+	const [showCategories, setShowsCategories] = useState(false)
 	const [showInput, setShowInput] = useState(value.length === 0)
 	const [dropdownId] = useId(1, 'service-')
 	const [multiListId] = useId(1, 'multiList-')
@@ -56,33 +66,58 @@ function ServicesInput({
 		[value]
 	)
 
+	const getServicesTimeSum = useCallback(
+		() => value.reduce((n, { value: { time } }) => n + parseInt(time), 0),
+		[value]
+	)
+
 	useEffect(() => {
 		if (value.length === 0 && !showInput) setShowInput(true)
 	}, [value, showInput])
 
+	useEffect(() => {
+		setShowsCategories(false)
+	}, [category, showMoreOptions])
+
 	const formatOptionLabel = (
 		{ id, name, display_time, price },
-		barber = defaultBarber
+		barber = defaultBarber,
+		selectedFormat
 	) => {
-		const time = barber ? getServiceBarberTime(barber, id) : null
+		const time = barber
+			? getServiceBarberTime(barber, id) || display_time
+			: display_time
 
 		return (
 			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'baseline',
-					flexGrow: '1',
-				}}
+				className={`service-item${
+					selectedFormat ? ' selected-format' : ''
+				}`}
 			>
 				<span>
 					{name}
 					&nbsp;
-					<span className="text-broken word-break-all">
-						{time ? time : display_time}
-					</span>
+					<small
+						className={`text-broken${
+							!selectedFormat ? ' word-break-all' : ''
+						}`}
+					>
+						{selectedFormat ? (
+							<>
+								(<span className="word-break-all">{time}</span>,{' '}
+								<span className="word-break-all">
+									{price} zł
+								</span>
+								)
+							</>
+						) : (
+							time
+						)}
+					</small>
 				</span>
-				<span className="text-broken">{price} zł</span>
+				{!selectedFormat && (
+					<span className="text-broken">{price} zł</span>
+				)}
 			</div>
 		)
 	}
@@ -217,105 +252,263 @@ function ServicesInput({
 					<FormControl.Label htmlFor={multiListId} inputValue>
 						Usługi
 					</FormControl.Label>
-					<div className="multi-list" id={multiListId}>
-						{value.map((option) => (
-							<div
-								className="multi-list__item"
-								key={option.value.id}
+					{showMoreOptions && (
+						<ButtonContainer.Group
+							className={`categories-group${
+								showCategories ? ' show-categories' : ''
+							}`}
+							onClick={() => setShowsCategories(true)}
+						>
+							<Button
+								type="button"
+								className={`btn-category icon-container${
+									category === CATEOGRIES[0] ? ' active' : ''
+								}`}
+								onClick={() => setCategory(CATEOGRIES[0])}
 							>
-								{formatOptionLabel(option.value, option.barber)}
-
-								{/* Worker btn */}
-								<Button
-									type="button"
-									onClick={() => setSelected(option)}
-									className={`btn-picker ${
-										option.barber ? option.barber.color : ''
-									}`}
-									data-tip={
-										option.barber
-											? `pracownik: ${option.barber.full_name}`
-											: 'brak pracownika'
-									}
-									data-for={`barberBtnTip-${option.id}`}
-								>
-									{option.barber?.full_name || (
-										<GrUserWorker />
-									)}
-								</Button>
-								<ReactTooltip
-									id={`barberBtnTip-${option.id}`}
-									effect="solid"
-									place="top"
-								/>
-
-								{isAdminPanel && (
-									<div
-										style={{
-											position: 'relative',
-										}}
-									>
-										{/* Resource btn */}
-										<Button
-											type="button"
-											onClick={() => setSelected(option)}
-											className="btn-picker"
-											style={{ maxWidth: '100%' }}
-											data-tip={
-												option.resources.length > 0
-													? `zasoby: ${option.resources
-															.map(
-																(resource) =>
-																	resource.name
-															)
-															.join(', ')}`
-													: 'brak zasobów'
-											}
-											data-for={`resourcesBtnTip-${option.id}`}
-										>
-											<GrResources />
-											{option.resources.length > 0 && (
-												<div className="badge">
-													{option.resources.length}
-												</div>
-											)}
-										</Button>
-
-										<ReactTooltip
-											id={`resourcesBtnTip-${option.id}`}
-											effect="solid"
-											place="top"
-										/>
-									</div>
+								{category === CATEOGRIES[0] && (
+									<FiMenu className="categories-group__icon" />
 								)}
+								<GiOfficeChair className="icon-container__icon" />
+								Ogólne
+							</Button>
+							<Button
+								type="button"
+								className={`btn-category icon-container${
+									category === CATEOGRIES[1] ? ' active' : ''
+								}`}
+								onClick={() => setCategory(CATEOGRIES[1])}
+							>
+								{category === CATEOGRIES[1] && (
+									<FiMenu className="categories-group__icon" />
+								)}
+								<BiTime className="icon-container__icon" />
+								Czas
+							</Button>
+							<Button
+								type="button"
+								className={`btn-category icon-container${
+									category === CATEOGRIES[2] ? ' active' : ''
+								}`}
+								onClick={() => setCategory(CATEOGRIES[2])}
+							>
+								{category === CATEOGRIES[2] && (
+									<FiMenu className="categories-group__icon" />
+								)}
+								<BsBoxArrowInDown className="icon-container__icon" />
+								Zużycie (0)
+							</Button>
+						</ButtonContainer.Group>
+					)}
 
-								{/* Delete btn */}
-								<Button
-									type="button"
-									rounded
-									onClick={() =>
-										updateState(
-											value.filter(
-												(service) =>
-													service.value.id !==
-													option.value.id
-											)
-										)
-									}
-									data-tip="Usuń usługę"
-									data-for={`removeValueBtnTip-${option.id}`}
-								>
-									<FiTrash2 size="20" />
-								</Button>
+					<div>
+						<table
+							className="multi-list"
+							style={
+								showMoreOptions
+									? {
+											borderTopLeftRadius: 0,
+											borderTopRightRadius: 0,
+									  }
+									: null
+							}
+							id={multiListId}
+						>
+							<tbody>
+								{value.map((option) => (
+									<tr key={option.value.id}>
+										<td>
+											{formatOptionLabel(
+												option.value,
+												option.barber,
+												true
+											)}
+										</td>
 
-								<ReactTooltip
-									id={`removeValueBtnTip-${option.id}`}
-									effect="solid"
-									place="right"
-									delayShow={250}
-								/>
-							</div>
-						))}
+										{!showMoreOptions ||
+										category === CATEOGRIES[0] ? (
+											<>
+												<td style={{ width: '1px' }}>
+													<div className="inline-wrap">
+														{/* Worker btn */}
+														<Button
+															type="button"
+															onClick={() =>
+																setSelected(
+																	option
+																)
+															}
+															className={`btn-picker ${
+																option.barber
+																	? option
+																			.barber
+																			.color
+																	: ''
+															}`}
+															data-tip={
+																option.barber
+																	? `pracownik: ${option.barber.full_name}`
+																	: 'brak pracownika'
+															}
+															data-for={`barberBtnTip-${option.value.id}`}
+														>
+															{option.barber
+																?.full_name || (
+																<GrUserWorker />
+															)}
+														</Button>
+														<ReactTooltip
+															id={`barberBtnTip-${option.value.id}`}
+															effect="solid"
+															place="top"
+														/>
+
+														{isAdminPanel && (
+															<div
+																style={{
+																	position:
+																		'relative',
+																}}
+															>
+																{/* Resource btn */}
+																<Button
+																	type="button"
+																	onClick={() =>
+																		setSelected(
+																			option
+																		)
+																	}
+																	className="btn-picker"
+																	style={{
+																		maxWidth:
+																			'100%',
+																	}}
+																	data-tip={
+																		option
+																			.resources
+																			.length >
+																		0
+																			? `zasoby: ${option.resources
+																					.map(
+																						(
+																							resource
+																						) =>
+																							resource.name
+																					)
+																					.join(
+																						', '
+																					)}`
+																			: 'brak zasobów'
+																	}
+																	data-for={`resourcesBtnTip-${option.value.id}`}
+																>
+																	<GrResources />
+																	{option
+																		.resources
+																		.length >
+																		0 && (
+																		<div className="badge">
+																			{
+																				option
+																					.resources
+																					.length
+																			}
+																		</div>
+																	)}
+																</Button>
+
+																<ReactTooltip
+																	id={`resourcesBtnTip-${option.value.id}`}
+																	effect="solid"
+																	place="top"
+																/>
+															</div>
+														)}
+													</div>
+												</td>
+												<td style={{ width: '1px' }}>
+													{/* Delete btn */}
+													<Button
+														type="button"
+														rounded
+														onClick={() =>
+															updateState(
+																value.filter(
+																	(service) =>
+																		service
+																			.value
+																			.id !==
+																		option
+																			.value
+																			.id
+																)
+															)
+														}
+														data-tip="Usuń usługę"
+														data-for={`removeValueBtnTip-${option.id}`}
+													>
+														<FiTrash2 size="20" />
+													</Button>
+
+													<ReactTooltip
+														id={`removeValueBtnTip-${option.id}`}
+														effect="solid"
+														place="right"
+														delayShow={250}
+													/>
+												</td>
+											</>
+										) : category === CATEOGRIES[1] ? (
+											<td style={{ width: '1px' }}>
+												<div className="inline-inputs">
+													<FormControl
+														style={{
+															width: '70px',
+														}}
+													>
+														<FormControl.DatePicker
+															value={new Date()}
+															onChange={() => {}}
+														/>
+													</FormControl>
+													<FormControl
+														style={{
+															width: '65px',
+														}}
+													>
+														<FormControl.TimePicker
+															onChange={() => {}}
+															value={'12:30'}
+															step={1}
+															// beginLimit="06:00"
+															// endLimit="07:00"
+														/>
+													</FormControl>
+													<FormControl
+														style={{
+															width: '50px',
+														}}
+													>
+														<FormControl.Input
+															type="number"
+															value={'30'}
+															readOnly
+														/>
+													</FormControl>
+													min
+													<span className="text-broken">
+														koniec:
+													</span>{' '}
+													12:30
+												</div>
+											</td>
+										) : category === CATEOGRIES[2] ? (
+											<h5>lol</h5>
+										) : null}
+									</tr>
+								))}
+							</tbody>
+						</table>
 					</div>
 				</div>
 			)}
@@ -370,11 +563,20 @@ function ServicesInput({
 							Kolejna usługa
 						</Button>
 					)}
-					{value.length > 0 && (
-						<div style={{ marginLeft: 'auto' }}>
-							Łącznie: <b>{getServicesPriceSum()} zł</b>
-						</div>
-					)}
+					{value.length > 0 &&
+						(!showMoreOptions || category !== CATEOGRIES[2]) && (
+							<div style={{ marginLeft: 'auto' }}>
+								Łącznie:{' '}
+								<b>
+									{!showMoreOptions ||
+									category === CATEOGRIES[0]
+										? `${getServicesPriceSum()} zł`
+										: category === CATEOGRIES[1]
+										? `${getServicesTimeSum()} min`
+										: null}
+								</b>
+							</div>
+						)}
 				</div>
 			)}
 		</FormControl>

@@ -49,31 +49,40 @@ function ResourcesInput({
 					<FormControl.Label htmlFor={multiListId} inputValue>
 						Zasoby
 					</FormControl.Label>
-					<div className="multi-list" id={multiListId}>
-						{value.map((option) => (
-							<div className="multi-list__item" key={option.id}>
-								{option.name}
-
-								{/* Delete btn */}
-								<Button
-									type="button"
-									rounded
-									onClick={() => removeValue(option.id)}
-									data-tip="Usuń zasób"
-									data-for={`removeResourceBtnTip-${option.id}`}
+					<table className="multi-list" id={multiListId}>
+						<tbody>
+							{value.map((option) => (
+								<tr
+									className="multi-list__item"
+									key={option.id}
 								>
-									<FiTrash2 size="20" />
-								</Button>
+									<td>{option.name}</td>
 
-								<ReactTooltip
-									id={`removeResourceBtnTip-${option.id}`}
-									effect="solid"
-									place="right"
-									delayShow={250}
-								/>
-							</div>
-						))}
-					</div>
+									<td style={{ width: '1px' }}>
+										{/* Delete btn */}
+										<Button
+											type="button"
+											rounded
+											onClick={() =>
+												removeValue(option.id)
+											}
+											data-tip="Usuń zasób"
+											data-for={`removeResourceBtnTip-${option.id}`}
+										>
+											<FiTrash2 size="20" />
+										</Button>
+
+										<ReactTooltip
+											id={`removeResourceBtnTip-${option.id}`}
+											effect="solid"
+											place="right"
+											delayShow={250}
+										/>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
 			)}
 			{showInput && value.length !== resources.length ? (

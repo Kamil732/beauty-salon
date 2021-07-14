@@ -47,6 +47,8 @@ const setMeeting = (data, getState) => {
 				resourceId: `resource-${data.services[i].resources[j]}`,
 			})
 
+		// TODO: TypeError: Cannot read property 'color' of undefined
+		// TODO: Barbers are not loaded yet
 		res.push({
 			...eventData,
 			color: getState().data.barbers.find(
@@ -143,6 +145,7 @@ export const loadMeetings =
 					'Nie udało się załadować wizyt',
 					'Błąd'
 				)
+				console.error(`The error occurred: ${err}`)
 			}
 		}
 	}
