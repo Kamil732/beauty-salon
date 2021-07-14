@@ -8,7 +8,7 @@ import { loadBarbers } from '../../../../../redux/actions/data'
 import FormControl from '../../../../../layout/forms/FormControl'
 import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 
-function BarberInput({ value, resources, onChange, ...props }) {
+function ResourceInput({ value, resources, onChange, ...props }) {
 	const [id] = useId(1, 'resource-')
 
 	return (
@@ -30,7 +30,7 @@ function BarberInput({ value, resources, onChange, ...props }) {
 	)
 }
 
-BarberInput.prototype.propTypes = {
+ResourceInput.prototype.propTypes = {
 	value: PropTypes.any.isRequired,
 	resources: PropTypes.array,
 	onChange: PropTypes.func.isRequired,
@@ -44,4 +44,4 @@ const mapDispatchToProps = {
 	loadBarbers,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BarberInput)
+export default connect(mapStateToProps, mapDispatchToProps)(ResourceInput)

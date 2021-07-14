@@ -29,7 +29,7 @@ function DropdownSelect({
 	useEffect(() => {
 		const handleClickOutside = (e) => {
 			if (container.current && !container.current.contains(e.target)) {
-				setSelected({ ...selected, isOpen: false })
+				setSelected((selected) => ({ ...selected, isOpen: false }))
 				setIsOpen(false)
 			}
 		}
@@ -38,7 +38,7 @@ function DropdownSelect({
 
 		return () =>
 			document.removeEventListener('mousedown', handleClickOutside)
-	}, [selected, isOpen])
+	}, [])
 
 	useEffect(() => {
 		if (selected.isOpen && !selected.data.read && markRead)

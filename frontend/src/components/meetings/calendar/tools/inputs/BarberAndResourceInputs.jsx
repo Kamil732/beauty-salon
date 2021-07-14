@@ -89,13 +89,7 @@ function BarberAndResourceInputs({
 				</Modal>
 			)}
 
-			<div
-				style={{
-					display: 'flex',
-					gap: '0.5rem',
-					alignItems: 'center',
-				}}
-			>
+			<div className="inline-inputs">
 				{/* Worker btn */}
 				<Button
 					type="button"

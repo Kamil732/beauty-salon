@@ -28,9 +28,10 @@ function BarberInput({
 	const getOptionLabel = (option) => option.full_name
 
 	const formatOptionLabel = (option) => {
-		const time =
-			option.services_data.find(({ service }) => service === serviceId)
-				?.display_time || serviceDisplayTime
+		const time = serviceId
+			? option.services_data.find(({ service }) => service === serviceId)
+					?.display_time || serviceDisplayTime
+			: null
 
 		if (time == null) return getOptionLabel(option)
 

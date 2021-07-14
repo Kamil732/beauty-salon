@@ -135,8 +135,8 @@ function Menu({
 								closeNavigation()
 								logout()
 							}}
-							rounded
 							primary
+							rounded
 						>
 							Wyloguj się
 						</Button>
