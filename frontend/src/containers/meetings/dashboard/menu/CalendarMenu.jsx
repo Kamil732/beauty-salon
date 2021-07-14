@@ -110,42 +110,44 @@ function CalendarMenu({
 								PRACOWNICY
 							</h4>
 
-							{barbers.map((barber) => (
-								<div
-									className="btn-resources-container"
-									key={barber.id}
-								>
-									<label>
-										<input
-											type={
-												resourceMap.isMany
-													? 'checkbox'
-													: 'radio'
-											}
-											data-id={`barber-${barber.id}`}
-											data-title={barber.full_name}
-											data-barber={barber.id}
-											checked={
-												resourceMap.isMany
-													? resourceMap.data.some(
-															({ id }) =>
-																id ===
-																`barber-${barber.id}`
-													  )
-													: resourceMap.selected
-															?.id ===
-													  `barber-${barber.id}`
-											}
-											onChange={onChangeResource}
-										/>
+							{barbers.map((barber) => {
+								const isChecked = resourceMap.isMany
+									? resourceMap.data.some(
+											({ id }) =>
+												id === `barber-${barber.id}`
+									  )
+									: resourceMap.selected?.id ===
+									  `barber-${barber.id}`
 
-										<span>{barber.full_name}</span>
-										<div
-											className={`box-color ${barber.color}`}
-										></div>
-									</label>
-								</div>
-							))}
+								return (
+									<div
+										className={`btn-resources-container${
+											isChecked ? ' active' : ''
+										}`}
+										key={barber.id}
+									>
+										<label>
+											<input
+												type={
+													resourceMap.isMany
+														? 'checkbox'
+														: 'radio'
+												}
+												data-id={`barber-${barber.id}`}
+												data-title={barber.full_name}
+												data-barber={barber.id}
+												checked={isChecked}
+												onChange={onChangeResource}
+											/>
+
+											<span>{barber.full_name}</span>
+											<div
+												className={`box-color ${barber.color}`}
+											></div>
+										</label>
+									</div>
+								)
+							})}
 						</div>
 					)}
 
@@ -153,42 +155,44 @@ function CalendarMenu({
 						<h4 className="tools-menu__item__title">ZASOBY</h4>
 
 						{resources.length > 0 ? (
-							resources.map((resource) => (
-								<div
-									className="btn-resources-container"
-									key={resource.id}
-								>
-									<label>
-										<input
-											type={
-												resourceMap.isMany
-													? 'checkbox'
-													: 'radio'
-											}
-											data-id={`resource-${resource.id}`}
-											data-title={resource.name}
-											data-resource={resource.id}
-											checked={
-												resourceMap.isMany
-													? resourceMap.data.some(
-															({ id }) =>
-																id ===
-																`resource-${resource.id}`
-													  )
-													: resourceMap.selected
-															?.id ===
-													  `resource-${resource.id}`
-											}
-											onChange={onChangeResource}
-										/>
+							resources.map((resource) => {
+								const isChecked = resourceMap.isMany
+									? resourceMap.data.some(
+											({ id }) =>
+												id === `resource-${resource.id}`
+									  )
+									: resourceMap.selected?.id ===
+									  `resource-${resource.id}`
 
-										<span>{resource.name}</span>
-										<div
-											className={`box-color ${resource.color}`}
-										></div>
-									</label>
-								</div>
-							))
+								return (
+									<div
+										className={`btn-resources-container${
+											isChecked ? ' active' : ''
+										}`}
+										key={resource.id}
+									>
+										<label>
+											<input
+												type={
+													resourceMap.isMany
+														? 'checkbox'
+														: 'radio'
+												}
+												data-id={`resource-${resource.id}`}
+												data-title={resource.name}
+												data-resource={resource.id}
+												checked={isChecked}
+												onChange={onChangeResource}
+											/>
+
+											<span>{resource.name}</span>
+											<div
+												className={`box-color ${resource.color}`}
+											></div>
+										</label>
+									</div>
+								)
+							})
 						) : (
 							<Button
 								small
