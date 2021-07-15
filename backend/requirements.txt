@@ -16,7 +16,7 @@ click==7.1.2
 constantly==15.1.0
 cryptography==3.4.7
 daphne==3.0.1
-Django==3.1.7
+Django==3.1.12
 django-autoslug==1.9.8
 django-bulk-sync==3.2.0
 django-cors-headers==3.7.0
