@@ -55,5 +55,5 @@ twisted-iocpsupport==1.0.1
 txaio==21.2.1
 typed-ast==1.4.2
 typing-extensions==3.7.4.3
-urllib3==1.26.4
+urllib3==1.26.5
 zope.interface==5.3.0
