@@ -16,14 +16,17 @@
 		height: 47px;
 		padding: 0.2rem 1rem;
 
-		&:last-child > td {
-			border-bottom: none;
-		}
-
 		& > td {
-			border-bottom: 1px solid $border-color;
 			padding: 0.2rem 0.5rem;
 		}
+
+		&:last-child > td {
+			border-bottom: 1px solid $border-color;
+		}
+	}
+
+	tbody:last-child > tr > td {
+		border-bottom: none;
 	}
 }
 
