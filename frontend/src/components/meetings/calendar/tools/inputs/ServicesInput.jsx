@@ -10,7 +10,6 @@ import { BiTime } from 'react-icons/bi'
 import { BsBoxArrowInDown } from 'react-icons/bs'
 
 import FormControl from '../../../../../layout/forms/FormControl'
-import FormGroup from '../../../../../layout/forms/FormGroup'
 import Button from '../../../../../layout/buttons/Button'
 import Modal from '../../../../../layout/Modal'
 import ErrorBoundary from '../../../../ErrorBoundary'
@@ -18,6 +17,7 @@ import CircleLoader from '../../../../../layout/loaders/CircleLoader'
 import ReactTooltip from 'react-tooltip'
 import Dropdown from '../../../../../layout/buttons/dropdowns/Dropdown'
 import ButtonContainer from '../../../../../layout/buttons/ButtonContainer'
+import moment from 'moment'
 
 const BarberInput = lazy(() => import('./BarberInput'))
 const ResourcesInput = lazy(() => import('./ResourcesInput'))
@@ -32,7 +32,9 @@ function ServicesInput({
 	resources,
 	updateState,
 	isAdminPanel,
+	calendar_step,
 	showMoreOptions,
+	dispatch,
 	...props
 }) {
 	const [selected, setSelected] = useState({})
@@ -63,11 +65,6 @@ function ServicesInput({
 					0
 				)
 				.toFixed(2),
-		[value]
-	)
-
-	const getServicesTimeSum = useCallback(
-		() => value.reduce((n, { value: { time } }) => n + parseInt(time), 0),
 		[value]
 	)
 
@@ -314,9 +311,9 @@ function ServicesInput({
 							}
 							id={multiListId}
 						>
-							<tbody>
-								{value.map((option) => (
-									<tr key={option.value.id}>
+							{value.map((option) => (
+								<tbody key={option.value.id}>
+									<tr>
 										<td>
 											{formatOptionLabel(
 												option.value,
@@ -467,8 +464,60 @@ function ServicesInput({
 														}}
 													>
 														<FormControl.DatePicker
-															value={new Date()}
-															onChange={() => {}}
+															value={option.start}
+															onChange={(date) =>
+																updateState(
+																	value.map(
+																		(
+																			service
+																		) => {
+																			if (
+																				service
+																					.value
+																					.id !==
+																				option
+																					.value
+																					.id
+																			)
+																				return service
+
+																			date =
+																				moment(
+																					date
+																				)
+																			const newDate =
+																				moment(
+																					option.start
+																				).set(
+																					{
+																						date: date.date(),
+																						month: date.month(),
+																						year: date.year(),
+																					}
+																				)
+
+																			const duration =
+																				moment(
+																					option.end
+																				).diff(
+																					option.start,
+																					'minutes'
+																				)
+
+																			return {
+																				...service,
+																				start: newDate.toDate(),
+																				end: newDate
+																					.add(
+																						duration,
+																						'minutes'
+																					)
+																					.toDate(),
+																			}
+																		}
+																	)
+																)
+															}
 														/>
 													</FormControl>
 													<FormControl
@@ -477,11 +526,71 @@ function ServicesInput({
 														}}
 													>
 														<FormControl.TimePicker
-															onChange={() => {}}
-															value={'12:30'}
-															step={1}
-															// beginLimit="06:00"
-															// endLimit="07:00"
+															onChange={(time) =>
+																updateState(
+																	value.map(
+																		(
+																			service
+																		) => {
+																			if (
+																				service
+																					.value
+																					.id !==
+																				option
+																					.value
+																					.id
+																			)
+																				return service
+
+																			const [
+																				hours,
+																				minutes,
+																			] =
+																				time.split(
+																					':'
+																				)
+																			const newDate =
+																				moment(
+																					option.start
+																				).set(
+																					{
+																						hour: parseInt(
+																							hours
+																						),
+																						minute: parseInt(
+																							minutes
+																						),
+																					}
+																				)
+
+																			const duration =
+																				moment(
+																					option.end
+																				).diff(
+																					option.start,
+																					'minutes'
+																				)
+
+																			return {
+																				...service,
+																				start: newDate.toDate(),
+																				end: newDate
+																					.add(
+																						duration,
+																						'minutes'
+																					)
+																					.toDate(),
+																			}
+																		}
+																	)
+																)
+															}
+															value={moment(
+																option.start
+															).format('HH:mm')}
+															step={calendar_step}
+															beginLimit="06:00"
+															endLimit="22:00"
 														/>
 													</FormControl>
 													<FormControl
@@ -491,23 +600,90 @@ function ServicesInput({
 													>
 														<FormControl.Input
 															type="number"
-															value={'30'}
-															readOnly
+															value={moment(
+																option.end
+															).diff(
+																option.start,
+																'minutes'
+															)}
+															onInput={(e) =>
+																updateState(
+																	value.map(
+																		(
+																			service
+																		) => {
+																			if (
+																				service
+																					.value
+																					.id !==
+																				option
+																					.value
+																					.id
+																			)
+																				return service
+
+																			return {
+																				...service,
+																				end: moment(
+																					service.start
+																				)
+																					.add(
+																						e
+																							.target
+																							.value,
+																						'minutes'
+																					)
+																					.toDate(),
+																			}
+																		}
+																	)
+																)
+															}
 														/>
 													</FormControl>
 													min
 													<span className="text-broken">
 														koniec:
 													</span>{' '}
-													12:30
+													{moment(option.end).format(
+														'HH:mm'
+													)}
 												</div>
 											</td>
-										) : category === CATEOGRIES[2] ? (
-											<h5>lol</h5>
 										) : null}
 									</tr>
-								))}
-							</tbody>
+									{category === CATEOGRIES[2] && (
+										<tr>
+											<td>
+												<table className="table">
+													<thead>
+														<th scope="col">
+															nazwa
+														</th>
+														<th scope="col">
+															jednostka
+														</th>
+														<th scope="col">
+															ilość
+														</th>
+														<th scope="col">
+															stan mag.
+														</th>
+													</thead>
+													<tbody>
+														<tr>
+															<td colspan="5">
+																Brak dodanych
+																produktów
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</td>
+										</tr>
+									)}
+								</tbody>
+							))}
 						</table>
 					</div>
 				</div>
@@ -523,12 +699,21 @@ function ServicesInput({
 					<Dropdown
 						id={dropdownId}
 						onChange={(option) => {
+							const start =
+								value.length > 0
+									? value[value.length - 1].end
+									: new Date()
+
 							const newOption = {
-								value: option,
+								start,
+								end: moment(start)
+									.add(option.time, 'minutes')
+									.toDate(),
 								barber: defaultBarber ? defaultBarber : null,
 								resources: defaultResource
 									? [defaultResource]
 									: [],
+								value: option,
 
 								// option.resources.map((resourceData) =>
 								// 	resources.find(
@@ -572,7 +757,12 @@ function ServicesInput({
 									category === CATEOGRIES[0]
 										? `${getServicesPriceSum()} zł`
 										: category === CATEOGRIES[1]
-										? `${getServicesTimeSum()} min`
+										? `${moment(
+												value[value.length - 1].end
+										  ).diff(
+												value[0].start,
+												'minutes'
+										  )} min`
 										: null}
 								</b>
 							</div>
@@ -590,10 +780,12 @@ ServicesInput.prototype.propTypes = {
 	isAdminPanel: PropTypes.bool,
 	services: PropTypes.array,
 	resources: PropTypes.array,
+	calendar_step: PropTypes.number.isRequired,
 	updateState: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
+	calendar_step: state.data.cms.data.calendar_step,
 	services: state.data.cms.data.services,
 	resources: state.data.cms.data.resources,
 })
