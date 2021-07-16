@@ -15,6 +15,8 @@ class Dropdown extends Component {
 		searchAsync: PropTypes.bool,
 		loadOptions: PropTypes.func,
 		isMulti: PropTypes.bool,
+		editable: PropTypes.bool,
+		regexValidation: PropTypes.string,
 		options: PropTypes.array,
 		value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 		onChange: PropTypes.func.isRequired,
@@ -105,7 +107,7 @@ class Dropdown extends Component {
 			case 32: // Spacebar
 				e.preventDefault()
 
-				if (isOpen) {
+				if (isOpen && filteredOptions.length > 0) {
 					this.handleOnChange(filteredOptions[navigatedIndex])
 					this.setState({ navigatedIndex: 0 })
 				} else this.setState({ isOpen: true })
@@ -180,6 +182,21 @@ class Dropdown extends Component {
 								.includes(this.state.inputValue.toLowerCase())
 					),
 				})
+
+			if (
+				(this.props.regexValidation &&
+					this.props.regexValidation.test(this.state.inputValue) &&
+					this.props.editable) ||
+				(!this.props.regexValidation && this.props.editable)
+			) {
+				const option = {
+					label: this.state.inputValue,
+					value: this.state.inputValue,
+				}
+
+				if (this.props.regexValidation) this.handleOnChange(option)
+				else this.props.onChange(option)
+			}
 		}
 
 		if (

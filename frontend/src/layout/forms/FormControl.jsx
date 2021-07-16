@@ -6,6 +6,8 @@ import moment from 'moment'
 import CircleLoader from '../loaders/CircleLoader'
 import Dropdown from '../buttons/dropdowns/Dropdown'
 
+import { timeValidation } from '../../helpers/validations'
+
 const DatePickerCalendar = lazy(() => import('react-calendar'))
 
 function FormControl({ children, ...props }) {
@@ -159,7 +161,7 @@ function TimePicker({ value, onChange, beginLimit, endLimit, step, ...props }) {
 		let currentTime = beginLimit
 
 		while (true) {
-			_options.push({ label: currentTime, value: _options.length })
+			_options.push({ label: currentTime, value: currentTime })
 
 			if (
 				moment(currentTime, 'HH:mm').isAfter(
@@ -182,15 +184,17 @@ function TimePicker({ value, onChange, beginLimit, endLimit, step, ...props }) {
 
 	return (
 		<Dropdown
-			value={options.find((option) => option.label === value)}
-			onChange={onChange}
+			value={{ label: value, value }}
+			onChange={({ value }) => onChange(value)}
 			options={options}
 			getOptionLabel={(opt) => opt.label}
 			getOptionValue={(opt) => opt.value}
 			getValuesValue={(opt) => opt.value}
-			fomtatOptionLabel={({ label }) => (
+			formatOptionLabel={({ label }) => (
 				<span className="word-break-all">{label}</span>
 			)}
+			editable
+			regexValidation={timeValidation}
 			{...props}
 		/>
 	)

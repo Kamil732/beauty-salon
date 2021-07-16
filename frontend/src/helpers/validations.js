@@ -3,6 +3,5 @@ export const timeValidationErrorMessage =
 	'Nie poprawny format. Format musi być w HH:MM'
 
 export const phoneNumberValidation = /^\+[0-9]{2}[0-9]{3}[0-9]{2}[0-9]{2}$/
-
 export const phoneNumberValidationErrorMessage =
 	'Numer telefonu jest niepoprawyny'
