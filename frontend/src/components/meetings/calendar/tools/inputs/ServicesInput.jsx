@@ -44,12 +44,19 @@ function ServicesInput({
 	const [dropdownId] = useId(1, 'service-')
 	const [multiListId] = useId(1, 'multiList-')
 
-	const getServiceBarberTime = useCallback((barber, id) => {
-		if (barber === null) return null
+	const getServiceBarberTime = useCallback(
+		(barber, id, returnDisplayTime = true) => {
+			if (barber === null) return null
 
-		return barber.services_data.find(({ service }) => service === id)
-			?.display_time
-	}, [])
+			const serviceDate = barber.services_data.find(
+				({ service }) => service === id
+			)
+
+			if (returnDisplayTime) return serviceDate?.display_time
+			return serviceDate?.time
+		},
+		[]
+	)
 
 	const findValueBySelectedId = useCallback(
 		() => value.find((option) => option.value.id === selected.value.id),
@@ -66,6 +73,18 @@ function ServicesInput({
 				)
 				.toFixed(2),
 		[value]
+	)
+
+	const getServicesTimeSum = useCallback(
+		() =>
+			value.reduce((prev, curr) => {
+				const time =
+					getServiceBarberTime(curr.barber, curr.value.id, false) ||
+					curr.value.time
+
+				return parseInt(prev) + parseInt(time)
+			}, 0),
+		[value, getServiceBarberTime]
 	)
 
 	useEffect(() => {
@@ -131,9 +150,19 @@ function ServicesInput({
 							if (service.value.id !== selected.value.id)
 								return service
 
+							const duration =
+								getServiceBarberTime(
+									option,
+									selected.value.id,
+									false
+								) || selected.value.time
+
 							return {
 								...service,
 								barber: option,
+								end: moment(findValueBySelectedId().start)
+									.add(duration, 'minutes')
+									.toDate(),
 							}
 						})
 					)
@@ -606,6 +635,7 @@ function ServicesInput({
 																option.start,
 																'minutes'
 															)}
+															min="1"
 															onInput={(e) =>
 																updateState(
 																	value.map(
@@ -655,7 +685,7 @@ function ServicesInput({
 									{category === CATEOGRIES[2] && (
 										<tr>
 											<td>
-												<table className="table">
+												<table className="table-border">
 													<thead>
 														<th scope="col">
 															nazwa
@@ -752,19 +782,26 @@ function ServicesInput({
 						(!showMoreOptions || category !== CATEOGRIES[2]) && (
 							<div style={{ marginLeft: 'auto' }}>
 								Łącznie:{' '}
-								<b>
-									{!showMoreOptions ||
-									category === CATEOGRIES[0]
-										? `${getServicesPriceSum()} zł`
-										: category === CATEOGRIES[1]
-										? `${moment(
+								{!showMoreOptions ||
+								category === CATEOGRIES[0] ? (
+									<b>{getServicesPriceSum()} zł</b>
+								) : category === CATEOGRIES[1] ? (
+									<>
+										<b>
+											{moment(
 												value[value.length - 1].end
-										  ).diff(
+											).diff(
 												value[0].start,
 												'minutes'
-										  )} min`
-										: null}
-								</b>
+											)}{' '}
+											min{' '}
+										</b>
+										<small className="text-broken">
+											(sugerowany czas:{' '}
+											{getServicesTimeSum()} min )
+										</small>
+									</>
+								) : null}
 							</div>
 						)}
 				</div>
