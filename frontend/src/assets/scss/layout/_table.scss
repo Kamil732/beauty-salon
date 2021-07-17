@@ -9,6 +9,8 @@
 	}
 
 	tr {
+		min-width: 100%;
+		width: auto;
 		border-bottom: 1px solid $border-color;
 		border-top: 1px solid $border-color;
 
@@ -22,5 +24,40 @@
 		text-align: center;
 
 		padding: 8px;
+	}
+}
+
+.table-border {
+	border-collapse: collapse;
+	border-spacing: 0;
+	min-width: 100%;
+	text-align: center;
+
+	th,
+	tr,
+	td {
+		background-color: $background-color;
+		color: set-text-color($background-color);
+		border: 1px solid $border-color;
+	}
+
+	th {
+		font-weight: 500;
+		padding: 0.2rem;
+	}
+
+	td.delete-item-cell {
+		width: 1px;
+
+		& > .delete-item-cell__btn {
+			font-size: 1.3em;
+			vertical-align: middle;
+			cursor: pointer;
+			transition: color 0.15s ease-in-out;
+
+			&:hover {
+				color: $error-color;
+			}
+		}
 	}
 }
