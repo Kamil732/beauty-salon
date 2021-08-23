@@ -11,12 +11,10 @@
 		object-fit: cover;
 		border-radius: 10px;
 		background-color: $surface-color;
-		@include box-shadow;
+		border: 1px solid #ccc;
 
 		&:hover {
-			transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-			transform: translateY(-0.5rem) scale(1.03) !important;
-			box-shadow: 0 0 8px 2px grey;
+			transform: translateY(-0.6rem) scale(1.04) !important;
 		}
 	}
 
@@ -45,8 +43,7 @@
 				margin: 4rem auto;
 
 				&:hover {
-					transform: none !important;
-					@include box-shadow;
+					transform: none;
 				}
 
 				&__title {

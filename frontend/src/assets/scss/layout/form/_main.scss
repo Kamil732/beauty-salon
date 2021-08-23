@@ -26,6 +26,16 @@ $form-control-vertical-margin: 2.5rem;
 	width: 100%;
 }
 
+@media screen and (max-width: 768px) {
+	.form-group.wrap {
+		display: block;
+
+		& > .form-control {
+			margin-bottom: 0;
+		}
+	}
+}
+
 @import './checkbox';
 @import './input';
 @import './label';

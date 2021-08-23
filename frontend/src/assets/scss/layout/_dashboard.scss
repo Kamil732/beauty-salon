@@ -44,9 +44,9 @@
 		justify-content: center;
 		align-items: center;
 		background-color: transparent;
-		font-size: 0.65em;
+		font-size: 0.7em;
 		width: 100%;
-		padding: 0.75rem 2.5px;
+		padding: 0.75rem 3px;
 		text-align: center;
 		color: set-text-color($primary-color);
 		opacity: 0.5;
@@ -58,7 +58,7 @@
 		}
 
 		&__icon {
-			font-size: 1.7em;
+			font-size: 1.8em;
 			margin-bottom: -0.3em;
 			color: set-text-color($primary-color);
 		}

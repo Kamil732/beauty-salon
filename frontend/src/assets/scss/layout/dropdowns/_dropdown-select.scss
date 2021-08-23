@@ -11,6 +11,7 @@ $prefix: dropdown-select;
 	z-index: 2;
 	border: 1px solid rgba(0, 0, 0, 0.04);
 	white-space: normal;
+	border: 1px solid #ccc;
 	@include box-shadow;
 
 	&__header {

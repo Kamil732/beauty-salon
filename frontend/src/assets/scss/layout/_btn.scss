@@ -7,7 +7,7 @@
 .btn-resources-container {
 	cursor: default;
 	user-select: none;
-	font-size: 0.85em;
+	font-size: 0.8em;
 
 	&:hover,
 	&.active {
@@ -94,7 +94,7 @@
 	text-align: center;
 	transition: background-color 0.1s ease-in, border-color 0.1s ease-in,
 		border-radius 0.1s ease-in;
-	font-size: 1.1rem;
+	font-size: 0.9em;
 
 	&-picker {
 		overflow: hidden;
@@ -135,7 +135,7 @@
 	}
 
 	&__small {
-		padding: 0.5rem 1rem !important;
+		padding: 0.2rem 0.5rem !important;
 
 		&.btn__loading {
 			padding: 0.2rem 0.5rem !important;
@@ -296,7 +296,7 @@
 		}
 
 		&__small {
-			padding: 0.5rem 1rem;
+			padding: 0.5rem 1rem !important;
 		}
 	}
 }

@@ -15,13 +15,13 @@
 	width: 100%;
 	background-color: $surface-color;
 	border-radius: $border-radius;
-	@include box-shadow;
+	border: 1px solid #ccc;
 
 	& > &__title {
 		background-color: $secondary-color;
 		color: set-text-color($secondary-color);
 		padding: 1.5rem;
-		font-size: 1.3rem;
+		font-size: 1.3em;
 		font-weight: 600;
 		letter-spacing: 1px;
 		text-align: center;
@@ -29,7 +29,6 @@
 	}
 
 	& > &__body {
-		font-size: 1.2rem;
 		padding: 1rem 1.5rem;
 	}
 }

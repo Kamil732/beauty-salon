@@ -3,7 +3,7 @@
 	@include menu;
 
 	& > &__item {
-		padding: 1rem;
+		padding: 0.9rem 1rem;
 		cursor: pointer;
 		width: 100%;
 		color: set-text-color($surface-color);
