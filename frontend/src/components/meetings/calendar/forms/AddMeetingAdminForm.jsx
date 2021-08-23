@@ -244,6 +244,7 @@ class AddMeetingAdminForm extends Component {
 												defaultResource={resource}
 												required={!blocked}
 												value={services}
+												eventStartDate={startDate}
 												updateState={(state) =>
 													this.setState({
 														services: state,

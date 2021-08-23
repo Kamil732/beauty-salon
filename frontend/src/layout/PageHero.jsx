@@ -23,18 +23,14 @@ function Content({ children, ...props }) {
 }
 
 function Img({ src, alt, ...props }) {
-	const imgContainer = useRef(null)
-	const isImgVisible = useIntersectionObserver(imgContainer)
-
 	return (
-		<div className="page-hero__img-container" ref={imgContainer} {...props}>
-			{isImgVisible && (
-				<img
-					src={src}
-					alt={alt ? alt : ''}
-					className="page-hero__img"
-				/>
-			)}
+		<div className="page-hero__img-container" {...props}>
+			<img
+				src={src}
+				alt={alt ? alt : ''}
+				className="page-hero__img"
+				loading="lazy"
+			/>
 
 			{props.children}
 		</div>

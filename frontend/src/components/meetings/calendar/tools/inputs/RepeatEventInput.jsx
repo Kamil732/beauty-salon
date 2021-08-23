@@ -39,15 +39,22 @@ function RepeatEventInput({
 	const [repeatEndId] = useId(1, 'repeat-end-')
 
 	return (
-		<>
+		<FormGroup wrap>
 			<FormControl
 				style={{
-					// margin: '2rem 0',
-					fontSize: '0.85em',
+					fontSize: '0.8em',
 					userSelect: 'none',
+					marginRight: '1rem',
 				}}
 			>
-				<label style={{ marginLeft: 'auto' }}>
+				<label
+					style={{
+						marginLeft: 'auto',
+						display: 'inline-flex',
+						alignItems: 'center',
+						gap: '0.2rem',
+					}}
+				>
 					<input
 						type="radio"
 						checked={repeatType === REPEAPT_TYPES[0]}
@@ -55,7 +62,15 @@ function RepeatEventInput({
 					/>{' '}
 					Liczba wystąpień
 				</label>
-				<label style={{ marginLeft: '1rem' }}>
+				<label
+					style={{
+						marginLeft: '1rem',
+						display: 'inline-flex',
+						alignItems: 'center',
+						gap: '0.2rem',
+					}}
+					className="icon-container"
+				>
 					<input
 						type="radio"
 						checked={repeatType === REPEAPT_TYPES[1]}
@@ -65,8 +80,8 @@ function RepeatEventInput({
 				</label>
 			</FormControl>
 
-			<FormGroup>
-				<FormControl>
+			<FormGroup style={{ margin: '0' }}>
+				<FormControl style={{ width: '8em' }}>
 					<FormControl.Label
 						htmlFor={repeatTimesId}
 						inputValue={value.repeatTimes}
@@ -85,7 +100,7 @@ function RepeatEventInput({
 					/>
 				</FormControl>
 
-				<FormControl>
+				<FormControl style={{ width: '10em' }}>
 					<Dropdown
 						required
 						value={value.unit}
@@ -99,7 +114,7 @@ function RepeatEventInput({
 				</FormControl>
 
 				{repeatType === REPEAPT_TYPES[0] ? (
-					<FormControl>
+					<FormControl style={{ width: '10em' }}>
 						<FormControl.Label
 							htmlFor={repeatEndId}
 							inputValue={value.appearancesNum}
@@ -118,7 +133,7 @@ function RepeatEventInput({
 						/>
 					</FormControl>
 				) : (
-					<FormControl>
+					<FormControl style={{ width: '10em' }}>
 						<FormControl.Label
 							htmlFor={repeatEndId}
 							inputValue={value.endDate != null}
@@ -135,7 +150,7 @@ function RepeatEventInput({
 					</FormControl>
 				)}
 			</FormGroup>
-		</>
+		</FormGroup>
 	)
 }
 

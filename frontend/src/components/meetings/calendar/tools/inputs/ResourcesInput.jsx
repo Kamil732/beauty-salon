@@ -50,12 +50,9 @@ function ResourcesInput({
 						Zasoby
 					</FormControl.Label>
 					<table className="multi-list" id={multiListId}>
-						<tbody>
-							{value.map((option) => (
-								<tr
-									className="multi-list__item"
-									key={option.id}
-								>
+						{value.map((option) => (
+							<tbody className="multi-list__item" key={option.id}>
+								<tr>
 									<td>{option.name}</td>
 
 									<td style={{ width: '1px' }}>
@@ -80,8 +77,8 @@ function ResourcesInput({
 										/>
 									</td>
 								</tr>
-							))}
-						</tbody>
+							</tbody>
+						))}
 					</table>
 				</div>
 			)}
@@ -89,27 +86,25 @@ function ResourcesInput({
 				value.length > 0 ? (
 					input
 				) : (
-					<>
+					<FormControl>
 						<FormControl.Label htmlFor={dropdownId}>
 							Zasoby
 						</FormControl.Label>
 
 						{input}
-					</>
+					</FormControl>
 				)
 			) : value.length > 0 ? (
-				<div className="space-between">
-					{value.length !== resources.length && (
-						<Button
-							type="button"
-							secondary
-							small
-							onClick={() => setShowInput(true)}
-						>
-							Dodaj zasób
-						</Button>
-					)}
-				</div>
+				value.length !== resources.length && (
+					<Button
+						type="button"
+						secondary
+						small
+						onClick={() => setShowInput(true)}
+					>
+						Dodaj zasób
+					</Button>
+				)
 			) : null}
 		</>
 	)
