@@ -1,3 +1,5 @@
+THAT IS OLD VERSION OF THE PROJECT (READ-ONLY). THE NEW ONE IS AT https://github.com/Kamil732/salon-mango
+
 # DK-team
 Website for beauty salons, with big calendar and communcation with customers
 
