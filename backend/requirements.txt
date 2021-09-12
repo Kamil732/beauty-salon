@@ -33,7 +33,7 @@ msgpack==1.0.2
 mypy-extensions==0.4.3
 pathspec==0.8.1
 phonenumberslite==8.12.20
-Pillow==8.2.0
+Pillow==8.3.2
 psycopg2==2.8.6
 py-vapid==1.8.2
 pyasn1==0.4.8
